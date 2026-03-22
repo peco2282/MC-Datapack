@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.template
+package com.github.peco2282.mcdatapack
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.NonNls
