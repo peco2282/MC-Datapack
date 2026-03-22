@@ -12,6 +12,7 @@
         <fileType name="Minecraft Function" language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionFileType" extensions="mcfunction"/>
         <lang.parserDefinition language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionParserDefinition"/>
         <lang.syntaxHighlighterFactory language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionSyntaxHighlighterFactory"/>
+        <annotator language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionAnnotator"/>
 
         <toolWindow factoryClass="com.github.peco2282.mcdatapack.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.peco2282.mcdatapack.startup.MyProjectActivity" />
