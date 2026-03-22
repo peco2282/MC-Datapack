@@ -1,6 +1,7 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("java") // Java support
@@ -9,6 +10,8 @@ plugins {
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
+    id("org.jetbrains.grammarkit") version "2022.3.2.2"
+    idea
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -135,6 +138,32 @@ tasks {
     publishPlugin {
         dependsOn(patchChangelog)
     }
+
+    generateLexer {
+        sourceFile.set(file("src/main/kotlin/com/github/peco2282/mcdatapack/language/mcfunction.flex"))
+        targetOutputDir.set(file("src/main/gen/com/github/peco2282/mcdatapack/language"))
+        purgeOldFiles.set(true)
+    }
+
+    generateParser {
+        sourceFile.set(file("src/main/kotlin/com/github/peco2282/mcdatapack/language/mcfunction.bnf"))
+        targetRootOutputDir.set(file("src/main/gen"))
+        pathToParser.set("/com/github/peco2282/mcdatapack/language/parser/McFunctionParser.java")
+        pathToPsiRoot.set("/com/github/peco2282/mcdatapack/language/psi")
+        purgeOldFiles.set(true)
+    }
+
+    withType<KotlinCompile> {
+        dependsOn(generateLexer, generateParser)
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/gen")
+        }
+    }
 }
 
 intellijPlatformTesting {
@@ -155,5 +184,12 @@ intellijPlatformTesting {
                 robotServerPlugin()
             }
         }
+    }
+}
+
+idea {
+    module {
+        isDownloadJavadoc = true
+        isDownloadSources = true
     }
 }
