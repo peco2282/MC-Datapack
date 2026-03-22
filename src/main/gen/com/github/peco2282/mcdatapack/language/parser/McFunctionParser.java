@@ -36,7 +36,16 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | EXECUTE_TOKEN | RUN_TOKEN | AS_TOKEN | AT_TOKEN | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | IF_TOKEN | ENTITY_TOKEN | COLON | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
+  // ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN
+  //   | EXECUTE_TOKEN | RUN_TOKEN | RETURN_TOKEN | FUNCTION_TOKEN | SCHEDULE_TOKEN
+  //   | IF_TOKEN | UNLESS_TOKEN | AS_TOKEN | AT_TOKEN | DATA_TOKEN
+  //   | ENTITY_TOKEN | SCORE_TOKEN | STORAGE_TOKEN | BLOCK_TOKEN | ITEMS_TOKEN
+  //   | STORE_TOKEN | RESULT_TOKEN | MATCHES_TOKEN
+  //   | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
+  //   | MACRO_TOKEN
+  //   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
+  //   | COLON | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
+  //   | CONTINUATION_TOKEN
   public static boolean argument(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "argument")) return false;
     boolean result_;
@@ -46,42 +55,70 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, STRING_TOKEN);
     if (!result_) result_ = consumeToken(builder_, EXECUTE_TOKEN);
     if (!result_) result_ = consumeToken(builder_, RUN_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, RETURN_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, FUNCTION_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SCHEDULE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, IF_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, UNLESS_TOKEN);
     if (!result_) result_ = consumeToken(builder_, AS_TOKEN);
     if (!result_) result_ = consumeToken(builder_, AT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DATA_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ENTITY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SCORE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, STORAGE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, BLOCK_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ITEMS_TOKEN);
     if (!result_) result_ = consumeToken(builder_, STORE_TOKEN);
     if (!result_) result_ = consumeToken(builder_, RESULT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, SCORE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, IF_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, ENTITY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, MATCHES_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SELECTOR_S);
+    if (!result_) result_ = consumeToken(builder_, SELECTOR_A);
+    if (!result_) result_ = consumeToken(builder_, SELECTOR_P);
+    if (!result_) result_ = consumeToken(builder_, SELECTOR_E);
+    if (!result_) result_ = consumeToken(builder_, SELECTOR_R);
+    if (!result_) result_ = consumeToken(builder_, MACRO_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, GTE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, LTE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, GT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, LT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DOTDOT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DOT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, COLON);
     if (!result_) result_ = consumeToken(builder_, LBRACK);
     if (!result_) result_ = consumeToken(builder_, RBRACK);
     if (!result_) result_ = consumeToken(builder_, LBRACE);
     if (!result_) result_ = consumeToken(builder_, RBRACE);
     if (!result_) result_ = consumeToken(builder_, COMMA);
+    if (!result_) result_ = consumeToken(builder_, CONTINUATION_TOKEN);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
   /* ********************************************************** */
-  // (EXECUTE_TOKEN | COMMAND_TOKEN) (SPACE_TOKEN | (json | argument))*
+  // (EXECUTE_TOKEN | COMMAND_TOKEN | FUNCTION_TOKEN | RETURN_TOKEN | SCHEDULE_TOKEN | DATA_TOKEN | IF_TOKEN | UNLESS_TOKEN) (SPACE_TOKEN | (json | argument))*
   public static boolean command_line(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "command_line")) return false;
-    if (!nextTokenIs(builder_, "<command line>", COMMAND_TOKEN, EXECUTE_TOKEN)) return false;
-    boolean result_;
+    boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, COMMAND_LINE, "<command line>");
     result_ = command_line_0(builder_, level_ + 1);
+    pinned_ = result_; // pin = 1
     result_ = result_ && command_line_1(builder_, level_ + 1);
-    exit_section_(builder_, level_, marker_, result_, false, null);
-    return result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
   }
 
-  // EXECUTE_TOKEN | COMMAND_TOKEN
+  // EXECUTE_TOKEN | COMMAND_TOKEN | FUNCTION_TOKEN | RETURN_TOKEN | SCHEDULE_TOKEN | DATA_TOKEN | IF_TOKEN | UNLESS_TOKEN
   private static boolean command_line_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "command_line_0")) return false;
     boolean result_;
     result_ = consumeToken(builder_, EXECUTE_TOKEN);
     if (!result_) result_ = consumeToken(builder_, COMMAND_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, FUNCTION_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, RETURN_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SCHEDULE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DATA_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, IF_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, UNLESS_TOKEN);
     return result_;
   }
 
@@ -117,7 +154,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // command_line | COMMENT_TOKEN | CRLF_TOKEN | SPACE_TOKEN
+  // command_line | COMMENT_TOKEN | CRLF_TOKEN | SPACE_TOKEN | CONTINUATION_TOKEN
   static boolean item(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "item")) return false;
     boolean result_;
@@ -125,6 +162,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, COMMENT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, CRLF_TOKEN);
     if (!result_) result_ = consumeToken(builder_, SPACE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, CONTINUATION_TOKEN);
     return result_;
   }
 

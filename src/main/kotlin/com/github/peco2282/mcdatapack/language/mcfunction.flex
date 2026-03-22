@@ -15,61 +15,72 @@ import com.intellij.psi.tree.IElementType;
 
 CRLF=\R
 WHITE_SPACE=[\ \t\f]
-CONTINUATION="\\"(\r\n|\r|\n)
+CONTINUATION=\\(\r\n|\r|\n)
 COMMENT=#.*
-STRING=\"([^\"\\\\]|\\.)*\"|'([^'\\\\]|\\.)*'
+STRING=\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'
+SELECTOR=@[saperSAPER]
+MACRO=\$[a-zA-Z_][a-zA-Z0-9_]*
 COMMAND=[a-z_][a-z0-9_]*
-ARGUMENT=[^ \n\r\t\f#\"'\[\]{},\\\\]+
-
-%state WAITING_ARGUMENT
+ARGUMENT=[^ \n\r\t\f#\"'\[\]{},]+
 
 %%
-<YYINITIAL> {
-  {CONTINUATION}   { /* Skip line continuation */ }
-  {WHITE_SPACE}+   { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SPACE_TOKEN; }
-  {CRLF}           { yybegin(YYINITIAL); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.CRLF_TOKEN; }
-  {COMMENT}        { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMENT_TOKEN; }
-  {STRING}         { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STRING_TOKEN; }
-  "execute"        { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.EXECUTE_TOKEN; }
-  "run"            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RUN_TOKEN; }
-  "as"             { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AS_TOKEN; }
-  "at"             { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AT_TOKEN; }
-  "store"          { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORE_TOKEN; }
-  "result"         { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RESULT_TOKEN; }
-  "score"          { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCORE_TOKEN; }
-  "if"             { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.IF_TOKEN; }
-  "entity"         { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ENTITY_TOKEN; }
-  "["              { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACK; }
-  "]"              { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACK; }
-  "{"              { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACE; }
-  "}"              { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACE; }
-  ":"              { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COLON; }
-  ","              { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMA; }
-  {COMMAND}        { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMAND_TOKEN; }
-  {ARGUMENT}       { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ARGUMENT_TOKEN; }
-}
 
-<WAITING_ARGUMENT> {
-  {CONTINUATION}   { /* Skip line continuation */ }
-  {WHITE_SPACE}+   { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SPACE_TOKEN; }
-  {CRLF}           { yybegin(YYINITIAL); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.CRLF_TOKEN; }
-  {STRING}         { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STRING_TOKEN; }
-  "execute"        { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.EXECUTE_TOKEN; }
-  "run"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RUN_TOKEN; }
-  "as"             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AS_TOKEN; }
-  "at"             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AT_TOKEN; }
-  "store"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORE_TOKEN; }
-  "result"         { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RESULT_TOKEN; }
-  "score"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCORE_TOKEN; }
-  "if"             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.IF_TOKEN; }
-  "entity"         { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ENTITY_TOKEN; }
-  "["              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACK; }
-  "]"              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACK; }
-  "{"              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACE; }
-  "}"              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACE; }
-  ":"              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COLON; }
-  ","              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMA; }
-  {ARGUMENT}       { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ARGUMENT_TOKEN; }
-}
+{CONTINUATION}     { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.CONTINUATION_TOKEN; }
+{WHITE_SPACE}+     { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SPACE_TOKEN; }
+{CRLF}             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.CRLF_TOKEN; }
+{COMMENT}          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMENT_TOKEN; }
+{STRING}           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STRING_TOKEN; }
 
-[^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+// Layer 3: Target selectors (must come before COMMAND to avoid @s being split)
+"@s"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SELECTOR_S; }
+"@a"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SELECTOR_A; }
+"@p"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SELECTOR_P; }
+"@e"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SELECTOR_E; }
+"@r"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SELECTOR_R; }
+
+// Layer 4: Comparison operators (multi-char first)
+">="               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.GTE_TOKEN; }
+"<="               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LTE_TOKEN; }
+".."               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.DOTDOT_TOKEN; }
+">"                { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.GT_TOKEN; }
+"<"                { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LT_TOKEN; }
+"."                { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.DOT_TOKEN; }
+
+// Layer 4: Macro
+{MACRO}            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.MACRO_TOKEN; }
+
+// Layer 1: Flow Control keywords (must come before COMMAND)
+"execute"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.EXECUTE_TOKEN; }
+"run"              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RUN_TOKEN; }
+"return"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RETURN_TOKEN; }
+"function"         { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.FUNCTION_TOKEN; }
+"schedule"         { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCHEDULE_TOKEN; }
+
+// Layer 2: Sub-modifier keywords
+"if"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.IF_TOKEN; }
+"unless"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.UNLESS_TOKEN; }
+"as"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AS_TOKEN; }
+"at"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AT_TOKEN; }
+"data"             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.DATA_TOKEN; }
+"entity"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ENTITY_TOKEN; }
+"score"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCORE_TOKEN; }
+"storage"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORAGE_TOKEN; }
+"block"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.BLOCK_TOKEN; }
+"items"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ITEMS_TOKEN; }
+"store"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORE_TOKEN; }
+"result"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RESULT_TOKEN; }
+"matches"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.MATCHES_TOKEN; }
+
+// Structural symbols
+"["                { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACK; }
+"]"                { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACK; }
+"{"                { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACE; }
+"}"                { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACE; }
+":"                { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COLON; }
+","                { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMA; }
+
+// Generic tokens (lowest priority)
+{COMMAND}          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMAND_TOKEN; }
+{ARGUMENT}         { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ARGUMENT_TOKEN; }
+
+[^]                { return com.intellij.psi.TokenType.BAD_CHARACTER; }

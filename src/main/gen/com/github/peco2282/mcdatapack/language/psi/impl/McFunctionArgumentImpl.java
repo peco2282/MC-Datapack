@@ -41,6 +41,18 @@ public class McFunctionArgumentImpl extends ASTWrapperPsiElement implements McFu
 
   @Override
   @Nullable
+  public PsiElement getContinuationToken() {
+    return findChildByType(CONTINUATION_TOKEN);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getMacroToken() {
+    return findChildByType(MACRO_TOKEN);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getStringToken() {
     return findChildByType(STRING_TOKEN);
   }

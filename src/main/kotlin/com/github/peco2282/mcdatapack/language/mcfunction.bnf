@@ -14,40 +14,85 @@
   tokenTypeClass="com.github.peco2282.mcdatapack.language.psi.McFunctionTokenType"
 
   tokens = [
-    COMMENT_TOKEN = "regexp:#.*"
-    CRLF_TOKEN = "regexp:\R"
-    SPACE_TOKEN = "regexp:\s+"
-    STRING_TOKEN = "regexp:\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'"
-    EXECUTE_TOKEN = "execute"
-    RUN_TOKEN = "run"
-    AS_TOKEN = "as"
-    AT_TOKEN = "at"
-    STORE_TOKEN = "store"
-    RESULT_TOKEN = "result"
-    SCORE_TOKEN = "score"
-    IF_TOKEN = "if"
-    ENTITY_TOKEN = "entity"
-    LBRACK = "["
-    RBRACK = "]"
-    LBRACE = "{"
-    RBRACE = "}"
-    COLON = ":"
-    COMMA = ","
-    COMMAND_TOKEN = "regexp:[a-z_][a-z0-9_]*"
-    ARGUMENT_TOKEN = "regexp:[^ \n\r\t\f#\"'\[\]{},]+"
+    COMMENT_TOKEN      = "regexp:#.*"
+    CRLF_TOKEN         = "regexp:\R"
+    SPACE_TOKEN        = "regexp:[ \t\f]+"
+    STRING_TOKEN       = "regexp:\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'"
+
+    // Layer 1: Flow Control
+    EXECUTE_TOKEN      = "execute"
+    RUN_TOKEN          = "run"
+    RETURN_TOKEN       = "return"
+    FUNCTION_TOKEN     = "function"
+    SCHEDULE_TOKEN     = "schedule"
+
+    // Layer 2: Sub-modifiers
+    IF_TOKEN           = "if"
+    UNLESS_TOKEN       = "unless"
+    AS_TOKEN           = "as"
+    AT_TOKEN           = "at"
+    DATA_TOKEN         = "data"
+    ENTITY_TOKEN       = "entity"
+    SCORE_TOKEN        = "score"
+    STORAGE_TOKEN      = "storage"
+    BLOCK_TOKEN        = "block"
+    ITEMS_TOKEN        = "items"
+    STORE_TOKEN        = "store"
+    RESULT_TOKEN       = "result"
+    MATCHES_TOKEN      = "matches"
+
+    // Layer 3: Target Selectors
+    SELECTOR_S         = "@s"
+    SELECTOR_A         = "@a"
+    SELECTOR_P         = "@p"
+    SELECTOR_E         = "@e"
+    SELECTOR_R         = "@r"
+
+    // Layer 4: Structural symbols
+    CONTINUATION_TOKEN = "regexp:\\\\(\r\n|\r|\n)"
+    MACRO_TOKEN        = "regexp:\\$[a-zA-Z_][a-zA-Z0-9_]*"
+    DOT_TOKEN          = "."
+    GTE_TOKEN          = ">="
+    LTE_TOKEN          = "<="
+    GT_TOKEN           = ">"
+    LT_TOKEN           = "<"
+    DOTDOT_TOKEN       = ".."
+
+    LBRACK             = "["
+    RBRACK             = "]"
+    LBRACE             = "{"
+    RBRACE             = "}"
+    COLON              = ":"
+    COMMA              = ","
+
+    COMMAND_TOKEN      = "regexp:[a-z_][a-z0-9_]*"
+    ARGUMENT_TOKEN     = "regexp:[^ \n\r\t\f#\"'\[\]{},]+"
   ]
 }
 
 mcFunctionFile ::= item*
-private item ::= (command_line | COMMENT_TOKEN | CRLF_TOKEN | SPACE_TOKEN)
-command_line ::= (EXECUTE_TOKEN | COMMAND_TOKEN) (SPACE_TOKEN | (json | argument))*
+private item ::= (command_line | COMMENT_TOKEN | CRLF_TOKEN | SPACE_TOKEN | CONTINUATION_TOKEN)
 
-argument ::= ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | EXECUTE_TOKEN | RUN_TOKEN | AS_TOKEN | AT_TOKEN | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | IF_TOKEN | ENTITY_TOKEN | COLON | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
+// {pin=1} により、最初のトークンが見えた時点でノードが確定する
+command_line ::= (EXECUTE_TOKEN | COMMAND_TOKEN | FUNCTION_TOKEN | RETURN_TOKEN | SCHEDULE_TOKEN | DATA_TOKEN | IF_TOKEN | UNLESS_TOKEN) (SPACE_TOKEN | (json | argument))* {pin=1}
 
+// Generic argument — すべてのトークンをキャッチオール
+argument ::= ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN
+  | EXECUTE_TOKEN | RUN_TOKEN | RETURN_TOKEN | FUNCTION_TOKEN | SCHEDULE_TOKEN
+  | IF_TOKEN | UNLESS_TOKEN | AS_TOKEN | AT_TOKEN | DATA_TOKEN
+  | ENTITY_TOKEN | SCORE_TOKEN | STORAGE_TOKEN | BLOCK_TOKEN | ITEMS_TOKEN
+  | STORE_TOKEN | RESULT_TOKEN | MATCHES_TOKEN
+  | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
+  | MACRO_TOKEN
+  | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
+  | COLON | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
+  | CONTINUATION_TOKEN
+
+// JSON support
 json ::= json_array | json_object
 
-json_array ::= LBRACK (json_element (COMMA json_element)*)? RBRACK
+json_array  ::= LBRACK (json_element (COMMA json_element)*)? RBRACK
 json_object ::= LBRACE (json_property (COMMA json_property)*)? RBRACE
 
-private json_element ::= SPACE_TOKEN? (json | argument) SPACE_TOKEN?
+private json_element  ::= SPACE_TOKEN? (json | argument) SPACE_TOKEN?
 private json_property ::= SPACE_TOKEN? (argument | STRING_TOKEN) SPACE_TOKEN? COLON SPACE_TOKEN? (json | argument) SPACE_TOKEN?

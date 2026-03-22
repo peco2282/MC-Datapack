@@ -14,6 +14,12 @@ public interface McFunctionArgument extends PsiElement {
   PsiElement getCommandToken();
 
   @Nullable
+  PsiElement getContinuationToken();
+
+  @Nullable
+  PsiElement getMacroToken();
+
+  @Nullable
   PsiElement getStringToken();
 
 }

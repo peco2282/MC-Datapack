@@ -17,7 +17,6 @@ class McFunctionLexer implements FlexLexer {
 
   /** lexical states */
   public static final int YYINITIAL = 0;
-  public static final int WAITING_ARGUMENT = 2;
 
   /**
    * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
@@ -26,7 +25,7 @@ class McFunctionLexer implements FlexLexer {
    * l is of the form l = 2*k, k a non negative integer
    */
   private static final int ZZ_LEXSTATE[] = {
-     0,  0,  1, 1
+     0, 0
   };
 
   /**
@@ -64,12 +63,14 @@ class McFunctionLexer implements FlexLexer {
 
   private static final String ZZ_CMAP_BLOCKS_PACKED_0 =
     "\11\0\1\1\1\2\1\3\1\4\1\5\22\0\1\1"+
-    "\1\0\1\6\1\7\3\0\1\10\4\0\1\11\3\0"+
-    "\12\12\1\13\40\0\1\14\1\15\1\16\1\0\1\17"+
-    "\1\0\1\20\1\17\1\21\1\17\1\22\1\23\2\17"+
-    "\1\24\2\17\1\25\1\17\1\26\1\27\2\17\1\30"+
-    "\1\31\1\32\1\33\2\17\1\34\1\35\1\17\1\36"+
-    "\1\0\1\37\7\0\1\3\u01a2\0\2\3\326\0\u0100\40";
+    "\1\0\1\6\1\7\1\10\2\0\1\11\4\0\1\12"+
+    "\1\0\1\13\1\0\12\14\1\15\1\0\1\16\1\17"+
+    "\1\20\1\0\1\21\32\22\1\23\1\24\1\25\1\0"+
+    "\1\26\1\0\1\27\1\30\1\31\1\32\1\33\1\34"+
+    "\1\35\1\36\1\37\1\26\1\40\1\41\1\42\1\43"+
+    "\1\44\1\45\1\26\1\46\1\47\1\50\1\51\2\26"+
+    "\1\52\1\53\1\26\1\54\1\0\1\55\7\0\1\3"+
+    "\u01a2\0\2\3\326\0\u0100\56";
 
   private static int [] zzUnpackcmap_blocks() {
     int [] result = new int[1024];
@@ -96,17 +97,17 @@ class McFunctionLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\2\0\1\1\1\2\3\3\1\4\1\5\1\4\1\6"+
-    "\1\7\1\10\1\4\1\11\6\12\1\13\1\14\1\15"+
-    "\1\3\1\4\1\16\1\17\1\20\1\21\5\15\1\22"+
-    "\1\23\1\0\1\24\3\0\2\25\1\26\1\27\2\12"+
-    "\1\30\4\12\1\31\1\32\2\15\1\33\4\15\3\12"+
-    "\1\34\2\12\3\15\1\35\2\15\5\12\5\15\3\12"+
-    "\1\36\1\37\3\15\1\40\1\41\1\42\1\12\1\43"+
-    "\1\44\1\15\1\45\1\46\1\47";
+    "\1\0\1\1\1\2\3\3\1\4\1\5\1\1\1\4"+
+    "\1\6\1\7\1\10\1\11\1\12\1\1\1\13\1\1"+
+    "\1\14\13\15\1\16\1\17\1\0\1\20\1\0\1\21"+
+    "\2\0\1\22\1\23\1\24\1\25\1\26\1\27\1\30"+
+    "\1\31\2\32\1\33\1\34\5\15\1\35\20\15\1\36"+
+    "\5\15\1\37\13\15\1\40\3\15\1\41\4\15\1\42"+
+    "\1\15\1\43\1\15\1\44\3\15\1\45\1\46\2\15"+
+    "\1\47\1\50\1\15\1\51\1\15\1\52\1\53\1\54";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[102];
+    int [] result = new int[119];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -131,22 +132,24 @@ class McFunctionLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\41\0\102\0\143\0\204\0\102\0\245\0\306"+
-    "\0\347\0\u0108\0\204\0\102\0\204\0\u0129\0\204\0\u014a"+
-    "\0\u016b\0\u018c\0\u01ad\0\u01ce\0\u01ef\0\204\0\204\0\u0210"+
-    "\0\u0210\0\204\0\204\0\u0210\0\204\0\204\0\u0231\0\u0252"+
-    "\0\u0273\0\u0294\0\u02b5\0\204\0\204\0\306\0\204\0\u02d6"+
-    "\0\u0108\0\u02f7\0\204\0\u0318\0\u014a\0\u014a\0\u0339\0\u035a"+
-    "\0\u014a\0\u037b\0\u039c\0\u03bd\0\u03de\0\u0210\0\u0210\0\u03ff"+
-    "\0\u0420\0\u0210\0\u0441\0\u0462\0\u0483\0\u04a4\0\u04c5\0\u04e6"+
-    "\0\u0507\0\u014a\0\u0528\0\u0549\0\u056a\0\u058b\0\u05ac\0\u0210"+
-    "\0\u05cd\0\u05ee\0\u060f\0\u0630\0\u0651\0\u0672\0\u0693\0\u06b4"+
-    "\0\u06d5\0\u06f6\0\u0717\0\u0738\0\u0759\0\u077a\0\u079b\0\u014a"+
-    "\0\u014a\0\u07bc\0\u07dd\0\u07fe\0\u0210\0\u0210\0\u014a\0\u081f"+
-    "\0\u014a\0\u0210\0\u0840\0\u0210\0\u014a\0\u0210";
+    "\0\0\0\57\0\136\0\215\0\57\0\274\0\353\0\u011a"+
+    "\0\u0149\0\u0178\0\215\0\u01a7\0\57\0\u01d6\0\u0205\0\u0234"+
+    "\0\215\0\u0263\0\215\0\u0292\0\u02c1\0\u02f0\0\u031f\0\u034e"+
+    "\0\u037d\0\u03ac\0\u03db\0\u040a\0\u0439\0\u0468\0\215\0\215"+
+    "\0\353\0\215\0\u0497\0\u04c6\0\u0178\0\u04f5\0\57\0\57"+
+    "\0\57\0\57\0\57\0\57\0\57\0\57\0\215\0\u0524"+
+    "\0\u0292\0\u0292\0\u0553\0\u0582\0\u05b1\0\u05e0\0\u060f\0\u0292"+
+    "\0\u063e\0\u066d\0\u069c\0\u06cb\0\u06fa\0\u0729\0\u0758\0\u0787"+
+    "\0\u07b6\0\u07e5\0\u0814\0\u0843\0\u0872\0\u08a1\0\u08d0\0\u08ff"+
+    "\0\u0292\0\u092e\0\u095d\0\u098c\0\u09bb\0\u09ea\0\u0292\0\u0a19"+
+    "\0\u0a48\0\u0a77\0\u0aa6\0\u0ad5\0\u0b04\0\u0b33\0\u0b62\0\u0b91"+
+    "\0\u0bc0\0\u0bef\0\u0292\0\u0c1e\0\u0c4d\0\u0c7c\0\u0292\0\u0cab"+
+    "\0\u0cda\0\u0d09\0\u0d38\0\u0292\0\u0d67\0\u0292\0\u0d96\0\u0292"+
+    "\0\u0dc5\0\u0df4\0\u0e23\0\u0292\0\u0292\0\u0e52\0\u0e81\0\u0292"+
+    "\0\u0292\0\u0eb0\0\u0292\0\u0edf\0\u0292\0\u0292\0\u0292";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[102];
+    int [] result = new int[119];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -169,93 +172,163 @@ class McFunctionLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpacktrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\3\1\4\1\5\1\6\1\4\1\7\1\10\1\11"+
-    "\1\12\1\13\1\3\1\14\1\15\1\16\1\17\1\20"+
-    "\1\21\1\20\1\22\1\20\1\23\3\20\1\24\1\25"+
-    "\4\20\1\26\1\27\1\3\1\30\1\4\1\5\1\31"+
-    "\1\4\1\7\1\10\1\32\1\12\1\33\1\30\1\34"+
-    "\1\35\1\16\1\36\1\30\1\37\1\30\1\40\1\30"+
-    "\1\41\3\30\1\42\1\43\4\30\1\44\1\45\1\30"+
-    "\1\3\2\0\1\3\6\0\2\3\3\0\17\3\2\0"+
-    "\1\3\1\0\1\4\2\0\1\4\77\0\1\5\36\0"+
-    "\6\46\1\47\6\46\1\50\23\46\2\11\4\0\32\11"+
-    "\1\0\10\51\1\47\4\51\1\52\23\51\2\0\1\53"+
-    "\2\0\1\54\33\0\1\3\2\0\1\3\6\0\1\20"+
-    "\1\3\3\0\17\20\2\0\2\3\2\0\1\3\6\0"+
-    "\1\20\1\3\3\0\12\20\1\55\1\56\3\20\2\0"+
-    "\2\3\2\0\1\3\6\0\1\20\1\3\3\0\7\20"+
-    "\1\57\5\20\1\60\1\20\2\0\2\3\2\0\1\3"+
-    "\6\0\1\20\1\3\3\0\4\20\1\61\12\20\2\0"+
-    "\2\3\2\0\1\3\6\0\1\20\1\3\3\0\3\20"+
-    "\1\62\10\20\1\63\2\20\2\0\2\3\2\0\1\3"+
-    "\6\0\1\20\1\3\3\0\2\20\1\64\10\20\1\65"+
-    "\3\20\2\0\1\3\1\30\2\0\1\30\6\0\2\30"+
-    "\3\0\17\30\2\0\2\30\2\0\1\30\6\0\2\30"+
-    "\3\0\12\30\1\66\1\67\3\30\2\0\2\30\2\0"+
-    "\1\30\6\0\2\30\3\0\7\30\1\70\5\30\1\71"+
-    "\1\30\2\0\2\30\2\0\1\30\6\0\2\30\3\0"+
-    "\4\30\1\72\12\30\2\0\2\30\2\0\1\30\6\0"+
-    "\2\30\3\0\3\30\1\73\10\30\1\74\2\30\2\0"+
-    "\2\30\2\0\1\30\6\0\2\30\3\0\2\30\1\75"+
-    "\10\30\1\76\3\30\2\0\1\30\2\46\4\0\32\46"+
-    "\1\0\2\51\4\0\32\51\3\0\1\53\36\0\1\3"+
-    "\2\0\1\3\6\0\1\20\1\3\3\0\13\20\1\77"+
-    "\3\20\2\0\2\3\2\0\1\3\6\0\1\20\1\3"+
-    "\3\0\3\20\1\100\13\20\2\0\2\3\2\0\1\3"+
-    "\6\0\1\20\1\3\3\0\12\20\1\101\4\20\2\0"+
-    "\2\3\2\0\1\3\6\0\1\20\1\3\3\0\7\20"+
-    "\1\102\7\20\2\0\2\3\2\0\1\3\6\0\1\20"+
-    "\1\3\3\0\10\20\1\103\6\20\2\0\2\3\2\0"+
-    "\1\3\6\0\1\20\1\3\3\0\10\20\1\104\6\20"+
-    "\2\0\1\3\1\30\2\0\1\30\6\0\2\30\3\0"+
-    "\13\30\1\105\3\30\2\0\2\30\2\0\1\30\6\0"+
-    "\2\30\3\0\3\30\1\106\13\30\2\0\2\30\2\0"+
-    "\1\30\6\0\2\30\3\0\12\30\1\107\4\30\2\0"+
-    "\2\30\2\0\1\30\6\0\2\30\3\0\7\30\1\110"+
-    "\7\30\2\0\2\30\2\0\1\30\6\0\2\30\3\0"+
-    "\10\30\1\111\6\30\2\0\2\30\2\0\1\30\6\0"+
-    "\2\30\3\0\10\30\1\112\6\30\2\0\1\30\1\3"+
-    "\2\0\1\3\6\0\1\20\1\3\3\0\5\20\1\113"+
-    "\11\20\2\0\2\3\2\0\1\3\6\0\1\20\1\3"+
-    "\3\0\2\20\1\114\14\20\2\0\2\3\2\0\1\3"+
-    "\6\0\1\20\1\3\3\0\14\20\1\115\2\20\2\0"+
-    "\2\3\2\0\1\3\6\0\1\20\1\3\3\0\11\20"+
-    "\1\116\5\20\2\0\2\3\2\0\1\3\6\0\1\20"+
-    "\1\3\3\0\11\20\1\117\5\20\2\0\1\3\1\30"+
-    "\2\0\1\30\6\0\2\30\3\0\5\30\1\120\11\30"+
-    "\2\0\2\30\2\0\1\30\6\0\2\30\3\0\2\30"+
-    "\1\121\14\30\2\0\2\30\2\0\1\30\6\0\2\30"+
-    "\3\0\14\30\1\122\2\30\2\0\2\30\2\0\1\30"+
-    "\6\0\2\30\3\0\11\30\1\123\5\30\2\0\2\30"+
-    "\2\0\1\30\6\0\2\30\3\0\11\30\1\124\5\30"+
-    "\2\0\1\30\1\3\2\0\1\3\6\0\1\20\1\3"+
-    "\3\0\13\20\1\125\3\20\2\0\2\3\2\0\1\3"+
-    "\6\0\1\20\1\3\3\0\14\20\1\126\2\20\2\0"+
-    "\2\3\2\0\1\3\6\0\1\20\1\3\3\0\6\20"+
-    "\1\127\10\20\2\0\2\3\2\0\1\3\6\0\1\20"+
-    "\1\3\3\0\3\20\1\130\13\20\2\0\2\3\2\0"+
-    "\1\3\6\0\1\20\1\3\3\0\3\20\1\131\13\20"+
-    "\2\0\1\3\1\30\2\0\1\30\6\0\2\30\3\0"+
-    "\13\30\1\132\3\30\2\0\2\30\2\0\1\30\6\0"+
-    "\2\30\3\0\14\30\1\133\2\30\2\0\2\30\2\0"+
-    "\1\30\6\0\2\30\3\0\6\30\1\134\10\30\2\0"+
-    "\2\30\2\0\1\30\6\0\2\30\3\0\3\30\1\135"+
-    "\13\30\2\0\2\30\2\0\1\30\6\0\2\30\3\0"+
-    "\3\30\1\136\13\30\2\0\1\30\1\3\2\0\1\3"+
-    "\6\0\1\20\1\3\3\0\16\20\1\137\2\0\2\3"+
-    "\2\0\1\3\6\0\1\20\1\3\3\0\13\20\1\140"+
-    "\3\20\2\0\2\3\2\0\1\3\6\0\1\20\1\3"+
-    "\3\0\13\20\1\141\3\20\2\0\1\3\1\30\2\0"+
-    "\1\30\6\0\2\30\3\0\16\30\1\142\2\0\2\30"+
-    "\2\0\1\30\6\0\2\30\3\0\13\30\1\143\3\30"+
-    "\2\0\2\30\2\0\1\30\6\0\2\30\3\0\13\30"+
-    "\1\144\3\30\2\0\1\30\1\3\2\0\1\3\6\0"+
-    "\1\20\1\3\3\0\3\20\1\145\13\20\2\0\1\3"+
-    "\1\30\2\0\1\30\6\0\2\30\3\0\3\30\1\146"+
-    "\13\30\2\0\1\30";
+    "\1\2\1\3\1\4\1\5\1\3\1\6\1\7\1\10"+
+    "\1\11\1\12\1\13\1\14\1\2\1\15\1\16\1\2"+
+    "\1\17\1\20\1\2\1\21\1\22\1\23\1\24\1\25"+
+    "\1\26\1\24\1\27\1\30\1\31\2\24\1\32\2\24"+
+    "\1\33\3\24\1\34\1\35\1\24\1\36\2\24\1\37"+
+    "\1\40\2\2\2\0\1\2\4\0\1\2\2\0\10\2"+
+    "\1\0\1\2\1\0\26\2\2\0\1\2\1\0\1\3"+
+    "\2\0\1\3\133\0\1\4\54\0\6\41\1\42\15\41"+
+    "\1\43\32\41\2\10\4\0\50\10\1\0\1\2\2\0"+
+    "\1\2\4\0\1\2\2\0\7\2\1\44\1\0\1\2"+
+    "\1\0\26\44\2\0\1\2\11\45\1\42\12\45\1\46"+
+    "\32\45\1\2\2\0\1\2\4\0\1\2\2\0\1\47"+
+    "\7\2\1\0\1\2\1\0\26\2\2\0\2\2\2\0"+
+    "\1\2\4\0\1\2\2\0\4\2\1\50\3\2\1\0"+
+    "\1\2\1\0\26\2\2\0\2\2\2\0\1\2\4\0"+
+    "\1\2\2\0\4\2\1\51\3\2\1\0\1\2\1\0"+
+    "\26\2\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\10\2\1\0\1\2\1\0\1\2\1\52\3\2\1\53"+
+    "\11\2\1\54\1\55\1\56\4\2\2\0\2\2\1\0"+
+    "\1\57\1\2\1\0\1\60\2\0\1\2\2\0\10\2"+
+    "\1\0\1\2\1\0\26\2\2\0\2\2\2\0\1\2"+
+    "\4\0\1\2\2\0\1\2\1\24\6\2\1\0\1\2"+
+    "\1\0\26\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\21\24"+
+    "\1\61\1\62\3\24\2\0\2\2\2\0\1\2\4\0"+
+    "\1\2\2\0\1\2\1\24\6\2\1\0\1\2\1\0"+
+    "\13\24\1\63\12\24\2\0\2\2\2\0\1\2\4\0"+
+    "\1\2\2\0\1\2\1\24\6\2\1\0\1\2\1\0"+
+    "\1\24\1\64\24\24\2\0\2\2\2\0\1\2\4\0"+
+    "\1\2\2\0\1\2\1\24\6\2\1\0\1\2\1\0"+
+    "\15\24\1\65\6\24\1\66\1\24\2\0\2\2\2\0"+
+    "\1\2\4\0\1\2\2\0\1\2\1\24\6\2\1\0"+
+    "\1\2\1\0\23\24\1\67\2\24\2\0\2\2\2\0"+
+    "\1\2\4\0\1\2\2\0\1\2\1\24\6\2\1\0"+
+    "\1\2\1\0\6\24\1\70\13\24\1\71\3\24\2\0"+
+    "\2\2\2\0\1\2\4\0\1\2\2\0\1\2\1\24"+
+    "\6\2\1\0\1\2\1\0\1\24\1\72\24\24\2\0"+
+    "\2\2\2\0\1\2\4\0\1\2\2\0\1\2\1\24"+
+    "\6\2\1\0\1\2\1\0\5\24\1\73\15\24\1\74"+
+    "\2\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\3\24\1\75"+
+    "\16\24\1\76\3\24\2\0\2\2\2\0\1\2\4\0"+
+    "\1\2\2\0\1\2\1\24\6\2\1\0\1\2\1\0"+
+    "\15\24\1\77\10\24\2\0\1\2\2\41\4\0\50\41"+
+    "\1\0\1\2\2\0\1\2\4\0\1\2\2\0\1\2"+
+    "\1\44\5\2\1\44\1\0\1\2\1\0\26\44\2\0"+
+    "\1\2\2\45\4\0\50\45\3\0\1\57\54\0\1\2"+
+    "\2\0\1\2\4\0\1\2\2\0\1\2\1\24\6\2"+
+    "\1\0\1\2\1\0\16\24\1\100\7\24\2\0\2\2"+
+    "\2\0\1\2\4\0\1\2\2\0\1\2\1\24\6\2"+
+    "\1\0\1\2\1\0\22\24\1\101\3\24\2\0\2\2"+
+    "\2\0\1\2\4\0\1\2\2\0\1\2\1\24\6\2"+
+    "\1\0\1\2\1\0\22\24\1\102\3\24\2\0\2\2"+
+    "\2\0\1\2\4\0\1\2\2\0\1\2\1\24\6\2"+
+    "\1\0\1\2\1\0\5\24\1\103\20\24\2\0\2\2"+
+    "\2\0\1\2\4\0\1\2\2\0\1\2\1\24\6\2"+
+    "\1\0\1\2\1\0\15\24\1\104\10\24\2\0\2\2"+
+    "\2\0\1\2\4\0\1\2\2\0\1\2\1\24\6\2"+
+    "\1\0\1\2\1\0\5\24\1\105\20\24\2\0\2\2"+
+    "\2\0\1\2\4\0\1\2\2\0\1\2\1\24\6\2"+
+    "\1\0\1\2\1\0\22\24\1\106\3\24\2\0\2\2"+
+    "\2\0\1\2\4\0\1\2\2\0\1\2\1\24\6\2"+
+    "\1\0\1\2\1\0\21\24\1\107\1\110\3\24\2\0"+
+    "\2\2\2\0\1\2\4\0\1\2\2\0\1\2\1\24"+
+    "\6\2\1\0\1\2\1\0\15\24\1\111\10\24\2\0"+
+    "\2\2\2\0\1\2\4\0\1\2\2\0\1\2\1\24"+
+    "\6\2\1\0\1\2\1\0\10\24\1\112\5\24\1\113"+
+    "\7\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\16\24\1\114"+
+    "\7\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\13\24\1\115"+
+    "\12\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\3\24\1\116"+
+    "\22\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\1\24\1\117"+
+    "\24\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\11\24\1\120"+
+    "\14\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\3\24\1\121"+
+    "\22\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\3\24\1\122"+
+    "\22\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\14\24\1\123"+
+    "\11\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\3\24\1\124"+
+    "\22\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\23\24\1\125"+
+    "\2\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\23\24\1\126"+
+    "\2\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\5\24\1\127"+
+    "\20\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\20\24\1\130"+
+    "\5\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\20\24\1\131"+
+    "\5\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\5\24\1\132"+
+    "\20\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\12\24\1\133"+
+    "\13\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\22\24\1\134"+
+    "\3\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\23\24\1\135"+
+    "\2\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\22\24\1\136"+
+    "\3\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\21\24\1\137"+
+    "\4\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\10\24\1\140"+
+    "\15\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\13\24\1\141"+
+    "\12\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\20\24\1\142"+
+    "\5\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\4\24\1\143"+
+    "\21\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\5\24\1\144"+
+    "\20\24\2\0\2\2\2\0\1\2\4\0\1\2\2\0"+
+    "\1\2\1\24\6\2\1\0\1\2\1\0\1\24\1\145"+
+    "\3\24\1\146\20\24\2\0\2\2\2\0\1\2\4\0"+
+    "\1\2\2\0\1\2\1\24\6\2\1\0\1\2\1\0"+
+    "\21\24\1\147\4\24\2\0\2\2\2\0\1\2\4\0"+
+    "\1\2\2\0\1\2\1\24\6\2\1\0\1\2\1\0"+
+    "\25\24\1\150\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\22\24"+
+    "\1\151\3\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\11\24"+
+    "\1\152\14\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\5\24"+
+    "\1\153\20\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\22\24"+
+    "\1\154\3\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\15\24"+
+    "\1\155\10\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\23\24"+
+    "\1\156\2\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\7\24"+
+    "\1\157\16\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\21\24"+
+    "\1\160\4\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\5\24"+
+    "\1\161\20\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\16\24"+
+    "\1\162\7\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\21\24"+
+    "\1\163\4\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\13\24"+
+    "\1\164\12\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\5\24"+
+    "\1\165\20\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\15\24"+
+    "\1\166\10\24\2\0\2\2\2\0\1\2\4\0\1\2"+
+    "\2\0\1\2\1\24\6\2\1\0\1\2\1\0\5\24"+
+    "\1\167\20\24\2\0\1\2";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[2145];
+    int [] result = new int[3854];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -293,12 +366,12 @@ class McFunctionLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\2\0\2\1\1\11\5\1\1\11\1\1\1\11\1\1"+
-    "\1\11\6\1\2\11\2\1\2\11\1\1\2\11\5\1"+
-    "\2\11\1\0\1\11\3\0\1\11\73\1";
+    "\1\0\2\1\1\11\6\1\1\11\5\1\1\11\1\1"+
+    "\1\11\13\1\2\11\1\0\1\11\1\0\1\1\2\0"+
+    "\10\1\1\11\110\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[102];
+    int [] result = new int[119];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -620,200 +693,225 @@ class McFunctionLexer implements FlexLexer {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ARGUMENT_TOKEN;
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ARGUMENT_TOKEN;
             }
           // fall through
-          case 40: break;
+          case 45: break;
           case 2:
             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SPACE_TOKEN;
             }
           // fall through
-          case 41: break;
+          case 46: break;
           case 3:
-            { yybegin(YYINITIAL); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.CRLF_TOKEN;
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.CRLF_TOKEN;
             }
           // fall through
-          case 42: break;
+          case 47: break;
           case 4:
             { return com.intellij.psi.TokenType.BAD_CHARACTER;
             }
           // fall through
-          case 43: break;
+          case 48: break;
           case 5:
             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMENT_TOKEN;
             }
           // fall through
-          case 44: break;
-          case 6:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMA;
-            }
-          // fall through
-          case 45: break;
-          case 7:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COLON;
-            }
-          // fall through
-          case 46: break;
-          case 8:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACK;
-            }
-          // fall through
-          case 47: break;
-          case 9:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACK;
-            }
-          // fall through
-          case 48: break;
-          case 10:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMAND_TOKEN;
-            }
-          // fall through
           case 49: break;
-          case 11:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACE;
-            }
-          // fall through
-          case 50: break;
-          case 12:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACE;
-            }
-          // fall through
-          case 51: break;
-          case 13:
-            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ARGUMENT_TOKEN;
-            }
-          // fall through
-          case 52: break;
-          case 14:
+          case 6:
             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMA;
             }
           // fall through
-          case 53: break;
-          case 15:
+          case 50: break;
+          case 7:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.DOT_TOKEN;
+            }
+          // fall through
+          case 51: break;
+          case 8:
             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COLON;
             }
           // fall through
+          case 52: break;
+          case 9:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LT_TOKEN;
+            }
+          // fall through
+          case 53: break;
+          case 10:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.GT_TOKEN;
+            }
+          // fall through
           case 54: break;
-          case 16:
+          case 11:
             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACK;
             }
           // fall through
           case 55: break;
-          case 17:
+          case 12:
             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACK;
             }
           // fall through
           case 56: break;
-          case 18:
-            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACE;
+          case 13:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.COMMAND_TOKEN;
             }
           // fall through
           case 57: break;
-          case 19:
-            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACE;
+          case 14:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACE;
             }
           // fall through
           case 58: break;
-          case 20:
-            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STRING_TOKEN;
+          case 15:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RBRACE;
             }
           // fall through
           case 59: break;
-          case 21:
-            { /* Skip line continuation */
+          case 16:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STRING_TOKEN;
             }
           // fall through
           case 60: break;
-          case 22:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AS_TOKEN;
+          case 17:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.MACRO_TOKEN;
             }
           // fall through
           case 61: break;
-          case 23:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AT_TOKEN;
+          case 18:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.DOTDOT_TOKEN;
             }
           // fall through
           case 62: break;
-          case 24:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.IF_TOKEN;
+          case 19:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LTE_TOKEN;
             }
           // fall through
           case 63: break;
-          case 25:
-            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AS_TOKEN;
+          case 20:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.GTE_TOKEN;
             }
           // fall through
           case 64: break;
-          case 26:
-            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AT_TOKEN;
+          case 21:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SELECTOR_A;
             }
           // fall through
           case 65: break;
-          case 27:
-            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.IF_TOKEN;
+          case 22:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SELECTOR_E;
             }
           // fall through
           case 66: break;
-          case 28:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RUN_TOKEN;
+          case 23:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SELECTOR_P;
             }
           // fall through
           case 67: break;
-          case 29:
-            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RUN_TOKEN;
+          case 24:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SELECTOR_R;
             }
           // fall through
           case 68: break;
-          case 30:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCORE_TOKEN;
+          case 25:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SELECTOR_S;
             }
           // fall through
           case 69: break;
-          case 31:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORE_TOKEN;
+          case 26:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.CONTINUATION_TOKEN;
             }
           // fall through
           case 70: break;
-          case 32:
-            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCORE_TOKEN;
+          case 27:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AS_TOKEN;
             }
           // fall through
           case 71: break;
-          case 33:
-            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORE_TOKEN;
+          case 28:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AT_TOKEN;
             }
           // fall through
           case 72: break;
-          case 34:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ENTITY_TOKEN;
+          case 29:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.IF_TOKEN;
             }
           // fall through
           case 73: break;
-          case 35:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RESULT_TOKEN;
+          case 30:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RUN_TOKEN;
             }
           // fall through
           case 74: break;
+          case 31:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.DATA_TOKEN;
+            }
+          // fall through
+          case 75: break;
+          case 32:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.BLOCK_TOKEN;
+            }
+          // fall through
+          case 76: break;
+          case 33:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ITEMS_TOKEN;
+            }
+          // fall through
+          case 77: break;
+          case 34:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCORE_TOKEN;
+            }
+          // fall through
+          case 78: break;
+          case 35:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORE_TOKEN;
+            }
+          // fall through
+          case 79: break;
           case 36:
             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ENTITY_TOKEN;
             }
           // fall through
-          case 75: break;
+          case 80: break;
           case 37:
             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RESULT_TOKEN;
             }
           // fall through
-          case 76: break;
+          case 81: break;
           case 38:
-            { yybegin(WAITING_ARGUMENT); return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.EXECUTE_TOKEN;
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RETURN_TOKEN;
             }
           // fall through
-          case 77: break;
+          case 82: break;
           case 39:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.UNLESS_TOKEN;
+            }
+          // fall through
+          case 83: break;
+          case 40:
             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.EXECUTE_TOKEN;
             }
           // fall through
-          case 78: break;
+          case 84: break;
+          case 41:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.MATCHES_TOKEN;
+            }
+          // fall through
+          case 85: break;
+          case 42:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORAGE_TOKEN;
+            }
+          // fall through
+          case 86: break;
+          case 43:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.FUNCTION_TOKEN;
+            }
+          // fall through
+          case 87: break;
+          case 44:
+            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCHEDULE_TOKEN;
+            }
+          // fall through
+          case 88: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }
