@@ -148,6 +148,28 @@ class McFunctionParserTest : BasePlatformTestCase() {
         assertEquals(1, commands.size)
     }
     @Test
+    fun testDataModifyStorage() {
+        val input = "data modify storage use: item set from entity @s SelectedItem"
+        val file = myFixture.configureByText("data_modify.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, com.intellij.psi.PsiErrorElement::class.java)
+        assertTrue("Should not have parse errors for data modify command: ${errors.firstOrNull()?.errorDescription}", errors.isEmpty())
+        val commands = PsiTreeUtil.findChildrenOfType(file, McFunctionCommandLine::class.java)
+        assertEquals(1, commands.size)
+        assertEquals("data", commands.first().firstChild.text)
+    }
+
+    @Test
+    fun testIfCommand() {
+        val input = "if score @s test matches 1.."
+        val file = myFixture.configureByText("if_command.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, com.intellij.psi.PsiErrorElement::class.java)
+        assertTrue("Should not have parse errors for if command: ${errors.firstOrNull()?.errorDescription}", errors.isEmpty())
+        val commands = PsiTreeUtil.findChildrenOfType(file, McFunctionCommandLine::class.java)
+        assertEquals(1, commands.size)
+        assertEquals("if", commands.first().firstChild.text)
+    }
+
+    @Test
     fun testItemReplaceEntity() {
         val input = """
             item replace entity @s enderchest.0 with \
