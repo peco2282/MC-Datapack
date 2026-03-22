@@ -9,6 +9,10 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
+        <fileType name="Minecraft Function" language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionFileType" extensions="mcfunction"/>
+        <lang.parserDefinition language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionSyntaxHighlighterFactory"/>
+
         <toolWindow factoryClass="com.github.peco2282.mcdatapack.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.peco2282.mcdatapack.startup.MyProjectActivity" />
     </extensions>

@@ -1,0 +1,53 @@
+{
+  parserClass="com.github.peco2282.mcdatapack.language.parser.McFunctionParser"
+  parserUtilClass="com.intellij.lang.parser.GeneratedParserUtilBase"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="McFunction"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.github.peco2282.mcdatapack.language.psi"
+  psiImplPackage="com.github.peco2282.mcdatapack.language.psi.impl"
+
+  elementTypeHolderClass="com.github.peco2282.mcdatapack.language.psi.McFunctionTypes"
+  elementTypeClass="com.github.peco2282.mcdatapack.language.psi.McFunctionElementType"
+  tokenTypeClass="com.github.peco2282.mcdatapack.language.psi.McFunctionTokenType"
+
+  tokens = [
+    COMMENT_TOKEN = "regexp:#.*"
+    CRLF_TOKEN = "regexp:\R"
+    SPACE_TOKEN = "regexp:\s+"
+    STRING_TOKEN = "regexp:\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'"
+    EXECUTE_TOKEN = "execute"
+    RUN_TOKEN = "run"
+    AS_TOKEN = "as"
+    AT_TOKEN = "at"
+    STORE_TOKEN = "store"
+    RESULT_TOKEN = "result"
+    SCORE_TOKEN = "score"
+    IF_TOKEN = "if"
+    ENTITY_TOKEN = "entity"
+    LBRACK = "["
+    RBRACK = "]"
+    LBRACE = "{"
+    RBRACE = "}"
+    COLON = ":"
+    COMMA = ","
+    COMMAND_TOKEN = "regexp:[a-z_][a-z0-9_]*"
+    ARGUMENT_TOKEN = "regexp:[^ \n\r\t\f#\"'\[\]{},]+"
+  ]
+}
+
+mcFunctionFile ::= item*
+private item ::= (command_line | COMMENT_TOKEN | CRLF_TOKEN | SPACE_TOKEN)
+command_line ::= (EXECUTE_TOKEN | COMMAND_TOKEN) (SPACE_TOKEN | (json | argument))*
+
+argument ::= ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | EXECUTE_TOKEN | RUN_TOKEN | AS_TOKEN | AT_TOKEN | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | IF_TOKEN | ENTITY_TOKEN | COLON | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
+
+json ::= json_array | json_object
+
+json_array ::= LBRACK (json_element (COMMA json_element)*)? RBRACK
+json_object ::= LBRACE (json_property (COMMA json_property)*)? RBRACE
+
+private json_element ::= SPACE_TOKEN? (json | argument) SPACE_TOKEN?
+private json_property ::= SPACE_TOKEN? (argument | STRING_TOKEN) SPACE_TOKEN? COLON SPACE_TOKEN? (json | argument) SPACE_TOKEN?
