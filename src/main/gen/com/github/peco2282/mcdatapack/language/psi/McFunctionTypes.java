@@ -9,10 +9,12 @@ import com.github.peco2282.mcdatapack.language.psi.impl.*;
 public interface McFunctionTypes {
 
   IElementType ARGUMENT = new McFunctionElementType("ARGUMENT");
+  IElementType COMMAND = new McFunctionElementType("COMMAND");
   IElementType COMMAND_LINE = new McFunctionElementType("COMMAND_LINE");
   IElementType JSON = new McFunctionElementType("JSON");
   IElementType JSON_ARRAY = new McFunctionElementType("JSON_ARRAY");
   IElementType JSON_OBJECT = new McFunctionElementType("JSON_OBJECT");
+  IElementType KEYWORD = new McFunctionElementType("KEYWORD");
 
   IElementType ARGUMENT_TOKEN = new McFunctionTokenType("ARGUMENT_TOKEN");
   IElementType AS_TOKEN = new McFunctionTokenType("as");
@@ -64,6 +66,9 @@ public interface McFunctionTypes {
       if (type == ARGUMENT) {
         return new McFunctionArgumentImpl(node);
       }
+      else if (type == COMMAND) {
+        return new McFunctionCommandImpl(node);
+      }
       else if (type == COMMAND_LINE) {
         return new McFunctionCommandLineImpl(node);
       }
@@ -75,6 +80,9 @@ public interface McFunctionTypes {
       }
       else if (type == JSON_OBJECT) {
         return new McFunctionJsonObjectImpl(node);
+      }
+      else if (type == KEYWORD) {
+        return new McFunctionKeywordImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

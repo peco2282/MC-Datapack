@@ -34,15 +34,27 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
   }
 
   @Override
+  @Nullable
+  public McFunctionCommand getCommand() {
+    return findChildByClass(McFunctionCommand.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionCommandLine getCommandLine() {
+    return findChildByClass(McFunctionCommandLine.class);
+  }
+
+  @Override
   @NotNull
   public List<McFunctionJson> getJsonList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionJson.class);
   }
 
   @Override
-  @Nullable
-  public PsiElement getCommandToken() {
-    return findChildByType(COMMAND_TOKEN);
+  @NotNull
+  public List<McFunctionKeyword> getKeywordList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionKeyword.class);
   }
 
 }

@@ -10,10 +10,16 @@ public interface McFunctionCommandLine extends PsiElement {
   @NotNull
   List<McFunctionArgument> getArgumentList();
 
+  @Nullable
+  McFunctionCommand getCommand();
+
+  @Nullable
+  McFunctionCommandLine getCommandLine();
+
   @NotNull
   List<McFunctionJson> getJsonList();
 
-  @Nullable
-  PsiElement getCommandToken();
+  @NotNull
+  List<McFunctionKeyword> getKeywordList();
 
 }

@@ -43,6 +43,11 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
             "MCFUNCTION_MACRO", DefaultLanguageHighlighterColors.INSTANCE_FIELD
         )
 
+        // コマンド名（行頭 or run 直後）
+        val COMMAND = TextAttributesKey.createTextAttributesKey(
+            "MCFUNCTION_COMMAND", DefaultLanguageHighlighterColors.FUNCTION_CALL
+        )
+
         // 文字列
         val STRING = TextAttributesKey.createTextAttributesKey(
             "MCFUNCTION_STRING", DefaultLanguageHighlighterColors.STRING
@@ -95,6 +100,9 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
 
             // Layer 4: Macro
             McFunctionTypes.MACRO_TOKEN -> arrayOf(MACRO)
+
+            // コマンド名トークン
+            McFunctionTypes.COMMAND_TOKEN -> arrayOf(COMMAND)
 
             // 文字列
             McFunctionTypes.STRING_TOKEN -> arrayOf(STRING)

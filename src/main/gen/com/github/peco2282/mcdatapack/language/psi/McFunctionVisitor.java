@@ -11,6 +11,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCommand(@NotNull McFunctionCommand o) {
+    visitPsiElement(o);
+  }
+
   public void visitCommandLine(@NotNull McFunctionCommandLine o) {
     visitPsiElement(o);
   }
@@ -24,6 +28,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
   }
 
   public void visitJsonObject(@NotNull McFunctionJsonObject o) {
+    visitPsiElement(o);
+  }
+
+  public void visitKeyword(@NotNull McFunctionKeyword o) {
     visitPsiElement(o);
   }
 
