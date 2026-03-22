@@ -257,7 +257,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // command (SPACE_TOKEN | (json | argument))*
+  // command (SPACE_TOKEN | CONTINUATION_TOKEN SPACE_TOKEN? | (json | argument))*
   static boolean generic_command(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command")) return false;
     boolean result_, pinned_;
@@ -269,7 +269,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_ || pinned_;
   }
 
-  // (SPACE_TOKEN | (json | argument))*
+  // (SPACE_TOKEN | CONTINUATION_TOKEN SPACE_TOKEN? | (json | argument))*
   private static boolean generic_command_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command_1")) return false;
     while (true) {
@@ -280,20 +280,39 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // SPACE_TOKEN | (json | argument)
+  // SPACE_TOKEN | CONTINUATION_TOKEN SPACE_TOKEN? | (json | argument)
   private static boolean generic_command_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command_1_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, SPACE_TOKEN);
     if (!result_) result_ = generic_command_1_0_1(builder_, level_ + 1);
+    if (!result_) result_ = generic_command_1_0_2(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
-  // json | argument
+  // CONTINUATION_TOKEN SPACE_TOKEN?
   private static boolean generic_command_1_0_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command_1_0_1")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, CONTINUATION_TOKEN);
+    result_ = result_ && generic_command_1_0_1_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // SPACE_TOKEN?
+  private static boolean generic_command_1_0_1_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "generic_command_1_0_1_1")) return false;
+    consumeToken(builder_, SPACE_TOKEN);
+    return true;
+  }
+
+  // json | argument
+  private static boolean generic_command_1_0_2(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "generic_command_1_0_2")) return false;
     boolean result_;
     result_ = json(builder_, level_ + 1);
     if (!result_) result_ = argument(builder_, level_ + 1);
@@ -381,13 +400,13 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // SPACE_TOKEN? (json | argument) SPACE_TOKEN?
+  // SPACE_TOKEN? json_value SPACE_TOKEN?
   static boolean json_element(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "json_element")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = json_element_0(builder_, level_ + 1);
-    result_ = result_ && json_element_1(builder_, level_ + 1);
+    result_ = result_ && json_value(builder_, level_ + 1);
     result_ = result_ && json_element_2(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
@@ -398,15 +417,6 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(builder_, level_, "json_element_0")) return false;
     consumeToken(builder_, SPACE_TOKEN);
     return true;
-  }
-
-  // json | argument
-  private static boolean json_element_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "json_element_1")) return false;
-    boolean result_;
-    result_ = json(builder_, level_ + 1);
-    if (!result_) result_ = argument(builder_, level_ + 1);
-    return result_;
   }
 
   // SPACE_TOKEN?
@@ -471,7 +481,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // SPACE_TOKEN? (argument | STRING_TOKEN) SPACE_TOKEN? COLON SPACE_TOKEN? (json | argument) SPACE_TOKEN?
+  // SPACE_TOKEN? (argument | STRING_TOKEN) SPACE_TOKEN? COLON SPACE_TOKEN? json_value SPACE_TOKEN?
   static boolean json_property(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "json_property")) return false;
     boolean result_;
@@ -481,7 +491,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     result_ = result_ && json_property_2(builder_, level_ + 1);
     result_ = result_ && consumeToken(builder_, COLON);
     result_ = result_ && json_property_4(builder_, level_ + 1);
-    result_ = result_ && json_property_5(builder_, level_ + 1);
+    result_ = result_ && json_value(builder_, level_ + 1);
     result_ = result_ && json_property_6(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
@@ -517,19 +527,64 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // json | argument
-  private static boolean json_property_5(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "json_property_5")) return false;
-    boolean result_;
-    result_ = json(builder_, level_ + 1);
-    if (!result_) result_ = argument(builder_, level_ + 1);
-    return result_;
-  }
-
   // SPACE_TOKEN?
   private static boolean json_property_6(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "json_property_6")) return false;
     consumeToken(builder_, SPACE_TOKEN);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // json | (argument | STRING_TOKEN)+ json?
+  static boolean json_value(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "json_value")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = json(builder_, level_ + 1);
+    if (!result_) result_ = json_value_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // (argument | STRING_TOKEN)+ json?
+  private static boolean json_value_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "json_value_1")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = json_value_1_0(builder_, level_ + 1);
+    result_ = result_ && json_value_1_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // (argument | STRING_TOKEN)+
+  private static boolean json_value_1_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "json_value_1_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = json_value_1_0_0(builder_, level_ + 1);
+    while (result_) {
+      int pos_ = current_position_(builder_);
+      if (!json_value_1_0_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "json_value_1_0", pos_)) break;
+    }
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // argument | STRING_TOKEN
+  private static boolean json_value_1_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "json_value_1_0_0")) return false;
+    boolean result_;
+    result_ = argument(builder_, level_ + 1);
+    if (!result_) result_ = consumeToken(builder_, STRING_TOKEN);
+    return result_;
+  }
+
+  // json?
+  private static boolean json_value_1_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "json_value_1_1")) return false;
+    json(builder_, level_ + 1);
     return true;
   }
 

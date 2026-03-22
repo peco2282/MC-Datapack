@@ -81,7 +81,7 @@ private execute_command ::= EXECUTE_TOKEN (SPACE_TOKEN | CONTINUATION_TOKEN exec
 private execute_modifier_line ::= SPACE_TOKEN? execute_modifier (SPACE_TOKEN execute_modifier)*
 
 // execute 以外の汎用コマンド：先頭単語を COMMAND として認識し、残りを argument でキャッチ
-private generic_command ::= command (SPACE_TOKEN | (json | argument))* {pin=1}
+private generic_command ::= command (SPACE_TOKEN | CONTINUATION_TOKEN SPACE_TOKEN? | (json | argument))* {pin=1}
 
 // 行頭のコマンド名（COMMAND_TOKEN として認識される単語群）
 command ::= COMMAND_TOKEN | FUNCTION_TOKEN | RETURN_TOKEN | SCHEDULE_TOKEN
@@ -115,5 +115,8 @@ json ::= json_array | json_object
 json_array  ::= LBRACK (json_element (COMMA json_element)*)? RBRACK
 json_object ::= LBRACE (json_property (COMMA json_property)*)? RBRACE
 
-private json_element  ::= SPACE_TOKEN? (json | argument) SPACE_TOKEN?
-private json_property ::= SPACE_TOKEN? (argument | STRING_TOKEN) SPACE_TOKEN? COLON SPACE_TOKEN? (json | argument) SPACE_TOKEN?
+// json_value: argument tokens optionally followed by a json structure (e.g. key={...} or key=[...])
+private json_value ::= json | (argument | STRING_TOKEN)+ json?
+
+private json_element  ::= SPACE_TOKEN? json_value SPACE_TOKEN?
+private json_property ::= SPACE_TOKEN? (argument | STRING_TOKEN) SPACE_TOKEN? COLON SPACE_TOKEN? json_value SPACE_TOKEN?
