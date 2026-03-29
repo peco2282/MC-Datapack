@@ -9,7 +9,7 @@ import javax.swing.Icon
 
 class McFunctionColorSettingsPage : ColorSettingsPage {
 
-    override fun getAttributeDescriptors(): Array<AttributesDescriptor> = DESCRIPTORS
+  override fun getAttributeDescriptors(): Array<AttributesDescriptor> = DESCRIPTORS
 
   override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 

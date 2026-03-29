@@ -51,11 +51,11 @@ class McFunctionAnnotator : Annotator {
       val token = element.firstChild ?: return
       val tokenType = token.node.elementType
 
-      val attributes = when {
-        tokenType in McFunctionSyntaxHighlighter.SUB_COMMAND_TOKENS ->
+      val attributes = when (tokenType) {
+        in McFunctionSyntaxHighlighter.SUB_COMMAND_TOKENS ->
           McFunctionSyntaxHighlighter.SUB_COMMAND
 
-        tokenType in McFunctionSyntaxHighlighter.FLOW_KEYWORD_TOKENS ->
+        in McFunctionSyntaxHighlighter.FLOW_KEYWORD_TOKENS ->
           McFunctionSyntaxHighlighter.FLOW_KEYWORD
 
         else -> return // デフォルト（白）
@@ -73,7 +73,12 @@ class McFunctionAnnotator : Annotator {
         tokenType == McFunctionTypes.SET_TOKEN ||
         tokenType == McFunctionTypes.ADD_TOKEN ||
         tokenType == McFunctionTypes.REMOVE_TOKEN ||
-        tokenType == McFunctionTypes.MERGE_TOKEN
+        tokenType == McFunctionTypes.MERGE_TOKEN ||
+        tokenType == McFunctionTypes.ENABLE_TOKEN ||
+        tokenType == McFunctionTypes.DISABLE_TOKEN ||
+        tokenType == McFunctionTypes.QUERY_TOKEN ||
+        tokenType == McFunctionTypes.GRANT_TOKEN ||
+        tokenType == McFunctionTypes.REVOKE_TOKEN
   }
 
   private fun isAfterRun(element: PsiElement): Boolean {
