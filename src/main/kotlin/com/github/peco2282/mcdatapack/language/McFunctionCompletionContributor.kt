@@ -1,5 +1,6 @@
 package com.github.peco2282.mcdatapack.language
 
+import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.PlatformPatterns
@@ -7,7 +8,7 @@ import com.intellij.util.ProcessingContext
 
 class McFunctionCompletionContributor : CompletionContributor() {
   init {
-    // すべての McFunction 内の要素に対して補完候補を出す
+    // 文脈に応じた補完
     extend(
       CompletionType.BASIC,
       PlatformPatterns.psiElement(),
@@ -17,18 +18,38 @@ class McFunctionCompletionContributor : CompletionContributor() {
           context: ProcessingContext,
           result: CompletionResultSet
         ) {
-          // McFunctionLanguage の要素でない場合はスキップ
-          if (parameters.position.language !is McFunctionLanguage) return
+          val position = parameters.position
+          if (position.language !is McFunctionLanguage) return
 
-          COMMANDS.forEach {
-            result.addElement(LookupElementBuilder.create(it))
-          }
-          KEYWORDS.forEach {
-            result.addElement(LookupElementBuilder.create(it))
+          // 行の先頭（または execute ... run の直後）かどうかを判定
+          if (isCommandPosition(position)) {
+            COMMANDS.forEach {
+              result.addElement(LookupElementBuilder.create(it).withBoldness(true))
+            }
+          } else {
+            KEYWORDS.forEach {
+              result.addElement(LookupElementBuilder.create(it))
+            }
           }
         }
       }
     )
+  }
+
+  private fun isCommandPosition(position: com.intellij.psi.PsiElement): Boolean {
+    // 1. 行の最初（前にあるのが改行やスペースのみ）
+    var prev = position.prevSibling
+    while (prev != null && (prev.node.elementType == McFunctionTypes.SPACE_TOKEN || prev.node.elementType == McFunctionTypes.CONTINUATION_TOKEN)) {
+      prev = prev.prevSibling
+    }
+    if (prev == null || prev.node.elementType == McFunctionTypes.CRLF_TOKEN) return true
+
+    // 2. run の直後
+    if (prev.node.elementType == McFunctionTypes.RUN_TOKEN) return true
+
+    // 3. McFunctionCommand の直後であればコマンドではない（引数のはず）
+    // ただし、execute の modifiers の途中などは KEYWORDS を出したい
+    return false
   }
 
   override fun beforeCompletion(context: CompletionInitializationContext) {

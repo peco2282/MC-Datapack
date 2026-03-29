@@ -83,16 +83,21 @@ class McFunctionAnnotator : Annotator {
 
   private fun isAfterRun(element: PsiElement): Boolean {
     // execute ... run <command> の構造を確認する
-    // BNF: execute_command ::= EXECUTE_TOKEN ... (SPACE_TOKEN RUN_TOKEN SPACE_TOKEN command_line)?
-    // command_line ::= execute_command | generic_command
     // generic_command ::= command ...
     // element(McFunctionCommand) の親が generic_command で、その親が command_line、
-    // さらにその親が execute_command であれば、その直前に RUN_TOKEN があるかチェック
-    val commandLine = element.parent as? McFunctionCommandLine ?: return false
-    val executeCommand = commandLine.parent as? McFunctionCommand ?: return false
-    // executeCommand の子要素を調べて、RUN_TOKEN の後にこの commandLine が来ているか確認
+    // さらにその親が execute_command (McFunctionCommandLine) であれば、その直前に RUN_TOKEN があるかチェック
+    // 
+    // 現在の PSI 木を確認すると、execute_command という要素名はなく McFunctionCommandLine として生成されている可能性がある
+    // BNF: command_line ::= execute_command | generic_command
+    // private execute_command ::= EXECUTE_TOKEN ... (SPACE_TOKEN RUN_TOKEN SPACE_TOKEN command_line)?
+
+    val genericCommand = element.parent // McFunctionCommand -> McFunctionCommandImpl (generic_command)
+    val commandLine = genericCommand?.parent as? McFunctionCommandLine ?: return false
+    val parentCommandLine = commandLine.parent as? McFunctionCommandLine ?: return false
+
+    // 親の commandLine の子要素を調べて、RUN_TOKEN の後にこの commandLine が来ているか確認
     var runFound = false
-    var child = executeCommand.firstChild
+    var child = parentCommandLine.firstChild
     while (child != null) {
       if (child.node.elementType == McFunctionTypes.RUN_TOKEN) {
         runFound = true
@@ -104,6 +109,4 @@ class McFunctionAnnotator : Annotator {
     }
     return false
   }
-
-  companion object
 }

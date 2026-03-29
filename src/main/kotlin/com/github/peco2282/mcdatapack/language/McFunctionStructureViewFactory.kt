@@ -70,6 +70,12 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
         ?.map { McFunctionStructureViewElement(it) }
         ?.toTypedArray() ?: emptyArray()
     }
+    // execute ... run ... の再帰的な構造を表示する
+    if (element is McFunctionCommandLine) {
+      return PsiTreeUtil.getChildrenOfType(element, McFunctionCommandLine::class.java)
+        ?.map { McFunctionStructureViewElement(it) }
+        ?.toTypedArray() ?: emptyArray()
+    }
     return emptyArray()
   }
 }

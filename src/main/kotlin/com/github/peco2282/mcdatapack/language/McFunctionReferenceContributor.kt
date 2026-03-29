@@ -47,13 +47,18 @@ class McFunctionFileReference(element: PsiElement, textRange: TextRange) :
     val path = if (parts.size > 1) parts[1] else parts[0]
 
     // 実際の Datapack 構造 (data/<namespace>/functions/<path>.mcfunction) を探す
+    // path は "/" を含む可能性がある
     val fileName = path.substringAfterLast("/") + ".mcfunction"
     val files = FilenameIndex.getFilesByName(element.project, fileName, GlobalSearchScope.allScope(element.project))
 
-    // パスが一致するものを探す (非常に簡易的な実装)
+    // パスが一致するものを探す (data/<namespace>/functions/<path>.mcfunction)
+    val expectedPathSuffix = "data/$namespace/functions/$path.mcfunction".replace("/", "\\")
+    val alternativePathSuffix = "data/$namespace/functions/$path.mcfunction".replace("\\", "/")
+    
     return files.firstOrNull { file ->
       val virtualFile = file.virtualFile
-      virtualFile.path.contains("data/$namespace/functions/$path")
+      val absolutePath = virtualFile.path
+      absolutePath.endsWith(expectedPathSuffix) || absolutePath.endsWith(alternativePathSuffix)
     }
   }
 }
