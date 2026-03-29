@@ -26,5 +26,6 @@
         <toolWindow factoryClass="com.github.peco2282.mcdatapack.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.peco2282.mcdatapack.startup.MyProjectActivity" />
         <directoryProjectGenerator implementation="com.github.peco2282.mcdatapack.project.McDatapackProjectGenerator"/>
+        <moduleBuilder builderClass="com.github.peco2282.mcdatapack.project.McDatapackModuleBuilder" />
     </extensions>
 </idea-plugin>
