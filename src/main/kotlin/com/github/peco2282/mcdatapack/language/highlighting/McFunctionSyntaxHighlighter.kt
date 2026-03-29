@@ -53,7 +53,7 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
     val MACRO = TextAttributesKey.createTextAttributesKey(
       "MC_MACRO", DefaultLanguageHighlighterColors.INSTANCE_FIELD
     )
-    
+
     // JSON (NBT/Components) 色分け
     val JSON_KEY = TextAttributesKey.createTextAttributesKey(
       "MC_JSON_KEY", DefaultLanguageHighlighterColors.INSTANCE_FIELD

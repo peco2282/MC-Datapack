@@ -6,7 +6,6 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.elementType
 
 class McFunctionAnnotator : Annotator {
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
@@ -78,7 +77,7 @@ class McFunctionAnnotator : Annotator {
     val type = element.node.elementType
     if (type == McFunctionTypes.ARGUMENT_TOKEN || type == McFunctionTypes.COMMAND_TOKEN || type == McFunctionTypes.STRING_TOKEN) {
       annotateJsonValue(element, holder)
-      
+
       // キーの判定: 次に ':' か '=' が来るか
       if (isJsonKey(element)) {
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
@@ -126,7 +125,7 @@ class McFunctionAnnotator : Annotator {
     // まず、自身が ':' か '=' で終わるか、次の要素が ':' か '=' であるか
     val text = element.text
     if (text.endsWith(":") || text.endsWith("=")) return true
-    
+
     var next = element.nextSibling
     while (next != null) {
       val nextType = next.node.elementType
@@ -135,8 +134,9 @@ class McFunctionAnnotator : Annotator {
         continue
       }
       // 直接 ':' か '=' が来る場合、あるいは McFunctionArgument の中の最初の子要素が ':' か '=' の場合
-      if (nextType == McFunctionTypes.COLON || nextType == McFunctionTypes.EQUALS || 
-        next.text.startsWith(":") || next.text.startsWith("=")) return true
+      if (nextType == McFunctionTypes.COLON || nextType == McFunctionTypes.EQUALS ||
+        next.text.startsWith(":") || next.text.startsWith("=")
+      ) return true
       break
     }
     // 親要素の隣も見る (PSI構造が ARGUMENT(KEY), ARGUMENT(:) に分かれている場合)
@@ -153,7 +153,7 @@ class McFunctionAnnotator : Annotator {
   private fun annotateJsonValue(element: PsiElement, holder: AnnotationHolder) {
     val text = element.text
     if (text.isEmpty()) return
-    
+
     val attributes = when {
       text.startsWith("\"") || text.startsWith("'") -> McFunctionSyntaxHighlighter.JSON_STRING
       text == "true" || text == "false" || text.matches(Regex("-?\\d+b")) || text.matches(Regex("-?\\d+B")) -> McFunctionSyntaxHighlighter.JSON_BOOLEAN
@@ -170,7 +170,12 @@ class McFunctionAnnotator : Annotator {
           if (valAttr != null) {
             val startOffset = text.indexOf(valPart)
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-              .range(com.intellij.openapi.util.TextRange(element.textRange.startOffset + startOffset, element.textRange.endOffset))
+              .range(
+                com.intellij.openapi.util.TextRange(
+                  element.textRange.startOffset + startOffset,
+                  element.textRange.endOffset
+                )
+              )
               .textAttributes(valAttr)
               .create()
           }
