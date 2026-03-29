@@ -31,7 +31,7 @@ class McFunctionFoldingBuilder : FoldingBuilderEx(), DumbAware {
         var next = child.nextSibling
         while (next != null && (next.node.elementType == McFunctionTypes.COMMENT_TOKEN ||
               next.node.elementType == McFunctionTypes.CRLF_TOKEN ||
-              next.node.elementType == McFunctionTypes.SPACE_TOKEN)
+              next.node.elementType == McFunctionTypes.WHITE_SPACE)
         ) {
           if (next.node.elementType == McFunctionTypes.COMMENT_TOKEN) {
             lastComment = next

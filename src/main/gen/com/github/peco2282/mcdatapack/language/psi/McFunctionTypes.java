@@ -50,6 +50,7 @@ public interface McFunctionTypes {
   IElementType ENABLE_TOKEN = new McFunctionTokenType("enable");
   IElementType ENCHANT_TOKEN = new McFunctionTokenType("enchant");
   IElementType ENTITY_TOKEN = new McFunctionTokenType("entity");
+  IElementType EQUALS = new McFunctionTokenType("=");
   IElementType EXECUTE_TOKEN = new McFunctionTokenType("execute");
   IElementType EXPERIENCE_TOKEN = new McFunctionTokenType("experience");
   IElementType EYES_TOKEN = new McFunctionTokenType("eyes");
@@ -94,6 +95,8 @@ public interface McFunctionTypes {
   IElementType MUSIC_TOKEN = new McFunctionTokenType("music");
   IElementType OBJECTIVES_TOKEN = new McFunctionTokenType("objectives");
   IElementType ONLY_TOKEN = new McFunctionTokenType("only");
+  IElementType OP_TOKEN = new McFunctionTokenType("op");
+  IElementType PARDON_TOKEN = new McFunctionTokenType("pardon");
   IElementType PARTICLE_TOKEN = new McFunctionTokenType("particle");
   IElementType PERF_TOKEN = new McFunctionTokenType("perf");
   IElementType PLACE_TOKEN = new McFunctionTokenType("place");
@@ -104,6 +107,7 @@ public interface McFunctionTypes {
   IElementType RBRACE = new McFunctionTokenType("}");
   IElementType RBRACK = new McFunctionTokenType("]");
   IElementType RECIPE_TOKEN = new McFunctionTokenType("recipe");
+  IElementType RELOAD_TOKEN = new McFunctionTokenType("reload");
   IElementType REMOVE_TOKEN = new McFunctionTokenType("remove");
   IElementType RESULT_TOKEN = new McFunctionTokenType("result");
   IElementType RETURN_TOKEN = new McFunctionTokenType("return");
@@ -114,6 +118,7 @@ public interface McFunctionTypes {
   IElementType SCHEDULE_TOKEN = new McFunctionTokenType("schedule");
   IElementType SCOREBOARD_TOKEN = new McFunctionTokenType("scoreboard");
   IElementType SCORE_TOKEN = new McFunctionTokenType("score");
+  IElementType SEED_TOKEN = new McFunctionTokenType("seed");
   IElementType SELECTOR_A = new McFunctionTokenType("@a");
   IElementType SELECTOR_E = new McFunctionTokenType("@e");
   IElementType SELECTOR_P = new McFunctionTokenType("@p");
@@ -157,6 +162,7 @@ public interface McFunctionTypes {
   IElementType WARNING_TOKEN = new McFunctionTokenType("warning");
   IElementType WEATHER_TOKEN = new McFunctionTokenType("weather");
   IElementType WHITELIST_TOKEN = new McFunctionTokenType("whitelist");
+  IElementType WHITE_SPACE = new McFunctionTokenType("WHITE_SPACE");
   IElementType WORLDBORDER_TOKEN = new McFunctionTokenType("worldborder");
   IElementType XP_TOKEN = new McFunctionTokenType("xp");
 

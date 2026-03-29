@@ -40,7 +40,7 @@ class McFunctionCompletionContributor : CompletionContributor() {
   private fun isCommandPosition(position: com.intellij.psi.PsiElement): Boolean {
     // 1. 行の最初（前にあるのが改行やスペースのみ）
     var prev = position.prevSibling
-    while (prev != null && (prev.node.elementType == McFunctionTypes.SPACE_TOKEN || prev.node.elementType == McFunctionTypes.CONTINUATION_TOKEN)) {
+    while (prev != null && (prev.node.elementType == McFunctionTypes.WHITE_SPACE || prev.node.elementType == McFunctionTypes.CONTINUATION_TOKEN)) {
       prev = prev.prevSibling
     }
     if (prev == null || prev.node.elementType == McFunctionTypes.CRLF_TOKEN) return true

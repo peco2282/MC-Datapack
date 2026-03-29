@@ -40,9 +40,9 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
   }
 
   @Override
-  @Nullable
-  public McFunctionCommandLine getCommandLine() {
-    return findChildByClass(McFunctionCommandLine.class);
+  @NotNull
+  public List<McFunctionCommandLine> getCommandLineList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCommandLine.class);
   }
 
   @Override

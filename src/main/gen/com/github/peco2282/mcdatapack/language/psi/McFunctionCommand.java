@@ -7,4 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface McFunctionCommand extends PsiElement {
 
+  @Nullable
+  PsiElement getCommandToken();
+
+  @Nullable
+  PsiElement getMacroToken();
+
 }
