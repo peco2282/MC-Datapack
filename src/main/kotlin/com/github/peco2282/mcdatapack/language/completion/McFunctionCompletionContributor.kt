@@ -1,11 +1,13 @@
 package com.github.peco2282.mcdatapack.language.completion
 
+import com.github.peco2282.mcdatapack.language.highlighting.McFunctionIcons
 import com.github.peco2282.mcdatapack.language.psi.McFunctionLanguage
 import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.util.ProcessingContext
+import javax.swing.Icon
 
 class McFunctionCompletionContributor : CompletionContributor() {
   init {
@@ -25,16 +27,36 @@ class McFunctionCompletionContributor : CompletionContributor() {
           // 行の先頭（または execute ... run の直後）かどうかを判定
           if (isCommandPosition(position)) {
             COMMANDS.forEach {
-              result.addElement(LookupElementBuilder.create(it).withBoldness(true))
+              result.addElement(
+                LookupElementBuilder.create(it)
+                  .withBoldness(true)
+                  .withIcon(getIconForCommand(it))
+              )
             }
           } else {
             KEYWORDS.forEach {
-              result.addElement(LookupElementBuilder.create(it))
+              result.addElement(
+                LookupElementBuilder.create(it)
+                  .withIcon(getIconForCommand(it))
+              )
             }
           }
         }
       }
     )
+  }
+
+  private fun getIconForCommand(command: String): Icon {
+    val text = command.lowercase()
+    return when {
+      text == "execute" -> McFunctionIcons.EXECUTE
+      text == "function" -> McFunctionIcons.FUNCTION
+      text == "give" -> McFunctionIcons.GIVE
+      text.contains("effect") -> McFunctionIcons.EFFECT
+      text.contains("scoreboard") -> McFunctionIcons.SCOREBOARD
+      text.startsWith("@") -> McFunctionIcons.SELECTOR
+      else -> McFunctionIcons.COMMAND
+    }
   }
 
   private fun isCommandPosition(position: com.intellij.psi.PsiElement): Boolean {

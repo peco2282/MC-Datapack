@@ -60,6 +60,19 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
 
       override fun getIcon(unused: Boolean): Icon? {
         if (element is PsiFile) return McFunctionIcons.FILE
+        if (element is McFunctionCommandLine) {
+          val command = element.command ?: return McFunctionIcons.COMMAND
+          val text = command.text.lowercase()
+          return when {
+            text == "execute" -> McFunctionIcons.EXECUTE
+            text == "function" -> McFunctionIcons.FUNCTION
+            text == "give" -> McFunctionIcons.GIVE
+            text.contains("effect") -> McFunctionIcons.EFFECT
+            text.contains("scoreboard") -> McFunctionIcons.SCOREBOARD
+            text.startsWith("@") -> McFunctionIcons.SELECTOR
+            else -> McFunctionIcons.COMMAND
+          }
+        }
         return null
       }
     }
