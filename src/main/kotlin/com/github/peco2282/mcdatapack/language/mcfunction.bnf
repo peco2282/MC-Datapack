@@ -19,27 +19,121 @@
     SPACE_TOKEN        = "regexp:[ \t\f]+"
     STRING_TOKEN       = "regexp:\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'"
 
-    // Layer 1: Flow Control
+    // Major Commands: 1.21.1
+    ADVANCEMENT_TOKEN  = "advancement"
+    ATTRIBUTE_TOKEN    = "attribute"
     EXECUTE_TOKEN      = "execute"
-    RUN_TOKEN          = "run"
-    RETURN_TOKEN       = "return"
+    BOSSBAR_TOKEN      = "bossbar"
+    CLEAR_TOKEN        = "clear"
+    CLONE_TOKEN        = "clone"
+    DAMAGE_TOKEN       = "damage"
+    DATA_TOKEN         = "data"
+    DATAPACK_TOKEN     = "datapack"
+    DEBUG_TOKEN        = "debug"
+    DEFAULTGAMEMODE_TOKEN = "defaultgamemode"
+    DIFFICULTY_TOKEN   = "difficulty"
+    EFFECT_TOKEN       = "effect"
+    ENCHANT_TOKEN      = "enchant"
+    EXPERIENCE_TOKEN   = "experience"
+    FILL_TOKEN         = "fill"
+    FILLBIOME_TOKEN    = "fillbiome"
+    FORCELOAD_TOKEN    = "forceload"
     FUNCTION_TOKEN     = "function"
+    GAMEMODE_TOKEN     = "gamemode"
+    GAMERULE_TOKEN     = "gamerule"
+    GIVE_TOKEN         = "give"
+    HELP_TOKEN         = "help"
+    ITEM_TOKEN         = "item"
+    JFR_TOKEN          = "jfr"
+    KICK_TOKEN         = "kick"
+    KILL_TOKEN         = "kill"
+    LIST_TOKEN         = "list"
+    LOCATE_TOKEN       = "locate"
+    LOOT_TOKEN         = "loot"
+    ME_TOKEN           = "me"
+    MSG_TOKEN          = "msg"
+    PARTICLE_TOKEN     = "particle"
+    PERF_TOKEN         = "perf"
+    PLACE_TOKEN        = "place"
+    PLAYSOUND_TOKEN    = "playsound"
+    RECIPE_TOKEN       = "recipe"
+    RETURN_TOKEN       = "return"
+    RIDE_TOKEN         = "ride"
+    SAY_TOKEN          = "say"
     SCHEDULE_TOKEN     = "schedule"
+    SCOREBOARD_TOKEN   = "scoreboard"
+    SETBLOCK_TOKEN     = "setblock"
+    SETIDLETIMEOUT_TOKEN = "setidletimeout"
+    SETWORLDSPAWN_TOKEN = "setworldspawn"
+    SPAWNPOINT_TOKEN   = "spawnpoint"
+    SPECTATE_TOKEN     = "spectate"
+    SPREADPLAYERS_TOKEN = "spreadplayers"
+    STOPSOUND_TOKEN    = "stopsound"
+    SUMMON_TOKEN       = "summon"
+    TAG_TOKEN          = "tag"
+    TEAM_TOKEN         = "team"
+    TEAMMSG_TOKEN      = "teammsg"
+    TELEPORT_TOKEN     = "teleport"
+    TELL_TOKEN         = "tell"
+    TELLRAW_TOKEN      = "tellraw"
+    TICK_TOKEN         = "tick"
+    TIME_TOKEN         = "time"
+    TITLE_TOKEN        = "title"
+    TM_TOKEN           = "tm"
+    TP_TOKEN           = "tp"
+    TRIGGER_TOKEN      = "trigger"
+    WEATHER_TOKEN      = "weather"
+    WHITELIST_TOKEN    = "whitelist"
+    WORLDBORDER_TOKEN  = "worldborder"
+    XP_TOKEN           = "xp"
 
-    // Layer 2: Sub-modifiers
+    // Subcommands & Keywords
     IF_TOKEN           = "if"
     UNLESS_TOKEN       = "unless"
+    RUN_TOKEN          = "run"
+    ONLY_TOKEN         = "only"
+    ENTITY_TOKEN       = "entity"
+    MODIFY_TOKEN       = "modify"
+    STORAGE_TOKEN      = "storage"
+    SET_TOKEN          = "set"
+    FROM_TOKEN         = "from"
+    ADD_TOKEN          = "add"
+    PLAYERS_TOKEN      = "players"
+    ACTIONBAR_TOKEN    = "actionbar"
+    MATCHES_TOKEN      = "matches"
     AS_TOKEN           = "as"
     AT_TOKEN           = "at"
-    DATA_TOKEN         = "data"
-    ENTITY_TOKEN       = "entity"
-    SCORE_TOKEN        = "score"
-    STORAGE_TOKEN      = "storage"
     BLOCK_TOKEN        = "block"
     ITEMS_TOKEN        = "items"
     STORE_TOKEN        = "store"
     RESULT_TOKEN       = "result"
-    MATCHES_TOKEN      = "matches"
+    SCORE_TOKEN        = "score"
+    REVOKE_TOKEN       = "revoke"
+    GRANT_TOKEN        = "grant"
+    GET_TOKEN          = "get"
+    MERGE_TOKEN        = "merge"
+    REMOVE_TOKEN       = "remove"
+    ENABLE_TOKEN       = "enable"
+    DISABLE_TOKEN      = "disable"
+    BASE_TOKEN         = "base"
+    MODIFIER_TOKEN     = "modifier"
+    QUERY_TOKEN        = "query"
+    TAKE_TOKEN         = "take"
+    OBJECTIVES_TOKEN   = "objectives"
+    SETDISPLAY_TOKEN   = "setdisplay"
+    EMPTY_TOKEN        = "empty"
+    JOIN_TOKEN         = "join"
+    LEAVE_TOKEN        = "leave"
+    RATE_TOKEN         = "rate"
+    FREEZE_TOKEN       = "freeze"
+    STEP_TOKEN         = "step"
+    STOP_TOKEN         = "stop"
+    UNFREEZE_TOKEN     = "unfreeze"
+    SUBTITLE_TOKEN     = "subtitle"
+    TIMES_TOKEN        = "times"
+    CENTER_TOKEN       = "center"
+    WARNING_TOKEN      = "warning"
+
 
     // Layer 3: Target Selectors
     SELECTOR_S         = "@s"
@@ -83,26 +177,32 @@ private execute_modifier_line ::= SPACE_TOKEN? execute_modifier (SPACE_TOKEN exe
 // execute 以外の汎用コマンド：先頭単語を COMMAND として認識し、残りを argument でキャッチ
 private generic_command ::= command (SPACE_TOKEN | CONTINUATION_TOKEN SPACE_TOKEN? | (json | argument))* {pin=1}
 
-// 行頭のコマンド名（COMMAND_TOKEN として認識される単語群）
-command ::= COMMAND_TOKEN | FUNCTION_TOKEN | RETURN_TOKEN | SCHEDULE_TOKEN
-  | DATA_TOKEN | IF_TOKEN | UNLESS_TOKEN | AS_TOKEN | AT_TOKEN
-  | ENTITY_TOKEN | SCORE_TOKEN | STORAGE_TOKEN | BLOCK_TOKEN | ITEMS_TOKEN
-  | STORE_TOKEN | RESULT_TOKEN | MATCHES_TOKEN
+// 行頭のコマンド名
+command ::= COMMAND_TOKEN
+  | ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN | DAMAGE_TOKEN
+  | DATA_TOKEN | DATAPACK_TOKEN | DEBUG_TOKEN | DEFAULTGAMEMODE_TOKEN | DIFFICULTY_TOKEN | EFFECT_TOKEN | ENCHANT_TOKEN
+  | EXPERIENCE_TOKEN | FILL_TOKEN | FILLBIOME_TOKEN | FORCELOAD_TOKEN | FUNCTION_TOKEN | GAMEMODE_TOKEN | GAMERULE_TOKEN
+  | GIVE_TOKEN | HELP_TOKEN | ITEM_TOKEN | JFR_TOKEN | KICK_TOKEN | KILL_TOKEN | LIST_TOKEN | LOCATE_TOKEN | LOOT_TOKEN
+  | ME_TOKEN | MSG_TOKEN | PARTICLE_TOKEN | PERF_TOKEN | PLACE_TOKEN | PLAYSOUND_TOKEN | RECIPE_TOKEN | RETURN_TOKEN
+  | RIDE_TOKEN | SAY_TOKEN | SCHEDULE_TOKEN | SCOREBOARD_TOKEN | SETBLOCK_TOKEN | SETIDLETIMEOUT_TOKEN | SETWORLDSPAWN_TOKEN
+  | SPAWNPOINT_TOKEN | SPECTATE_TOKEN | SPREADPLAYERS_TOKEN | STOPSOUND_TOKEN | SUMMON_TOKEN | TAG_TOKEN | TEAM_TOKEN
+  | TEAMMSG_TOKEN | TELEPORT_TOKEN | TELL_TOKEN | TELLRAW_TOKEN | TICK_TOKEN | TIME_TOKEN | TITLE_TOKEN | TM_TOKEN
+  | TP_TOKEN | TRIGGER_TOKEN | WEATHER_TOKEN | WHITELIST_TOKEN | WORLDBORDER_TOKEN | XP_TOKEN
 
-// execute の modifier 部分：KEYWORD として区別するトークン群（RUN_TOKEN は含めない）
-keyword ::= IF_TOKEN | UNLESS_TOKEN | AS_TOKEN | AT_TOKEN
-  | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | STORAGE_TOKEN
-  | BLOCK_TOKEN | ITEMS_TOKEN | ENTITY_TOKEN | DATA_TOKEN | MATCHES_TOKEN
+// execute の modifier 部分やサブコマンド等
+keyword ::= IF_TOKEN | UNLESS_TOKEN | RUN_TOKEN | ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN | SET_TOKEN
+  | FROM_TOKEN | ADD_TOKEN | PLAYERS_TOKEN | ACTIONBAR_TOKEN | MATCHES_TOKEN | AS_TOKEN | AT_TOKEN | BLOCK_TOKEN
+  | ITEMS_TOKEN | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | REVOKE_TOKEN | GRANT_TOKEN | DATA_TOKEN
+  | GET_TOKEN | MERGE_TOKEN | REMOVE_TOKEN | ENABLE_TOKEN | DISABLE_TOKEN | BASE_TOKEN | MODIFIER_TOKEN
+  | QUERY_TOKEN | TAKE_TOKEN | OBJECTIVES_TOKEN | SETDISPLAY_TOKEN | EMPTY_TOKEN | JOIN_TOKEN | LEAVE_TOKEN
+  | RATE_TOKEN | FREEZE_TOKEN | STEP_TOKEN | STOP_TOKEN | UNFREEZE_TOKEN | SUBTITLE_TOKEN | TIMES_TOKEN
+  | CENTER_TOKEN | WARNING_TOKEN
 
 // execute の modifier 内：keyword か json か argument のどちらか
 private execute_modifier ::= keyword | json | argument
 
-// Generic argument — キーワード・コマンドに該当しない残りのフォールバック
-argument ::= ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN
-  | EXECUTE_TOKEN | RUN_TOKEN | RETURN_TOKEN | FUNCTION_TOKEN | SCHEDULE_TOKEN
-  | IF_TOKEN | UNLESS_TOKEN | AS_TOKEN | AT_TOKEN | DATA_TOKEN
-  | ENTITY_TOKEN | SCORE_TOKEN | STORAGE_TOKEN | BLOCK_TOKEN | ITEMS_TOKEN
-  | STORE_TOKEN | RESULT_TOKEN | MATCHES_TOKEN
+// Generic argument
+argument ::= ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
   | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
   | MACRO_TOKEN
   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN

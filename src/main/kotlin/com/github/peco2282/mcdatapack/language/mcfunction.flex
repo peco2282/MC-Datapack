@@ -49,27 +49,39 @@ ARGUMENT=[^ \n\r\t\f#\"'\[\]{},]+
 // Layer 4: Macro
 {MACRO}            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.MACRO_TOKEN; }
 
-// Layer 1: Flow Control keywords (must come before COMMAND)
+// Major Commands: execute, advancement, data, tag, scoreboard, title, function, return, tp
 "execute"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.EXECUTE_TOKEN; }
-"run"              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RUN_TOKEN; }
-"return"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RETURN_TOKEN; }
+"advancement"      { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ADVANCEMENT_TOKEN; }
+"data"             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.DATA_TOKEN; }
+"tag"              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.TAG_TOKEN; }
+"scoreboard"       { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCOREBOARD_TOKEN; }
+"title"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.TITLE_TOKEN; }
 "function"         { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.FUNCTION_TOKEN; }
+"return"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RETURN_TOKEN; }
+"tp"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.TP_TOKEN; }
 "schedule"         { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCHEDULE_TOKEN; }
 
-// Layer 2: Sub-modifier keywords
+// Flow Keywords: if, unless, run, only, entity, modify, storage, set, from, add, players, actionbar, matches, as, at, store, result, block, items
 "if"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.IF_TOKEN; }
 "unless"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.UNLESS_TOKEN; }
+"run"              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RUN_TOKEN; }
+"only"             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ONLY_TOKEN; }
+"entity"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ENTITY_TOKEN; }
+"modify"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.MODIFY_TOKEN; }
+"storage"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORAGE_TOKEN; }
+"set"              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SET_TOKEN; }
+"from"             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.FROM_TOKEN; }
+"add"              { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ADD_TOKEN; }
+"players"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.PLAYERS_TOKEN; }
+"actionbar"        { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ACTIONBAR_TOKEN; }
+"matches"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.MATCHES_TOKEN; }
 "as"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AS_TOKEN; }
 "at"               { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.AT_TOKEN; }
-"data"             { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.DATA_TOKEN; }
-"entity"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ENTITY_TOKEN; }
-"score"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCORE_TOKEN; }
-"storage"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORAGE_TOKEN; }
-"block"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.BLOCK_TOKEN; }
-"items"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ITEMS_TOKEN; }
 "store"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.STORE_TOKEN; }
 "result"           { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.RESULT_TOKEN; }
-"matches"          { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.MATCHES_TOKEN; }
+"block"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.BLOCK_TOKEN; }
+"items"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.ITEMS_TOKEN; }
+"score"            { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.SCORE_TOKEN; }
 
 // Structural symbols
 "["                { return com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.LBRACK; }
