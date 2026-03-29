@@ -33,7 +33,7 @@ STRING_TOKEN=\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'
 CONTINUATION_TOKEN=\\\\(\r\n|\r|\n)
 MACRO_TOKEN=\$[a-zA-Z_][a-zA-Z0-9_]*
 COMMAND_TOKEN=[a-z_][a-z0-9_]*
-ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{}=,]+
+ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},]+
 
 %%
 <YYINITIAL> {
@@ -172,7 +172,6 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{}=,]+
   ">"                        { return GT_TOKEN; }
   "<"                        { return LT_TOKEN; }
   ".."                       { return DOTDOT_TOKEN; }
-  "="                        { return EQUALS; }
   "["                        { return LBRACK; }
   "]"                        { return RBRACK; }
   "{"                        { return LBRACE; }

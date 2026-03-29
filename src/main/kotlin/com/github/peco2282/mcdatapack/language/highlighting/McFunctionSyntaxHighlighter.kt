@@ -54,16 +54,6 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
       "MC_MACRO", DefaultLanguageHighlighterColors.INSTANCE_FIELD
     )
 
-    // JSON Keys (Aqua/Light Blue)
-    val JSON_KEY = TextAttributesKey.createTextAttributesKey(
-      "MC_JSON_KEY", DefaultLanguageHighlighterColors.MARKUP_TAG
-    )
-
-    // JSON Literals (Number, Boolean)
-    val JSON_LITERAL = TextAttributesKey.createTextAttributesKey(
-      "MC_JSON_LITERAL", DefaultLanguageHighlighterColors.NUMBER
-    )
-
     val COMMENT = TextAttributesKey.createTextAttributesKey(
       "MC_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT
     )
@@ -216,8 +206,7 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
       McFunctionTypes.LBRACE,
       McFunctionTypes.RBRACE,
       McFunctionTypes.COLON,
-      McFunctionTypes.COMMA,
-      McFunctionTypes.EQUALS
+      McFunctionTypes.COMMA
     )
   }
 

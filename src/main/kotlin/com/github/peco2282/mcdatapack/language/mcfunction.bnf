@@ -163,7 +163,6 @@
     GT_TOKEN              = ">"
     LT_TOKEN              = "<"
     DOTDOT_TOKEN          = ".."
-    EQUALS                = "="
 
     LBRACK                = "["
     RBRACK                = "]"
@@ -173,7 +172,7 @@
     COMMA                 = ","
 
     COMMAND_TOKEN         = "regexp:[a-z_][a-z0-9_]*"
-    ARGUMENT_TOKEN        = "regexp:[^ \n\r\t\f#\"'\[\]{}=,]+"
+    ARGUMENT_TOKEN        = "regexp:[^ \n\r\t\f#\"'\[\]{},]+"
   ]
 }
 
@@ -190,11 +189,7 @@ private execute_modifier_with_continuation ::= CONTINUATION_TOKEN execute_modifi
 private execute_modifier_line ::= WHITE_SPACE? execute_modifier (WHITE_SPACE execute_modifier)*
 
 // execute 以外の汎用コマンド：先頭単語を COMMAND として認識し、残りを argument でキャッチ
-private generic_command ::= command generic_body
-
-private generic_body ::= (WHITE_SPACE | json | argument | structural_symbol)* {pin=1}
-
-private structural_symbol ::= LBRACK | RBRACK | LBRACE | RBRACE | COLON | EQUALS | COMMA
+private generic_command ::= command (SPACE_TOKEN | CONTINUATION_TOKEN | json | argument | CRLF_TOKEN)*
 
 // 行頭のコマンド名
 command ::= ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN | DAMAGE_TOKEN
@@ -222,25 +217,21 @@ keyword ::= RUN_TOKEN | ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN
 private execute_modifier ::= keyword | json | argument
 
 // Generic argument
-argument ::= (ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
+argument ::= ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
   | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
   | MACRO_TOKEN
   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
-  | CONTINUATION_TOKEN) {recoverWhile=arg_recover}
-
-private arg_recover ::= !(SPACE_TOKEN | CRLF_TOKEN | WHITE_SPACE)
+  | COLON | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
+  | CONTINUATION_TOKEN
 
 // JSON support
-json ::= (json_array | json_object)
+json ::= (json_array | json_object) {pin=1}
 
-json_array  ::= LBRACK json_array_body? RBRACK
-private json_array_body ::= json_element (COMMA json_element)*
-
-json_object ::= LBRACE json_object_body? RBRACE
-private json_object_body ::= json_property (COMMA json_property)*
+json_array  ::= LBRACK (json_element (COMMA json_element)*)? RBRACK
+json_object ::= LBRACE (json_property (COMMA json_property)*)? RBRACE
 
 // json_value: argument tokens optionally followed by a json structure (e.g. key={...} or key=[...])
-private json_value ::= json | (argument | STRING_TOKEN | LBRACK | RBRACK | LBRACE | RBRACE | COLON | EQUALS | COMMA)+ json?
+private json_value ::= json | (argument | STRING_TOKEN)+ json?
 
 private json_element  ::= WHITE_SPACE? json_value WHITE_SPACE?
-private json_property ::= WHITE_SPACE? (argument | STRING_TOKEN | LBRACK | RBRACK | LBRACE | RBRACE | COLON | EQUALS | COMMA) WHITE_SPACE? (COLON | EQUALS) WHITE_SPACE? json_value WHITE_SPACE?
+private json_property ::= WHITE_SPACE? (argument | STRING_TOKEN) WHITE_SPACE? COLON WHITE_SPACE? json_value WHITE_SPACE?
