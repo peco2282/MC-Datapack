@@ -151,7 +151,7 @@
 
     // Layer 4: Structural symbols
     CONTINUATION_TOKEN = "regexp:\\\\(\r\n|\r|\n)"
-    MACRO_TOKEN        = "regexp:\\$[a-zA-Z_][a-zA-Z0-9_]*"
+    MACRO_TOKEN        = "regexp:\$[a-zA-Z_][a-zA-Z0-9_]*"
     DOT_TOKEN          = "."
     GTE_TOKEN          = ">="
     LTE_TOKEN          = "<="
