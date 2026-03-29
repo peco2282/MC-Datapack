@@ -36,11 +36,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN
-  //   | EXECUTE_TOKEN | RUN_TOKEN | RETURN_TOKEN | FUNCTION_TOKEN | SCHEDULE_TOKEN
-  //   | IF_TOKEN | UNLESS_TOKEN | AS_TOKEN | AT_TOKEN | DATA_TOKEN
-  //   | ENTITY_TOKEN | SCORE_TOKEN | STORAGE_TOKEN | BLOCK_TOKEN | ITEMS_TOKEN
-  //   | STORE_TOKEN | RESULT_TOKEN | MATCHES_TOKEN
+  // ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
   //   | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
   //   | MACRO_TOKEN
   //   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
@@ -53,24 +49,8 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     result_ = consumeToken(builder_, ARGUMENT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, COMMAND_TOKEN);
     if (!result_) result_ = consumeToken(builder_, STRING_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, EXECUTE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, RUN_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, RETURN_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, FUNCTION_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, SCHEDULE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, IF_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, UNLESS_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, AS_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, AT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, DATA_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, ENTITY_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, SCORE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, STORAGE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, BLOCK_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, ITEMS_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, STORE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, RESULT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, MATCHES_TOKEN);
+    if (!result_) result_ = command(builder_, level_ + 1);
+    if (!result_) result_ = keyword(builder_, level_ + 1);
     if (!result_) result_ = consumeToken(builder_, SELECTOR_S);
     if (!result_) result_ = consumeToken(builder_, SELECTOR_A);
     if (!result_) result_ = consumeToken(builder_, SELECTOR_P);
@@ -95,31 +75,87 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // COMMAND_TOKEN | FUNCTION_TOKEN | RETURN_TOKEN | SCHEDULE_TOKEN
-  //   | DATA_TOKEN | IF_TOKEN | UNLESS_TOKEN | AS_TOKEN | AT_TOKEN
-  //   | ENTITY_TOKEN | SCORE_TOKEN | STORAGE_TOKEN | BLOCK_TOKEN | ITEMS_TOKEN
-  //   | STORE_TOKEN | RESULT_TOKEN | MATCHES_TOKEN
+  // ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN | DAMAGE_TOKEN
+  //   | DATA_TOKEN | DATAPACK_TOKEN | DEBUG_TOKEN | DEFAULTGAMEMODE_TOKEN | DIFFICULTY_TOKEN | EFFECT_TOKEN | ENCHANT_TOKEN
+  //   | EXPERIENCE_TOKEN | FILL_TOKEN | FILLBIOME_TOKEN | FORCELOAD_TOKEN | FUNCTION_TOKEN | GAMEMODE_TOKEN | GAMERULE_TOKEN
+  //   | GIVE_TOKEN | HELP_TOKEN | ITEM_TOKEN | JFR_TOKEN | KICK_TOKEN | KILL_TOKEN | LIST_TOKEN | LOCATE_TOKEN | LOOT_TOKEN
+  //   | ME_TOKEN | MSG_TOKEN | PARTICLE_TOKEN | PERF_TOKEN | PLACE_TOKEN | PLAYSOUND_TOKEN | RECIPE_TOKEN | RETURN_TOKEN
+  //   | RIDE_TOKEN | SAY_TOKEN | SCHEDULE_TOKEN | SCOREBOARD_TOKEN | SETBLOCK_TOKEN | SETIDLETIMEOUT_TOKEN | SETWORLDSPAWN_TOKEN
+  //   | SPAWNPOINT_TOKEN | SPECTATE_TOKEN | SPREADPLAYERS_TOKEN | STOPSOUND_TOKEN | SUMMON_TOKEN | TAG_TOKEN | TEAM_TOKEN
+  //   | TEAMMSG_TOKEN | TELEPORT_TOKEN | TELL_TOKEN | TELLRAW_TOKEN | TICK_TOKEN | TIME_TOKEN | TITLE_TOKEN | TM_TOKEN
+  //   | TP_TOKEN | TRIGGER_TOKEN | WEATHER_TOKEN | WHITELIST_TOKEN | WORLDBORDER_TOKEN | XP_TOKEN
+  //   | IF_TOKEN
   public static boolean command(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "command")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, COMMAND, "<command>");
-    result_ = consumeToken(builder_, COMMAND_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, FUNCTION_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, RETURN_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, SCHEDULE_TOKEN);
+    result_ = consumeToken(builder_, ADVANCEMENT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ATTRIBUTE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, EXECUTE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, BOSSBAR_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, CLEAR_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, CLONE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DAMAGE_TOKEN);
     if (!result_) result_ = consumeToken(builder_, DATA_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DATAPACK_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DEBUG_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DEFAULTGAMEMODE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DIFFICULTY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, EFFECT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ENCHANT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, EXPERIENCE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, FILL_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, FILLBIOME_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, FORCELOAD_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, FUNCTION_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, GAMEMODE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, GAMERULE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, GIVE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, HELP_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ITEM_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, JFR_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, KICK_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, KILL_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, LIST_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, LOCATE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, LOOT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ME_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, MSG_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, PARTICLE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, PERF_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, PLACE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, PLAYSOUND_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, RECIPE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, RETURN_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, RIDE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SAY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SCHEDULE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SCOREBOARD_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SETBLOCK_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SETIDLETIMEOUT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SETWORLDSPAWN_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SPAWNPOINT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SPECTATE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SPREADPLAYERS_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, STOPSOUND_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SUMMON_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TAG_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TEAM_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TEAMMSG_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TELEPORT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TELL_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TELLRAW_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TICK_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TIME_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TITLE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TM_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TP_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TRIGGER_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, WEATHER_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, WHITELIST_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, WORLDBORDER_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, XP_TOKEN);
     if (!result_) result_ = consumeToken(builder_, IF_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, UNLESS_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, AS_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, AT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, ENTITY_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, SCORE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, STORAGE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, BLOCK_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, ITEMS_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, STORE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, RESULT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, MATCHES_TOKEN);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
@@ -589,26 +625,71 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IF_TOKEN | UNLESS_TOKEN | AS_TOKEN | AT_TOKEN
-  //   | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | STORAGE_TOKEN
-  //   | BLOCK_TOKEN | ITEMS_TOKEN | ENTITY_TOKEN | DATA_TOKEN | MATCHES_TOKEN
+  // RUN_TOKEN | ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN | SET_TOKEN
+  //   | FROM_TOKEN | ADD_TOKEN | PLAYERS_TOKEN | ACTIONBAR_TOKEN | MATCHES_TOKEN | AS_TOKEN | AT_TOKEN | ANCHORED_TOKEN | FACING_TOKEN | BLOCK_TOKEN
+  //   | ITEMS_TOKEN | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | TEXT_TOKEN | VALUE_TOKEN | EYES_TOKEN | REVOKE_TOKEN | GRANT_TOKEN | DATA_TOKEN
+  //   | GET_TOKEN | MERGE_TOKEN | REMOVE_TOKEN | ENABLE_TOKEN | DISABLE_TOKEN | BASE_TOKEN | MODIFIER_TOKEN
+  //   | QUERY_TOKEN | TAKE_TOKEN | OBJECTIVES_TOKEN | SETDISPLAY_TOKEN | EMPTY_TOKEN | JOIN_TOKEN | LEAVE_TOKEN
+  //   | RATE_TOKEN | FREEZE_TOKEN | STEP_TOKEN | STOP_TOKEN | UNFREEZE_TOKEN | SUBTITLE_TOKEN | TIMES_TOKEN
+  //   | CENTER_TOKEN | WARNING_TOKEN | MASTER_TOKEN | MUSIC_TOKEN
+  //   | IF_TOKEN | UNLESS_TOKEN
   public static boolean keyword(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "keyword")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, KEYWORD, "<keyword>");
-    result_ = consumeToken(builder_, IF_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, UNLESS_TOKEN);
+    result_ = consumeToken(builder_, RUN_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ONLY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ENTITY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, MODIFY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, STORAGE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SET_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, FROM_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ADD_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, PLAYERS_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ACTIONBAR_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, MATCHES_TOKEN);
     if (!result_) result_ = consumeToken(builder_, AS_TOKEN);
     if (!result_) result_ = consumeToken(builder_, AT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ANCHORED_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, FACING_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, BLOCK_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ITEMS_TOKEN);
     if (!result_) result_ = consumeToken(builder_, STORE_TOKEN);
     if (!result_) result_ = consumeToken(builder_, RESULT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, SCORE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, STORAGE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, BLOCK_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, ITEMS_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, ENTITY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TEXT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, VALUE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, EYES_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, REVOKE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, GRANT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, DATA_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, MATCHES_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, GET_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, MERGE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, REMOVE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ENABLE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DISABLE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, BASE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, MODIFIER_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, QUERY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TAKE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, OBJECTIVES_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SETDISPLAY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, EMPTY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, JOIN_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, LEAVE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, RATE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, FREEZE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, STEP_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, STOP_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, UNFREEZE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SUBTITLE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, TIMES_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, CENTER_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, WARNING_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, MASTER_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, MUSIC_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, IF_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, UNLESS_TOKEN);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }

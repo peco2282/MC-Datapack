@@ -8,6 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface McFunctionArgument extends PsiElement {
 
   @Nullable
+  McFunctionCommand getCommand();
+
+  @Nullable
+  McFunctionKeyword getKeyword();
+
+  @Nullable
   PsiElement getArgumentToken();
 
   @Nullable

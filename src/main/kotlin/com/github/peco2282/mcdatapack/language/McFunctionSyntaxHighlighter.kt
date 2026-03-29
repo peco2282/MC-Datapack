@@ -10,103 +10,218 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.tree.TokenSet
 
 class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
     companion object {
-        // コメント
-        val COMMENT = TextAttributesKey.createTextAttributesKey(
-            "MCFUNCTION_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT
-        )
-
-        // Layer 1: Flow Control (execute, run, return, function, schedule) — Bold
-        val FLOW_CONTROL = TextAttributesKey.createTextAttributesKey(
-            "MCFUNCTION_FLOW_CONTROL", DefaultLanguageHighlighterColors.KEYWORD
-        )
-
-        // Layer 2: Sub-modifiers (if, unless, as, at, data, entity, score, storage, block, items)
-        val SUB_MODIFIER = TextAttributesKey.createTextAttributesKey(
-            "MCFUNCTION_SUB_MODIFIER", DefaultLanguageHighlighterColors.KEYWORD
-        )
-
-        // Layer 3: Target selectors (@s, @a, @p, @e, @r)
-        val SELECTOR = TextAttributesKey.createTextAttributesKey(
-            "MCFUNCTION_SELECTOR", DefaultLanguageHighlighterColors.METADATA
-        )
-
-        // Layer 4: Structural symbols (continuation \, macro $, dot ., comparators)
+        // コメント (Structural Symbols: グレー) -> 実はコメントは別扱いが良いか。
+        // ユーザー指定: Structural Symbols(グレー) - 文法を補助する記号
         val STRUCTURE = TextAttributesKey.createTextAttributesKey(
             "MCFUNCTION_STRUCTURE", DefaultLanguageHighlighterColors.OPERATION_SIGN
         )
 
-        // Layer 4: Macro ($variable)
-        val MACRO = TextAttributesKey.createTextAttributesKey(
-            "MCFUNCTION_MACRO", DefaultLanguageHighlighterColors.INSTANCE_FIELD
+        // Major Commands (オレンジ / 太字)
+        val MAJOR_COMMAND = TextAttributesKey.createTextAttributesKey(
+            "MC_MAJOR_COMMAND", DefaultLanguageHighlighterColors.KEYWORD
         )
 
-        // コマンド名（行頭 or run 直後）
-        val COMMAND = TextAttributesKey.createTextAttributesKey(
-            "MCFUNCTION_COMMAND", DefaultLanguageHighlighterColors.FUNCTION_CALL
+        // Subcommands (別カラー)
+        val SUB_COMMAND = TextAttributesKey.createTextAttributesKey(
+            "MC_SUB_COMMAND", DefaultLanguageHighlighterColors.STATIC_METHOD
         )
 
-        // 文字列
+        // Flow Keywords (ピンク・紫)
+        val FLOW_KEYWORD = TextAttributesKey.createTextAttributesKey(
+            "MC_FLOW_KEYWORD", DefaultLanguageHighlighterColors.CONSTANT
+        )
+
+        // Selectors (黄緑)
+        val SELECTOR = TextAttributesKey.createTextAttributesKey(
+            "MC_SELECTOR", DefaultLanguageHighlighterColors.METADATA
+        )
+
+        // Values / Literals (水色 / 緑 / 白)
         val STRING = TextAttributesKey.createTextAttributesKey(
-            "MCFUNCTION_STRING", DefaultLanguageHighlighterColors.STRING
+            "MC_STRING", DefaultLanguageHighlighterColors.STRING
+        )
+        val ARGUMENT = TextAttributesKey.createTextAttributesKey(
+            "MC_ARGUMENT", DefaultLanguageHighlighterColors.IDENTIFIER
+        )
+
+        // Macros & Constants (赤・ピンク)
+        val MACRO = TextAttributesKey.createTextAttributesKey(
+            "MC_MACRO", DefaultLanguageHighlighterColors.INSTANCE_FIELD
+        )
+
+        val COMMENT = TextAttributesKey.createTextAttributesKey(
+            "MC_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT
+        )
+
+        val MAJOR_COMMAND_TOKENS = TokenSet.create(
+            McFunctionTypes.ADVANCEMENT_TOKEN,
+            McFunctionTypes.ATTRIBUTE_TOKEN,
+            McFunctionTypes.EXECUTE_TOKEN,
+            McFunctionTypes.BOSSBAR_TOKEN,
+            McFunctionTypes.CLEAR_TOKEN,
+            McFunctionTypes.CLONE_TOKEN,
+            McFunctionTypes.DAMAGE_TOKEN,
+            McFunctionTypes.DATA_TOKEN,
+            McFunctionTypes.DATAPACK_TOKEN,
+            McFunctionTypes.DEBUG_TOKEN,
+            McFunctionTypes.DEFAULTGAMEMODE_TOKEN,
+            McFunctionTypes.DIFFICULTY_TOKEN,
+            McFunctionTypes.EFFECT_TOKEN,
+            McFunctionTypes.ENCHANT_TOKEN,
+            McFunctionTypes.EXPERIENCE_TOKEN,
+            McFunctionTypes.FILL_TOKEN,
+            McFunctionTypes.FILLBIOME_TOKEN,
+            McFunctionTypes.FORCELOAD_TOKEN,
+            McFunctionTypes.FUNCTION_TOKEN,
+            McFunctionTypes.GAMEMODE_TOKEN,
+            McFunctionTypes.GAMERULE_TOKEN,
+            McFunctionTypes.GIVE_TOKEN,
+            McFunctionTypes.HELP_TOKEN,
+            McFunctionTypes.ITEM_TOKEN,
+            McFunctionTypes.JFR_TOKEN,
+            McFunctionTypes.KICK_TOKEN,
+            McFunctionTypes.KILL_TOKEN,
+            McFunctionTypes.LIST_TOKEN,
+            McFunctionTypes.LOCATE_TOKEN,
+            McFunctionTypes.LOOT_TOKEN,
+            McFunctionTypes.ME_TOKEN,
+            McFunctionTypes.MSG_TOKEN,
+            McFunctionTypes.PARTICLE_TOKEN,
+            McFunctionTypes.PERF_TOKEN,
+            McFunctionTypes.PLACE_TOKEN,
+            McFunctionTypes.PLAYSOUND_TOKEN,
+            McFunctionTypes.RECIPE_TOKEN,
+            McFunctionTypes.RETURN_TOKEN,
+            McFunctionTypes.RIDE_TOKEN,
+            McFunctionTypes.SAY_TOKEN,
+            McFunctionTypes.SCHEDULE_TOKEN,
+            McFunctionTypes.SCOREBOARD_TOKEN,
+            McFunctionTypes.SETBLOCK_TOKEN,
+            McFunctionTypes.SETIDLETIMEOUT_TOKEN,
+            McFunctionTypes.SETWORLDSPAWN_TOKEN,
+            McFunctionTypes.SPAWNPOINT_TOKEN,
+            McFunctionTypes.SPECTATE_TOKEN,
+            McFunctionTypes.SPREADPLAYERS_TOKEN,
+            McFunctionTypes.STOPSOUND_TOKEN,
+            McFunctionTypes.SUMMON_TOKEN,
+            McFunctionTypes.TAG_TOKEN,
+            McFunctionTypes.TEAM_TOKEN,
+            McFunctionTypes.TEAMMSG_TOKEN,
+            McFunctionTypes.TELEPORT_TOKEN,
+            McFunctionTypes.TELL_TOKEN,
+            McFunctionTypes.TELLRAW_TOKEN,
+            McFunctionTypes.TICK_TOKEN,
+            McFunctionTypes.TIME_TOKEN,
+            McFunctionTypes.TITLE_TOKEN,
+            McFunctionTypes.TM_TOKEN,
+            McFunctionTypes.TP_TOKEN,
+            McFunctionTypes.TRIGGER_TOKEN,
+            McFunctionTypes.WEATHER_TOKEN,
+            McFunctionTypes.WHITELIST_TOKEN,
+            McFunctionTypes.WORLDBORDER_TOKEN,
+            McFunctionTypes.XP_TOKEN
+        )
+
+        val FLOW_KEYWORD_TOKENS = TokenSet.create(
+            McFunctionTypes.IF_TOKEN,
+            McFunctionTypes.UNLESS_TOKEN,
+            McFunctionTypes.RUN_TOKEN,
+            McFunctionTypes.STORAGE_TOKEN,
+            McFunctionTypes.FROM_TOKEN,
+            McFunctionTypes.MATCHES_TOKEN,
+            McFunctionTypes.STORE_TOKEN,
+            McFunctionTypes.REVOKE_TOKEN,
+            McFunctionTypes.GRANT_TOKEN
+        )
+
+        val SELECTOR_TOKENS = TokenSet.create(
+            McFunctionTypes.SELECTOR_S,
+            McFunctionTypes.SELECTOR_A,
+            McFunctionTypes.SELECTOR_P,
+            McFunctionTypes.SELECTOR_E,
+            McFunctionTypes.SELECTOR_R
+        )
+
+        val SUB_COMMAND_TOKENS = TokenSet.create(
+            McFunctionTypes.ONLY_TOKEN,
+            McFunctionTypes.ENTITY_TOKEN,
+            McFunctionTypes.MODIFY_TOKEN,
+            McFunctionTypes.SET_TOKEN,
+            McFunctionTypes.ADD_TOKEN,
+            McFunctionTypes.PLAYERS_TOKEN,
+            McFunctionTypes.ACTIONBAR_TOKEN,
+            McFunctionTypes.AS_TOKEN,
+            McFunctionTypes.AT_TOKEN,
+            McFunctionTypes.ANCHORED_TOKEN,
+            McFunctionTypes.FACING_TOKEN,
+            McFunctionTypes.BLOCK_TOKEN,
+            McFunctionTypes.ITEMS_TOKEN,
+            McFunctionTypes.RESULT_TOKEN,
+            McFunctionTypes.SCORE_TOKEN,
+            McFunctionTypes.TEXT_TOKEN,
+            McFunctionTypes.VALUE_TOKEN,
+            McFunctionTypes.EYES_TOKEN,
+            McFunctionTypes.GET_TOKEN,
+            McFunctionTypes.MERGE_TOKEN,
+            McFunctionTypes.REMOVE_TOKEN,
+            McFunctionTypes.ENABLE_TOKEN,
+            McFunctionTypes.DISABLE_TOKEN,
+            McFunctionTypes.BASE_TOKEN,
+            McFunctionTypes.MODIFIER_TOKEN,
+            McFunctionTypes.QUERY_TOKEN,
+            McFunctionTypes.TAKE_TOKEN,
+            McFunctionTypes.OBJECTIVES_TOKEN,
+            McFunctionTypes.SETDISPLAY_TOKEN,
+            McFunctionTypes.EMPTY_TOKEN,
+            McFunctionTypes.JOIN_TOKEN,
+            McFunctionTypes.LEAVE_TOKEN,
+            McFunctionTypes.RATE_TOKEN,
+            McFunctionTypes.FREEZE_TOKEN,
+            McFunctionTypes.STEP_TOKEN,
+            McFunctionTypes.STOP_TOKEN,
+            McFunctionTypes.UNFREEZE_TOKEN,
+            McFunctionTypes.SUBTITLE_TOKEN,
+            McFunctionTypes.TIMES_TOKEN,
+            McFunctionTypes.CENTER_TOKEN,
+            McFunctionTypes.WARNING_TOKEN,
+            McFunctionTypes.MASTER_TOKEN,
+            McFunctionTypes.MUSIC_TOKEN
+        )
+
+        val STRUCTURE_TOKENS = TokenSet.create(
+            McFunctionTypes.CONTINUATION_TOKEN,
+            McFunctionTypes.DOT_TOKEN,
+            McFunctionTypes.GTE_TOKEN,
+            McFunctionTypes.LTE_TOKEN,
+            McFunctionTypes.GT_TOKEN,
+            McFunctionTypes.LT_TOKEN,
+            McFunctionTypes.DOTDOT_TOKEN,
+            McFunctionTypes.LBRACK,
+            McFunctionTypes.RBRACK,
+            McFunctionTypes.LBRACE,
+            McFunctionTypes.RBRACE,
+            McFunctionTypes.COLON,
+            McFunctionTypes.COMMA
         )
     }
 
     override fun getHighlightingLexer(): Lexer = McFunctionLexerAdapter()
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
-        return when (tokenType) {
-            McFunctionTypes.COMMENT_TOKEN -> arrayOf(COMMENT)
-
-            // Layer 1: Flow Control
-            McFunctionTypes.EXECUTE_TOKEN,
-            McFunctionTypes.RUN_TOKEN,
-            McFunctionTypes.RETURN_TOKEN,
-            McFunctionTypes.FUNCTION_TOKEN,
-            McFunctionTypes.SCHEDULE_TOKEN -> arrayOf(FLOW_CONTROL)
-
-            // Layer 2: Sub-modifiers
-            McFunctionTypes.IF_TOKEN,
-            McFunctionTypes.UNLESS_TOKEN,
-            McFunctionTypes.AS_TOKEN,
-            McFunctionTypes.AT_TOKEN,
-            McFunctionTypes.DATA_TOKEN,
-            McFunctionTypes.ENTITY_TOKEN,
-            McFunctionTypes.SCORE_TOKEN,
-            McFunctionTypes.STORAGE_TOKEN,
-            McFunctionTypes.BLOCK_TOKEN,
-            McFunctionTypes.ITEMS_TOKEN,
-            McFunctionTypes.STORE_TOKEN,
-            McFunctionTypes.RESULT_TOKEN -> arrayOf(SUB_MODIFIER)
-
-            // Layer 3: Target selectors
-            McFunctionTypes.SELECTOR_S,
-            McFunctionTypes.SELECTOR_A,
-            McFunctionTypes.SELECTOR_P,
-            McFunctionTypes.SELECTOR_E,
-            McFunctionTypes.SELECTOR_R -> arrayOf(SELECTOR)
-
-            // Layer 4: Structural symbols
-            McFunctionTypes.CONTINUATION_TOKEN,
-            McFunctionTypes.DOT_TOKEN,
-            McFunctionTypes.DOTDOT_TOKEN,
-            McFunctionTypes.GTE_TOKEN,
-            McFunctionTypes.LTE_TOKEN,
-            McFunctionTypes.GT_TOKEN,
-            McFunctionTypes.LT_TOKEN,
-            McFunctionTypes.MATCHES_TOKEN -> arrayOf(STRUCTURE)
-
-            // Layer 4: Macro
-            McFunctionTypes.MACRO_TOKEN -> arrayOf(MACRO)
-
-            // コマンド名トークン
-            McFunctionTypes.COMMAND_TOKEN -> arrayOf(COMMAND)
-
-            // 文字列
-            McFunctionTypes.STRING_TOKEN -> arrayOf(STRING)
-
+        return when {
+            tokenType == McFunctionTypes.COMMENT_TOKEN -> arrayOf(COMMENT)
+            MAJOR_COMMAND_TOKENS.contains(tokenType) -> arrayOf(MAJOR_COMMAND)
+            SUB_COMMAND_TOKENS.contains(tokenType) -> arrayOf(SUB_COMMAND)
+            FLOW_KEYWORD_TOKENS.contains(tokenType) -> arrayOf(FLOW_KEYWORD)
+            SELECTOR_TOKENS.contains(tokenType) -> arrayOf(SELECTOR)
+            STRUCTURE_TOKENS.contains(tokenType) -> arrayOf(STRUCTURE)
+            tokenType == McFunctionTypes.MACRO_TOKEN -> arrayOf(MACRO)
+            tokenType == McFunctionTypes.STRING_TOKEN -> arrayOf(STRING)
+            tokenType == McFunctionTypes.ARGUMENT_TOKEN || tokenType == McFunctionTypes.COMMAND_TOKEN -> arrayOf(ARGUMENT)
             else -> emptyArray()
         }
     }

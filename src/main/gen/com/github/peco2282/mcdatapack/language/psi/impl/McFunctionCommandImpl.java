@@ -27,10 +27,4 @@ public class McFunctionCommandImpl extends ASTWrapperPsiElement implements McFun
     else super.accept(visitor);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getCommandToken() {
-    return findChildByType(COMMAND_TOKEN);
-  }
-
 }

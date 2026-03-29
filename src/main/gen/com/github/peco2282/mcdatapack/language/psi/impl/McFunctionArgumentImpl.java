@@ -29,6 +29,18 @@ public class McFunctionArgumentImpl extends ASTWrapperPsiElement implements McFu
 
   @Override
   @Nullable
+  public McFunctionCommand getCommand() {
+    return findChildByClass(McFunctionCommand.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionKeyword getKeyword() {
+    return findChildByClass(McFunctionKeyword.class);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getArgumentToken() {
     return findChildByType(ARGUMENT_TOKEN);
   }
