@@ -9,7 +9,7 @@ import com.intellij.util.PsiErrorElementUtil
 import com.github.peco2282.mcdatapack.language.McFunctionFileType
 import com.github.peco2282.mcdatapack.services.MyProjectService
 
-@TestDataPath("\$CONTENT_ROOT/src/test/testData")
+@TestDataPath($$"$CONTENT_ROOT/src/test/testData")
 class MyPluginTest : BasePlatformTestCase() {
 
     fun testXMLFile() {
