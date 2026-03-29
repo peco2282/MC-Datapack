@@ -224,9 +224,6 @@ argument ::= json | ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | ke
   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
   | COLON | EQUALS | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
   | CONTINUATION_TOKEN
-  | ITEM_WITH_JSON
-
-private ITEM_WITH_JSON ::= ARGUMENT_TOKEN (json_array | json_object)
 
 // JSON support
 json ::= (json_array | json_object) {pin=1}

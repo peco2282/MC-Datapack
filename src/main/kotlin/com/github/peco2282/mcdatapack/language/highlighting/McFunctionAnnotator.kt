@@ -79,14 +79,43 @@ class McFunctionAnnotator : Annotator {
     if (type == McFunctionTypes.ARGUMENT_TOKEN || type == McFunctionTypes.COMMAND_TOKEN || type == McFunctionTypes.STRING_TOKEN) {
       annotateJsonValue(element, holder)
       
-      // キーの判定: 次に ':' が来るか
+      // キーの判定: 次に ':' か '=' が来るか
       if (isJsonKey(element)) {
+        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+          .range(element.textRange)
+          .textAttributes(McFunctionSyntaxHighlighter.JSON_KEY)
+          .create()
+      } else if (type == McFunctionTypes.ARGUMENT_TOKEN && isItemNameBeforeJson(element)) {
+        // minecraft:stone[...] の minecraft:stone 部分をハイライト
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
           .range(element.textRange)
           .textAttributes(McFunctionSyntaxHighlighter.JSON_KEY)
           .create()
       }
     }
+  }
+
+  private fun isItemNameBeforeJson(element: PsiElement): Boolean {
+    // ARGUMENT_TOKEN の中にある可能性を考慮し、親を辿るか、単一の PsiElement ととしてチェック
+    val target = if (element.parent is McFunctionArgument) element.parent else element
+    val next = target.nextSibling
+    if (next != null) {
+      // 次の要素が [ か { か、あるいは McFunctionArgument でその中身が [ か { か
+      val nextType = next.node.elementType
+      if (nextType == McFunctionTypes.LBRACK || nextType == McFunctionTypes.LBRACE) {
+        return true
+      }
+      if (next is McFunctionArgument) {
+        val firstChild = next.firstChild
+        if (firstChild != null) {
+          val firstType = firstChild.node.elementType
+          if (firstType == McFunctionTypes.LBRACK || firstType == McFunctionTypes.LBRACE) {
+            return true
+          }
+        }
+      }
+    }
+    return false
   }
 
   private fun isInJsonStructure(element: PsiElement): Boolean {

@@ -17,23 +17,10 @@ class McFunctionHighlightingTest : BasePlatformTestCase() {
         """.trimIndent()
         myFixture.configureByText("test.mcfunction", input)
         
-        println("[DEBUG_LOG] PSI Tree structure:")
-        println("[DEBUG_LOG] ${com.intellij.psi.impl.DebugUtil.psiToString(myFixture.file, true)}")
-
-        myFixture.doHighlighting()
-        
-        // Annotatorによるハイライトを確認する。
-        // 現状、Json関係のハイライトはないはずなので、それを確認し、修正後に再度確認する。
-        // doHighlighting() は Annotator も実行する。
-        
-        // 簡易的にデバッグ出力
-        val file = myFixture.file
         val annotations = myFixture.doHighlighting(HighlightSeverity.INFORMATION)
         
-        println("[DEBUG_LOG] All annotations:")
-        annotations.forEach { 
-            println("[DEBUG_LOG]   range=${it.startOffset}-${it.endOffset}, text='${file.text.substring(it.startOffset, it.endOffset)}', attributes=${it.forcedTextAttributesKey}")
-        }
+        val itemKeyAnn = annotations.filter { it.forcedTextAttributesKey == McFunctionSyntaxHighlighter.JSON_KEY && myFixture.file.text.substring(it.startOffset, it.endOffset) == "minecraft:stone" }
+        assertTrue("Should have 'minecraft:stone' highlighted as JSON_KEY", itemKeyAnn.isNotEmpty())
 
         val jsonKeyAnn = annotations.filter { it.forcedTextAttributesKey == McFunctionSyntaxHighlighter.JSON_KEY }
         val jsonStringAnn = annotations.filter { it.forcedTextAttributesKey == McFunctionSyntaxHighlighter.JSON_STRING }
