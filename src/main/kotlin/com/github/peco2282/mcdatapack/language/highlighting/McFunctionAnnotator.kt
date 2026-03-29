@@ -96,7 +96,7 @@ class McFunctionAnnotator : Annotator {
 
   private fun isItemNameBeforeJson(element: PsiElement): Boolean {
     // ARGUMENT_TOKEN の中にある可能性を考慮し、親を辿るか、単一の PsiElement ととしてチェック
-    val target = if (element.parent is McFunctionArgument) element.parent else element
+    val target = element.parent as? McFunctionArgument ?: element
     val next = target.nextSibling
     if (next != null) {
       // 次の要素が [ か { か、あるいは McFunctionArgument でその中身が [ か { か
