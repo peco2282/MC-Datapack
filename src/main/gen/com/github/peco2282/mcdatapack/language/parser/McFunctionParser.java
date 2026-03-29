@@ -254,14 +254,14 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // EXECUTE_TOKEN execute_body?
-  static boolean execute_command(PsiBuilder builder_, int level_) {
+  public static boolean execute_command(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_command")) return false;
     if (!nextTokenIs(builder_, EXECUTE_TOKEN)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, EXECUTE_TOKEN);
     result_ = result_ && execute_command_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    exit_section_(builder_, marker_, EXECUTE_COMMAND, result_);
     return result_;
   }
 
@@ -349,18 +349,18 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // command (SPACE_TOKEN | CONTINUATION_TOKEN | json | argument | CRLF_TOKEN)*
-  static boolean generic_command(PsiBuilder builder_, int level_) {
+  // command (SPACE_TOKEN | CONTINUATION_TOKEN | json | argument)*
+  public static boolean generic_command(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, GENERIC_COMMAND, "<generic command>");
     result_ = command(builder_, level_ + 1);
     result_ = result_ && generic_command_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
-  // (SPACE_TOKEN | CONTINUATION_TOKEN | json | argument | CRLF_TOKEN)*
+  // (SPACE_TOKEN | CONTINUATION_TOKEN | json | argument)*
   private static boolean generic_command_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command_1")) return false;
     while (true) {
@@ -371,7 +371,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // SPACE_TOKEN | CONTINUATION_TOKEN | json | argument | CRLF_TOKEN
+  // SPACE_TOKEN | CONTINUATION_TOKEN | json | argument
   private static boolean generic_command_1_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command_1_0")) return false;
     boolean result_;
@@ -379,20 +379,6 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, CONTINUATION_TOKEN);
     if (!result_) result_ = json(builder_, level_ + 1);
     if (!result_) result_ = argument(builder_, level_ + 1);
-    if (!result_) result_ = consumeToken(builder_, CRLF_TOKEN);
-    return result_;
-  }
-
-  /* ********************************************************** */
-  // command_line | COMMENT_TOKEN | CRLF_TOKEN | WHITE_SPACE | CONTINUATION_TOKEN
-  static boolean item(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "item")) return false;
-    boolean result_;
-    result_ = command_line(builder_, level_ + 1);
-    if (!result_) result_ = consumeToken(builder_, COMMENT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, CRLF_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, WHITE_SPACE);
-    if (!result_) result_ = consumeToken(builder_, CONTINUATION_TOKEN);
     return result_;
   }
 
@@ -732,15 +718,27 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // item*
+  // (command_line | COMMENT_TOKEN | CRLF_TOKEN | WHITE_SPACE | CONTINUATION_TOKEN)*
   static boolean mcFunctionFile(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "mcFunctionFile")) return false;
     while (true) {
       int pos_ = current_position_(builder_);
-      if (!item(builder_, level_ + 1)) break;
+      if (!mcFunctionFile_0(builder_, level_ + 1)) break;
       if (!empty_element_parsed_guard_(builder_, "mcFunctionFile", pos_)) break;
     }
     return true;
+  }
+
+  // command_line | COMMENT_TOKEN | CRLF_TOKEN | WHITE_SPACE | CONTINUATION_TOKEN
+  private static boolean mcFunctionFile_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "mcFunctionFile_0")) return false;
+    boolean result_;
+    result_ = command_line(builder_, level_ + 1);
+    if (!result_) result_ = consumeToken(builder_, COMMENT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, CRLF_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, WHITE_SPACE);
+    if (!result_) result_ = consumeToken(builder_, CONTINUATION_TOKEN);
+    return result_;
   }
 
 }

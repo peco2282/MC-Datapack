@@ -182,7 +182,6 @@ class McFunctionParserTest : BasePlatformTestCase() {
         val sb = StringBuilder()
         dumpPsi(file, sb)
         val output = sb.toString()
-
         assertEquals("Expected 3 commands, but found ${commands.size}.\nPSI Tree:\n$output", 3, commands.size)
     }
 
