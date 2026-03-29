@@ -15,6 +15,12 @@
         <annotator language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionAnnotator"/>
         <colorSettingsPage implementation="com.github.peco2282.mcdatapack.language.McFunctionColorSettingsPage"/>
         <completion.contributor language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionCompletionContributor"/>
+        <lang.commenter language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionCommenter"/>
+        <lang.braceMatcher language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionPairedBraceMatcher"/>
+        <typedHandler implementation="com.github.peco2282.mcdatapack.language.McFunctionQuoteHandler"/>
+        <lang.foldingBuilder language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionFoldingBuilder"/>
+        <lang.psiStructureViewFactory language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionStructureViewFactory"/>
+        <psi.referenceContributor language="McFunction" implementation="com.github.peco2282.mcdatapack.language.McFunctionReferenceContributor"/>
 
         <toolWindow factoryClass="com.github.peco2282.mcdatapack.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.peco2282.mcdatapack.startup.MyProjectActivity" />
