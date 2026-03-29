@@ -16,17 +16,8 @@ class McFunctionAnnotator : Annotator {
       val token = element.firstChild ?: return
       val tokenType = token.node.elementType
 
-      // 1. オレンジ(MAJOR_COMMAND)の判定
-      // generic_command 内の COMMAND_TOKEN は通常オレンジだが、
-      // summon や particle などの引数として現れる場合は白にしたい。
-      // 現状 BNF では generic_command ::= command ... で、command に COMMAND_TOKEN が含まれている。
-      // しかし、引数側の argument にも COMMAND_TOKEN が含まれている。
-      // もし element が command (McFunctionCommand) であれば、それは常に先頭のはず。
-      // ただし、「第2動詞」をオレンジから紫に下げたいという要望がある。
-
       val attributes = when {
         tokenType in McFunctionSyntaxHighlighter.MAJOR_COMMAND_TOKENS || tokenType == McFunctionTypes.COMMAND_TOKEN -> {
-          // run の直後ならオレンジのまま、それ以外ならサブコマンド色に格下げしたい単語がある
           if (isSubVerb(tokenType)) {
             if (isAfterRun(element)) {
               McFunctionSyntaxHighlighter.MAJOR_COMMAND
@@ -66,6 +57,46 @@ class McFunctionAnnotator : Annotator {
         .textAttributes(attributes)
         .create()
     }
+
+    // JSON/NBT highlighting
+    val node = element.node
+    val type = node.elementType
+    if (type == McFunctionTypes.ARGUMENT_TOKEN || type == McFunctionTypes.STRING_TOKEN || type == McFunctionTypes.COMMAND_TOKEN) {
+      val text = element.text
+      // Check if it's a JSON/NBT literal (true, false, or numbers like 0b, 1.0f, etc)
+      if (isJsonLiteral(text)) {
+        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+          .range(element.textRange)
+          .textAttributes(McFunctionSyntaxHighlighter.JSON_LITERAL)
+          .create()
+      }
+    }
+
+    // Highlight keys (before : or =)
+    if (type == McFunctionTypes.COLON || type == McFunctionTypes.EQUALS) {
+      val prev = getPrevNonWhitespaceSibling(element)
+      if (prev != null && (prev.node.elementType == McFunctionTypes.ARGUMENT_TOKEN || prev.node.elementType == McFunctionTypes.STRING_TOKEN || prev.node.elementType == McFunctionTypes.COMMAND_TOKEN)) {
+        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+          .range(prev.textRange)
+          .textAttributes(McFunctionSyntaxHighlighter.JSON_KEY)
+          .create()
+      }
+    }
+  }
+
+  private fun isJsonLiteral(text: String): Boolean {
+    if (text == "true" || text == "false") return true
+    // Minecraft NBT numbers: 0b, 1s, 2L, 3.0f, 4.0d, etc.
+    val nbtNumberRegex = Regex("^-?\\d+(\\.\\d+)?([bslfdBSLFD])?$")
+    return nbtNumberRegex.matches(text)
+  }
+
+  private fun getPrevNonWhitespaceSibling(element: PsiElement): PsiElement? {
+    var prev = element.prevSibling
+    while (prev != null && (prev.node.elementType == McFunctionTypes.WHITE_SPACE || prev.node.elementType == com.intellij.psi.TokenType.WHITE_SPACE)) {
+      prev = prev.prevSibling
+    }
+    return prev
   }
 
   private fun isSubVerb(tokenType: IElementType): Boolean {
@@ -89,7 +120,7 @@ class McFunctionAnnotator : Annotator {
     // 
     // 現在の PSI 木を確認すると、execute_command という要素名はなく McFunctionCommandLine として生成されている可能性がある
     // BNF: command_line ::= execute_command | generic_command
-    // private execute_command ::= EXECUTE_TOKEN ... (SPACE_TOKEN RUN_TOKEN SPACE_TOKEN command_line)?
+    // private execute_command ::= EXECUTE_TOKEN ... (WHITE_SPACE RUN_TOKEN WHITE_SPACE command_line)?
 
     val genericCommand = element.parent // McFunctionCommand -> McFunctionCommandImpl (generic_command)
     val commandLine = genericCommand?.parent as? McFunctionCommandLine ?: return false
