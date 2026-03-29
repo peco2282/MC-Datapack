@@ -9,23 +9,31 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 
 %%
 
-%unicode
-%class McFunctionLexer
+%{
+  public _McFunctionLexer() {
+    this((java.io.Reader)null);
+  }
+%}
+
+%public
+%class _McFunctionLexer
 %implements FlexLexer
 %function advance
 %type IElementType
+%unicode
 
 EOL=\R
 WHITE_SPACE=\s+
 
 COMMENT_TOKEN=#.*
 CRLF_TOKEN=\R
+WHITE_SPACE=[ \t\f]+
 SPACE_TOKEN=[ \t\f]+
 STRING_TOKEN=\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'
 CONTINUATION_TOKEN=\\\\(\r\n|\r|\n)
 MACRO_TOKEN=\$[a-zA-Z_][a-zA-Z0-9_]*
 COMMAND_TOKEN=[a-z_][a-z0-9_]*
-ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},]+
+ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{}=,]+
 
 %%
 <YYINITIAL> {
@@ -63,16 +71,20 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},]+
   "loot"                     { return LOOT_TOKEN; }
   "me"                       { return ME_TOKEN; }
   "msg"                      { return MSG_TOKEN; }
+  "op"                       { return OP_TOKEN; }
+  "pardon"                   { return PARDON_TOKEN; }
   "particle"                 { return PARTICLE_TOKEN; }
   "perf"                     { return PERF_TOKEN; }
   "place"                    { return PLACE_TOKEN; }
   "playsound"                { return PLAYSOUND_TOKEN; }
   "recipe"                   { return RECIPE_TOKEN; }
+  "reload"                   { return RELOAD_TOKEN; }
   "return"                   { return RETURN_TOKEN; }
   "ride"                     { return RIDE_TOKEN; }
   "say"                      { return SAY_TOKEN; }
   "schedule"                 { return SCHEDULE_TOKEN; }
   "scoreboard"               { return SCOREBOARD_TOKEN; }
+  "seed"                     { return SEED_TOKEN; }
   "setblock"                 { return SETBLOCK_TOKEN; }
   "setidletimeout"           { return SETIDLETIMEOUT_TOKEN; }
   "setworldspawn"            { return SETWORLDSPAWN_TOKEN; }
@@ -160,6 +172,7 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},]+
   ">"                        { return GT_TOKEN; }
   "<"                        { return LT_TOKEN; }
   ".."                       { return DOTDOT_TOKEN; }
+  "="                        { return EQUALS; }
   "["                        { return LBRACK; }
   "]"                        { return RBRACK; }
   "{"                        { return LBRACE; }
@@ -169,6 +182,7 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},]+
 
   {COMMENT_TOKEN}            { return COMMENT_TOKEN; }
   {CRLF_TOKEN}               { return CRLF_TOKEN; }
+  {WHITE_SPACE}              { return WHITE_SPACE; }
   {SPACE_TOKEN}              { return SPACE_TOKEN; }
   {STRING_TOKEN}             { return STRING_TOKEN; }
   {CONTINUATION_TOKEN}       { return CONTINUATION_TOKEN; }
