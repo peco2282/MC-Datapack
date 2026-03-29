@@ -4,13 +4,13 @@ import com.intellij.lang.Language
 import com.intellij.psi.tree.IFileElementType
 
 class McFunctionLanguage : Language("McFunction") {
-    companion object {
-        @JvmStatic
-        val INSTANCE = McFunctionLanguage()
+  companion object {
+    @JvmStatic
+    val INSTANCE = McFunctionLanguage()
 
-        @JvmStatic
-        val FILE = IFileElementType(INSTANCE)
-    }
+    @JvmStatic
+    val FILE = IFileElementType(INSTANCE)
+  }
 
-    override fun getDisplayName(): String = "Minecraft Function"
+  override fun getDisplayName(): String = "Minecraft Function"
 }

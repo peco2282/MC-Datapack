@@ -1,12 +1,12 @@
 package com.github.peco2282.mcdatapack
 
+import com.github.peco2282.mcdatapack.language.INSTANCE
 import com.intellij.ide.highlighter.XmlFileType
 import com.intellij.openapi.components.service
 import com.intellij.psi.xml.XmlFile
 import com.intellij.testFramework.TestDataPath
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.PsiErrorElementUtil
-import com.github.peco2282.mcdatapack.language.McFunctionFileType
 import com.github.peco2282.mcdatapack.services.MyProjectService
 
 @TestDataPath($$"$CONTENT_ROOT/src/test/testData")
@@ -38,7 +38,7 @@ class MyPluginTest : BasePlatformTestCase() {
 
     fun testMcFunctionFileType() {
         val psiFile = myFixture.configureByText("test.mcfunction", "say hello")
-        assertEquals(McFunctionFileType.INSTANCE, psiFile.fileType)
+        assertEquals(INSTANCE, psiFile.fileType)
     }
 
     override fun getTestDataPath() = "src/test/testData/rename"

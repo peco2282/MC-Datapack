@@ -8,31 +8,18 @@ import com.intellij.openapi.options.colors.ColorSettingsPage
 import javax.swing.Icon
 
 class McFunctionColorSettingsPage : ColorSettingsPage {
-    companion object {
-        private val DESCRIPTORS = arrayOf(
-            AttributesDescriptor("Major Commands (execute, advancement, data, etc.)", McFunctionSyntaxHighlighter.MAJOR_COMMAND),
-            AttributesDescriptor("Sub Commands (set, modify, players, etc.)", McFunctionSyntaxHighlighter.SUB_COMMAND),
-            AttributesDescriptor("Flow Keywords (if, run, unless, etc.)", McFunctionSyntaxHighlighter.FLOW_KEYWORD),
-            AttributesDescriptor("Selectors (@s, @a, etc.)", McFunctionSyntaxHighlighter.SELECTOR),
-            AttributesDescriptor("Macros (\$variable)", McFunctionSyntaxHighlighter.MACRO),
-            AttributesDescriptor("Structural Symbols (\\, :, ., etc.)", McFunctionSyntaxHighlighter.STRUCTURE),
-            AttributesDescriptor("String", McFunctionSyntaxHighlighter.STRING),
-            AttributesDescriptor("Values / Literals", McFunctionSyntaxHighlighter.ARGUMENT),
-            AttributesDescriptor("Comment", McFunctionSyntaxHighlighter.COMMENT)
-        )
-    }
 
     override fun getAttributeDescriptors(): Array<AttributesDescriptor> = DESCRIPTORS
 
-    override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
+  override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 
-    override fun getDisplayName(): String = "McFunction"
+  override fun getDisplayName(): String = "McFunction"
 
-    override fun getIcon(): Icon = McFunctionIcons.FILE
+  override fun getIcon(): Icon = McFunctionIcons.FILE
 
-    override fun getHighlighter(): SyntaxHighlighter = McFunctionSyntaxHighlighter()
+  override fun getHighlighter(): SyntaxHighlighter = McFunctionSyntaxHighlighter()
 
-    override fun getDemoText(): String = """
+  override fun getDemoText(): String = $$"""
         # function item:common/clicked
         advancement revoke @s only item:clicked
 
@@ -53,10 +40,25 @@ class McFunctionColorSettingsPage : ColorSettingsPage {
 
         ##開始ボタン
         execute if data storage use: item.components."minecraft:custom_data"{item_id:"admin_start"} \
-            if score @s item.using_timer >= ${'$'}Start_Required_Time item.using_timer run function core:admin/start
+            if score @s item.using_timer >= $Start_Required_Time item.using_timer run function core:admin/start
 
         tp @s 0 64 0
     """.trimIndent()
 
-    override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? = null
+  override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? = null
 }
+
+private val DESCRIPTORS = arrayOf(
+  AttributesDescriptor(
+    "Major Commands (execute, advancement, data, etc.)",
+    McFunctionSyntaxHighlighter.MAJOR_COMMAND
+  ),
+  AttributesDescriptor("Sub Commands (set, modify, players, etc.)", McFunctionSyntaxHighlighter.SUB_COMMAND),
+  AttributesDescriptor("Flow Keywords (if, run, unless, etc.)", McFunctionSyntaxHighlighter.FLOW_KEYWORD),
+  AttributesDescriptor("Selectors (@s, @a, etc.)", McFunctionSyntaxHighlighter.SELECTOR),
+  AttributesDescriptor("Macros (\$variable)", McFunctionSyntaxHighlighter.MACRO),
+  AttributesDescriptor("Structural Symbols (\\, :, ., etc.)", McFunctionSyntaxHighlighter.STRUCTURE),
+  AttributesDescriptor("String", McFunctionSyntaxHighlighter.STRING),
+  AttributesDescriptor("Values / Literals", McFunctionSyntaxHighlighter.ARGUMENT),
+  AttributesDescriptor("Comment", McFunctionSyntaxHighlighter.COMMENT)
+)

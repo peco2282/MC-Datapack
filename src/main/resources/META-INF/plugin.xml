@@ -14,6 +14,7 @@
         <lang.syntaxHighlighterFactory language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionSyntaxHighlighterFactory"/>
         <annotator language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionAnnotator"/>
         <colorSettingsPage implementation="com.github.peco2282.mcdatapack.language.McFunctionColorSettingsPage"/>
+        <completion.contributor language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.McFunctionCompletionContributor"/>
 
         <toolWindow factoryClass="com.github.peco2282.mcdatapack.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.peco2282.mcdatapack.startup.MyProjectActivity" />
