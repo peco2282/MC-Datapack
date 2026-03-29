@@ -1,18 +1,15 @@
 package com.github.peco2282.mcdatapack.language.highlighting
 
-import com.github.peco2282.mcdatapack.language.psi.McFunctionCommand
-import com.github.peco2282.mcdatapack.language.psi.McFunctionCommandLine
-import com.github.peco2282.mcdatapack.language.psi.McFunctionKeyword
-import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
+import com.github.peco2282.mcdatapack.language.psi.*
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.util.elementType
 
 class McFunctionAnnotator : Annotator {
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-    println("annotate: ${element.javaClass.simpleName} ${element.text}")
     if (element is McFunctionCommand) {
       val token = element.firstChild ?: return
       val tokenType = token.node.elementType
@@ -67,6 +64,96 @@ class McFunctionAnnotator : Annotator {
         .textAttributes(attributes)
         .create()
     }
+
+    if (element is McFunctionJson || element is McFunctionJsonObject || element is McFunctionJsonArray) {
+      return
+    }
+
+    if (element is McFunctionArgument) {
+      // McFunctionArgument 自体へのアノテーションはスキップし、
+      // その中のトークン (PsiElement) 単位で処理させる。
+      return
+    }
+
+    val type = element.node.elementType
+    if (type == McFunctionTypes.ARGUMENT_TOKEN || type == McFunctionTypes.COMMAND_TOKEN || type == McFunctionTypes.STRING_TOKEN) {
+      annotateJsonValue(element, holder)
+      
+      // キーの判定: 次に ':' が来るか
+      if (isJsonKey(element)) {
+        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+          .range(element.textRange)
+          .textAttributes(McFunctionSyntaxHighlighter.JSON_KEY)
+          .create()
+      }
+    }
+  }
+
+  private fun isInJsonStructure(element: PsiElement): Boolean {
+    return false // 使わない
+  }
+
+  private fun isJsonKey(element: PsiElement): Boolean {
+    // まず、自身が ':' か '=' で終わるか、次の要素が ':' か '=' であるか
+    val text = element.text
+    if (text.endsWith(":") || text.endsWith("=")) return true
+    
+    var next = element.nextSibling
+    while (next != null) {
+      val nextType = next.node.elementType
+      if (nextType == McFunctionTypes.WHITE_SPACE || nextType == McFunctionTypes.SPACE_TOKEN) {
+        next = next.nextSibling
+        continue
+      }
+      // 直接 ':' か '=' が来る場合、あるいは McFunctionArgument の中の最初の子要素が ':' か '=' の場合
+      if (nextType == McFunctionTypes.COLON || nextType == McFunctionTypes.EQUALS || 
+        next.text.startsWith(":") || next.text.startsWith("=")) return true
+      break
+    }
+    // 親要素の隣も見る (PSI構造が ARGUMENT(KEY), ARGUMENT(:) に分かれている場合)
+    if (element.parent is McFunctionArgument && element.parent.firstChild == element) {
+      return isJsonKey(element.parent)
+    }
+    return false
+  }
+
+  private fun annotateJson(element: PsiElement, holder: AnnotationHolder) {
+    // 何もしない
+  }
+
+  private fun annotateJsonValue(element: PsiElement, holder: AnnotationHolder) {
+    val text = element.text
+    if (text.isEmpty()) return
+    
+    val attributes = when {
+      text.startsWith("\"") || text.startsWith("'") -> McFunctionSyntaxHighlighter.JSON_STRING
+      text == "true" || text == "false" || text.matches(Regex("-?\\d+b")) || text.matches(Regex("-?\\d+B")) -> McFunctionSyntaxHighlighter.JSON_BOOLEAN
+      text.matches(Regex("-?\\d+(\\.\\d+)?([dfslDFSL])?")) -> McFunctionSyntaxHighlighter.JSON_NUMBER
+      else -> {
+        // 部分的なマッチ（:false や =false のような場合）
+        if (text.startsWith(":") || text.startsWith("=")) {
+          val valPart = text.substring(1).trim()
+          val valAttr = when {
+            valPart == "true" || valPart == "false" || valPart.matches(Regex("-?\\d+[bB]")) -> McFunctionSyntaxHighlighter.JSON_BOOLEAN
+            valPart.matches(Regex("-?\\d+(\\.\\d+)?([dfslDFSL])?")) -> McFunctionSyntaxHighlighter.JSON_NUMBER
+            else -> null
+          }
+          if (valAttr != null) {
+            val startOffset = text.indexOf(valPart)
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+              .range(com.intellij.openapi.util.TextRange(element.textRange.startOffset + startOffset, element.textRange.endOffset))
+              .textAttributes(valAttr)
+              .create()
+          }
+        }
+        return
+      }
+    }
+
+    holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+      .range(element.textRange)
+      .textAttributes(attributes)
+      .create()
   }
 
   private fun isSubVerb(tokenType: IElementType): Boolean {

@@ -36,17 +36,41 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
+  // ARGUMENT_TOKEN (json_array | json_object)
+  static boolean ITEM_WITH_JSON(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "ITEM_WITH_JSON")) return false;
+    if (!nextTokenIs(builder_, ARGUMENT_TOKEN)) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, ARGUMENT_TOKEN);
+    result_ = result_ && ITEM_WITH_JSON_1(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // json_array | json_object
+  private static boolean ITEM_WITH_JSON_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "ITEM_WITH_JSON_1")) return false;
+    boolean result_;
+    result_ = json_array(builder_, level_ + 1);
+    if (!result_) result_ = json_object(builder_, level_ + 1);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // json | ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
   //   | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
   //   | MACRO_TOKEN
   //   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
-  //   | COLON | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
-  //   | CONTINUATION_TOKEN
+  //   | COLON | EQUALS | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
+  //   | CONTINUATION_TOKEN
+  //   | ITEM_WITH_JSON
   public static boolean argument(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "argument")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, ARGUMENT, "<argument>");
-    result_ = consumeToken(builder_, ARGUMENT_TOKEN);
+    result_ = json(builder_, level_ + 1);
+    if (!result_) result_ = consumeToken(builder_, ARGUMENT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, COMMAND_TOKEN);
     if (!result_) result_ = consumeToken(builder_, STRING_TOKEN);
     if (!result_) result_ = command(builder_, level_ + 1);
@@ -64,12 +88,14 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, DOTDOT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, DOT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, COLON);
+    if (!result_) result_ = consumeToken(builder_, EQUALS);
     if (!result_) result_ = consumeToken(builder_, LBRACK);
     if (!result_) result_ = consumeToken(builder_, RBRACK);
     if (!result_) result_ = consumeToken(builder_, LBRACE);
     if (!result_) result_ = consumeToken(builder_, RBRACE);
     if (!result_) result_ = consumeToken(builder_, COMMA);
     if (!result_) result_ = consumeToken(builder_, CONTINUATION_TOKEN);
+    if (!result_) result_ = ITEM_WITH_JSON(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
@@ -543,7 +569,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // WHITE_SPACE? (argument | STRING_TOKEN) WHITE_SPACE? COLON WHITE_SPACE? json_value WHITE_SPACE?
+  // WHITE_SPACE? (argument | STRING_TOKEN) WHITE_SPACE? (COLON | EQUALS) WHITE_SPACE? json_value WHITE_SPACE?
   static boolean json_property(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "json_property")) return false;
     boolean result_;
@@ -551,7 +577,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     result_ = json_property_0(builder_, level_ + 1);
     result_ = result_ && json_property_1(builder_, level_ + 1);
     result_ = result_ && json_property_2(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, COLON);
+    result_ = result_ && json_property_3(builder_, level_ + 1);
     result_ = result_ && json_property_4(builder_, level_ + 1);
     result_ = result_ && json_value(builder_, level_ + 1);
     result_ = result_ && json_property_6(builder_, level_ + 1);
@@ -580,6 +606,15 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(builder_, level_, "json_property_2")) return false;
     consumeToken(builder_, WHITE_SPACE);
     return true;
+  }
+
+  // COLON | EQUALS
+  private static boolean json_property_3(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "json_property_3")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, COLON);
+    if (!result_) result_ = consumeToken(builder_, EQUALS);
+    return result_;
   }
 
   // WHITE_SPACE?

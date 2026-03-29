@@ -23,6 +23,9 @@ class McFunctionColorSettingsPage : ColorSettingsPage {
         # function item:common/clicked
         advancement revoke @s only item:clicked
 
+        # item[json] with '=' property keys
+        minecraft:stone[custom_name={"italic":false,"text":"木の剣"},minecraft:lore=[{color:"aqua",italic:0b,text:"価格 : 10コイン"}],minecraft:unbreakable={},item_model="minecraft:wooden_sword"]
+
         #特殊アイテムか検知
         execute unless data entity @s SelectedItem.components."minecraft:custom_data".item_id run return 0
 
@@ -57,6 +60,10 @@ private val DESCRIPTORS = arrayOf(
   AttributesDescriptor("Flow Keywords (if, run, unless, etc.)", McFunctionSyntaxHighlighter.FLOW_KEYWORD),
   AttributesDescriptor("Selectors (@s, @a, etc.)", McFunctionSyntaxHighlighter.SELECTOR),
   AttributesDescriptor("Macros (\$variable)", McFunctionSyntaxHighlighter.MACRO),
+  AttributesDescriptor("JSON Property Key", McFunctionSyntaxHighlighter.JSON_KEY),
+  AttributesDescriptor("JSON String Value", McFunctionSyntaxHighlighter.JSON_STRING),
+  AttributesDescriptor("JSON Number Value", McFunctionSyntaxHighlighter.JSON_NUMBER),
+  AttributesDescriptor("JSON Boolean/Byte Value", McFunctionSyntaxHighlighter.JSON_BOOLEAN),
   AttributesDescriptor("Structural Symbols (\\, :, ., etc.)", McFunctionSyntaxHighlighter.STRUCTURE),
   AttributesDescriptor("String", McFunctionSyntaxHighlighter.STRING),
   AttributesDescriptor("Values / Literals", McFunctionSyntaxHighlighter.ARGUMENT),

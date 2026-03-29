@@ -50,6 +50,7 @@ public interface McFunctionTypes {
   IElementType ENABLE_TOKEN = new McFunctionTokenType("enable");
   IElementType ENCHANT_TOKEN = new McFunctionTokenType("enchant");
   IElementType ENTITY_TOKEN = new McFunctionTokenType("entity");
+  IElementType EQUALS = new McFunctionTokenType("=");
   IElementType EXECUTE_TOKEN = new McFunctionTokenType("execute");
   IElementType EXPERIENCE_TOKEN = new McFunctionTokenType("experience");
   IElementType EYES_TOKEN = new McFunctionTokenType("eyes");

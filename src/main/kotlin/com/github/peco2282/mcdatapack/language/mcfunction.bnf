@@ -169,6 +169,7 @@
     LBRACE                = "{"
     RBRACE                = "}"
     COLON                 = ":"
+    EQUALS                = "="
     COMMA                 = ","
 
     COMMAND_TOKEN         = "regexp:[a-z_][a-z0-9_]*"
@@ -217,12 +218,15 @@ keyword ::= RUN_TOKEN | ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN
 private execute_modifier ::= keyword | json | argument
 
 // Generic argument
-argument ::= ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
+argument ::= json | ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
   | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
   | MACRO_TOKEN
   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
-  | COLON | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
+  | COLON | EQUALS | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
   | CONTINUATION_TOKEN
+  | ITEM_WITH_JSON
+
+private ITEM_WITH_JSON ::= ARGUMENT_TOKEN (json_array | json_object)
 
 // JSON support
 json ::= (json_array | json_object) {pin=1}
@@ -234,4 +238,4 @@ json_object ::= LBRACE (json_property (COMMA json_property)*)? RBRACE
 private json_value ::= json | (argument | STRING_TOKEN)+ json?
 
 private json_element  ::= WHITE_SPACE? json_value WHITE_SPACE?
-private json_property ::= WHITE_SPACE? (argument | STRING_TOKEN) WHITE_SPACE? COLON WHITE_SPACE? json_value WHITE_SPACE?
+private json_property ::= WHITE_SPACE? (argument | STRING_TOKEN) WHITE_SPACE? (COLON | EQUALS) WHITE_SPACE? json_value WHITE_SPACE?

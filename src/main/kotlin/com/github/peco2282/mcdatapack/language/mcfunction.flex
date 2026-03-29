@@ -177,6 +177,7 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},]+
   "{"                        { return LBRACE; }
   "}"                        { return RBRACE; }
   ":"                        { return COLON; }
+  "="                        { return EQUALS; }
   ","                        { return COMMA; }
 
   {COMMENT_TOKEN}            { return COMMENT_TOKEN; }
