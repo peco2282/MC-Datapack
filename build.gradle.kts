@@ -163,6 +163,9 @@ sourceSets {
         java {
             srcDirs("src/main/gen")
         }
+        kotlin {
+            srcDirs("src/main/gen")
+        }
     }
 }
 

@@ -170,6 +170,57 @@ class McFunctionParserTest : BasePlatformTestCase() {
     }
 
     @Test
+    fun testMultipleLines() {
+        val input = """
+            say hello
+            tp @s 0 0 0
+            execute as @a run say hi
+        """.trimIndent()
+        val file = myFixture.configureByText("multi.mcfunction", input)
+        val commands = PsiTreeUtil.findChildrenOfType(file, McFunctionCommandLine::class.java)
+        
+        val sb = StringBuilder()
+        dumpPsi(file, sb)
+        val output = sb.toString()
+
+        assertEquals("Expected 3 commands, but found ${commands.size}.\nPSI Tree:\n$output", 3, commands.size)
+    }
+
+    private fun dumpPsi(element: com.intellij.psi.PsiElement, sb: StringBuilder) {
+        val visitor = object : com.intellij.psi.PsiRecursiveElementVisitor() {
+            override fun visitElement(element: com.intellij.psi.PsiElement) {
+                val type = element.node.elementType
+                if (element.children.isEmpty() || type.toString().contains("COMMAND_LINE")) {
+                    var parent = element.parent
+                    var depth = 0
+                    while (parent != null) {
+                        depth++
+                        parent = parent.parent
+                    }
+                    val indent = "  ".repeat(depth)
+                    sb.append("$indent Element: $type, text: '${element.text.replace("\n", "\\n")}'\n")
+                }
+                super.visitElement(element)
+            }
+        }
+        element.accept(visitor)
+    }
+
+    @Test
+    fun testExecuteRecursionWithNewlines() {
+        val input = """
+            execute as @a
+            run say hi
+        """.trimIndent()
+        val file = myFixture.configureByText("execute_newline.mcfunction", input)
+        val commands = PsiTreeUtil.findChildrenOfType(file, McFunctionCommandLine::class.java)
+        // 1つのコマンドとしてパースされるか、2つに分かれるかは仕様によるが、
+        // 少なくともファイル全体が1つに固まるのを避ける必要がある。
+        // 現在の定義だと \ がないので2つに分かれるべき。
+        assertEquals(2, commands.size)
+    }
+
+    @Test
     fun testItemReplaceEntity() {
         val input = """
             item replace entity @s enderchest.0 with \
@@ -179,6 +230,42 @@ class McFunctionParserTest : BasePlatformTestCase() {
 
         val errors = PsiTreeUtil.findChildrenOfType(file, com.intellij.psi.PsiErrorElement::class.java)
         assertTrue("Should not have parse errors for item replace command: ${errors.firstOrNull()?.errorDescription}", errors.isEmpty())
+        val commands = PsiTreeUtil.findChildrenOfType(file, McFunctionCommandLine::class.java)
+        assertEquals(1, commands.size)
+    }
+    @Test
+    fun testItemReplaceWithContinuationFull() {
+        val input = """
+            item replace entity @s enderchest.0 with \
+                minecraft:stone[custom_name={"italic":false,"text":"木の剣"},minecraft:lore=[{color:"aqua",italic:0b,text:"価格 : 10コイン"},{color:"white",italic:0b,text:"いたって普通の木の剣"}],minecraft:unbreakable={},minecraft:tooltip_display={hidden_components:["attribute_modifiers","unbreakable"]},custom_data={shop_item:true},item_model="minecraft:wooden_sword"]
+        """.trimIndent()
+        val file = myFixture.configureByText("item_replace_cont_full.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, com.intellij.psi.PsiErrorElement::class.java)
+        
+        if (errors.isNotEmpty()) {
+            val sb = StringBuilder()
+            dumpPsi(file, sb)
+            java.io.File("psi_tree_full.txt").writeText(sb.toString())
+            java.io.File("error_full.txt").writeText(errors.first().errorDescription)
+        }
+        
+        assertTrue("Should not have parse errors: ${errors.firstOrNull()?.errorDescription}", errors.isEmpty())
+    }
+
+    @Test
+    fun testMacroCommand() {
+        val input = "${'$'}tp @s ${'$'}(pos[0]) ${'$'}(pos[1]) ${'$'}(pos[2])"
+        val file = myFixture.configureByText("macro.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, com.intellij.psi.PsiErrorElement::class.java)
+        
+        if (errors.isNotEmpty()) {
+            val sb = StringBuilder()
+            dumpPsi(file, sb)
+            println("[DEBUG_LOG] PSI Tree:\n$sb")
+            println("[DEBUG_LOG] ERROR: ${errors.first().errorDescription}")
+        }
+
+        assertTrue("Should not have parse errors: ${errors.firstOrNull()?.errorDescription}", errors.isEmpty())
         val commands = PsiTreeUtil.findChildrenOfType(file, McFunctionCommandLine::class.java)
         assertEquals(1, commands.size)
     }

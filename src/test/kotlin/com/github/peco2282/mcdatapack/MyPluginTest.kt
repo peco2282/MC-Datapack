@@ -1,6 +1,6 @@
 package com.github.peco2282.mcdatapack
 
-import com.github.peco2282.mcdatapack.language.INSTANCE
+import com.github.peco2282.mcdatapack.language.psi.INSTANCE
 import com.intellij.ide.highlighter.XmlFileType
 import com.intellij.openapi.components.service
 import com.intellij.psi.xml.XmlFile
