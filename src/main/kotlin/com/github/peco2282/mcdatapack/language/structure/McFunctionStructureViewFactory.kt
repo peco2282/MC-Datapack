@@ -2,6 +2,8 @@ package com.github.peco2282.mcdatapack.language.structure
 
 import com.github.peco2282.mcdatapack.language.highlighting.McFunctionIcons
 import com.github.peco2282.mcdatapack.language.psi.McFunctionCommandLine
+import com.github.peco2282.mcdatapack.language.psi.McFunctionExecuteCommand
+import com.github.peco2282.mcdatapack.language.psi.McFunctionGenericCommand
 import com.intellij.ide.structureView.*
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.lang.PsiStructureViewFactory
@@ -51,7 +53,8 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
       override fun getPresentableText(): String? {
         if (element is PsiFile) return element.name
         if (element is McFunctionCommandLine) {
-          return element.text.take(50).let { if (it.length == 50) "$it..." else it }
+          val text = element.text.trim()
+          return text.take(50).let { if (it.length == 50) "$it..." else it }
         }
         return element.text
       }
@@ -61,19 +64,29 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
       override fun getIcon(unused: Boolean): Icon? {
         if (element is PsiFile) return McFunctionIcons.FILE
         if (element is McFunctionCommandLine) {
-          val command = element.command ?: return McFunctionIcons.COMMAND
-          val text = command.text.lowercase()
-          return when {
-            text == "execute" -> McFunctionIcons.EXECUTE
-            text == "function" -> McFunctionIcons.FUNCTION
-            text == "give" -> McFunctionIcons.GIVE
-            text.contains("effect") -> McFunctionIcons.EFFECT
-            text.contains("scoreboard") -> McFunctionIcons.SCOREBOARD
-            text.startsWith("@") -> McFunctionIcons.SELECTOR
-            else -> McFunctionIcons.COMMAND
+          val generic = element.genericCommand
+          if (generic != null) {
+            val commandText = generic.command.text.lowercase()
+            return getIconForCommand(commandText)
           }
+          if (element.executeCommand != null) {
+            return McFunctionIcons.EXECUTE
+          }
+          return McFunctionIcons.COMMAND
         }
         return null
+      }
+
+      private fun getIconForCommand(text: String): Icon {
+        return when {
+          text == "execute" -> McFunctionIcons.EXECUTE
+          text == "function" -> McFunctionIcons.FUNCTION
+          text == "give" -> McFunctionIcons.GIVE
+          text.contains("effect") -> McFunctionIcons.EFFECT
+          text.contains("scoreboard") -> McFunctionIcons.SCOREBOARD
+          text.startsWith("@") -> McFunctionIcons.SELECTOR
+          else -> McFunctionIcons.COMMAND
+        }
       }
     }
   }
@@ -86,9 +99,12 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
     }
     // execute ... run ... の再帰的な構造を表示する
     if (element is McFunctionCommandLine) {
-      return PsiTreeUtil.getChildrenOfType(element, McFunctionCommandLine::class.java)
-        ?.map { McFunctionStructureViewElement(it) }
-        ?.toTypedArray() ?: emptyArray()
+      val executeCommand = element.executeCommand
+      if (executeCommand != null) {
+        return executeCommand.commandLineList
+          .map { McFunctionStructureViewElement(it) }
+          .toTypedArray()
+      }
     }
     return emptyArray()
   }

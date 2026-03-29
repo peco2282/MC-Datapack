@@ -11,6 +11,8 @@ public interface McFunctionTypes {
   IElementType ARGUMENT = new McFunctionElementType("ARGUMENT");
   IElementType COMMAND = new McFunctionElementType("COMMAND");
   IElementType COMMAND_LINE = new McFunctionElementType("COMMAND_LINE");
+  IElementType EXECUTE_COMMAND = new McFunctionElementType("EXECUTE_COMMAND");
+  IElementType GENERIC_COMMAND = new McFunctionElementType("GENERIC_COMMAND");
   IElementType JSON = new McFunctionElementType("JSON");
   IElementType JSON_ARRAY = new McFunctionElementType("JSON_ARRAY");
   IElementType JSON_OBJECT = new McFunctionElementType("JSON_OBJECT");
@@ -177,6 +179,12 @@ public interface McFunctionTypes {
       }
       else if (type == COMMAND_LINE) {
         return new McFunctionCommandLineImpl(node);
+      }
+      else if (type == EXECUTE_COMMAND) {
+        return new McFunctionExecuteCommandImpl(node);
+      }
+      else if (type == GENERIC_COMMAND) {
+        return new McFunctionGenericCommandImpl(node);
       }
       else if (type == JSON) {
         return new McFunctionJsonImpl(node);

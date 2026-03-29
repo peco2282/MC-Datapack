@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements McFunctionCommandLine {
+public class McFunctionExecuteCommandImpl extends ASTWrapperPsiElement implements McFunctionExecuteCommand {
 
-  public McFunctionCommandLineImpl(@NotNull ASTNode node) {
+  public McFunctionExecuteCommandImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitCommandLine(this);
+    visitor.visitExecuteCommand(this);
   }
 
   @Override
@@ -28,15 +28,27 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
   }
 
   @Override
-  @Nullable
-  public McFunctionExecuteCommand getExecuteCommand() {
-    return findChildByClass(McFunctionExecuteCommand.class);
+  @NotNull
+  public List<McFunctionArgument> getArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionArgument.class);
   }
 
   @Override
-  @Nullable
-  public McFunctionGenericCommand getGenericCommand() {
-    return findChildByClass(McFunctionGenericCommand.class);
+  @NotNull
+  public List<McFunctionCommandLine> getCommandLineList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCommandLine.class);
+  }
+
+  @Override
+  @NotNull
+  public List<McFunctionJson> getJsonList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionJson.class);
+  }
+
+  @Override
+  @NotNull
+  public List<McFunctionKeyword> getKeywordList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionKeyword.class);
   }
 
 }

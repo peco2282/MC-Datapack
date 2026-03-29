@@ -19,6 +19,14 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitExecuteCommand(@NotNull McFunctionExecuteCommand o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGenericCommand(@NotNull McFunctionGenericCommand o) {
+    visitPsiElement(o);
+  }
+
   public void visitJson(@NotNull McFunctionJson o) {
     visitPsiElement(o);
   }

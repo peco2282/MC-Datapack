@@ -177,20 +177,19 @@
   ]
 }
 
-mcFunctionFile ::= item*
-private item ::= (command_line | COMMENT_TOKEN | CRLF_TOKEN | WHITE_SPACE | CONTINUATION_TOKEN)
+mcFunctionFile ::= (command_line | COMMENT_TOKEN | CRLF_TOKEN | WHITE_SPACE | CONTINUATION_TOKEN)*
 
 // コマンド行：execute コマンドか、それ以外の汎用コマンド
 command_line ::= (execute_command | generic_command) {pin=1}
 
 // execute コマンド：modifier を並べ、run の後に新しいコマンドを再帰的にパース
-private execute_command ::= EXECUTE_TOKEN execute_body?
+execute_command ::= EXECUTE_TOKEN execute_body?
 private execute_body ::= (WHITE_SPACE | execute_modifier_with_continuation)+ (RUN_TOKEN (WHITE_SPACE command_line | execute_body))?
 private execute_modifier_with_continuation ::= CONTINUATION_TOKEN execute_modifier_line | execute_modifier
 private execute_modifier_line ::= WHITE_SPACE? execute_modifier (WHITE_SPACE execute_modifier)*
 
 // execute 以外の汎用コマンド：先頭単語を COMMAND として認識し、残りを argument でキャッチ
-private generic_command ::= command (SPACE_TOKEN | CONTINUATION_TOKEN | json | argument | CRLF_TOKEN)*
+generic_command ::= command (SPACE_TOKEN | CONTINUATION_TOKEN | json | argument)*
 
 // 行頭のコマンド名
 command ::= ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN | DAMAGE_TOKEN
