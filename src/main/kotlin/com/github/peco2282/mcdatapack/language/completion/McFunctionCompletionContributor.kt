@@ -1,5 +1,6 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.completion
 
+import com.github.peco2282.mcdatapack.language.psi.McFunctionLanguage
 import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder

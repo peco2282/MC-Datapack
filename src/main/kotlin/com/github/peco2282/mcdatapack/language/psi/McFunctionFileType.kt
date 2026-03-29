@@ -1,5 +1,6 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.psi
 
+import com.github.peco2282.mcdatapack.language.highlighting.McFunctionIcons
 import com.intellij.openapi.fileTypes.LanguageFileType
 import javax.swing.Icon
 

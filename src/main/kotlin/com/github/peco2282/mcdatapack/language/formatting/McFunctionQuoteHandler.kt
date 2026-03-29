@@ -1,5 +1,6 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.formatting
 
+import com.github.peco2282.mcdatapack.language.psi.McFunctionLanguage
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project

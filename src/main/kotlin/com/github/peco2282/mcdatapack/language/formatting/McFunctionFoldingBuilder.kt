@@ -1,4 +1,4 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.formatting
 
 import com.github.peco2282.mcdatapack.language.psi.McFunctionJsonObject
 import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes

@@ -1,4 +1,4 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.highlighting
 
 import com.github.peco2282.mcdatapack.language.psi.McFunctionCommand
 import com.github.peco2282.mcdatapack.language.psi.McFunctionCommandLine

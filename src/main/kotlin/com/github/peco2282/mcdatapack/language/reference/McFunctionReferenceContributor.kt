@@ -1,4 +1,4 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.reference
 
 import com.github.peco2282.mcdatapack.language.psi.McFunctionArgument
 import com.github.peco2282.mcdatapack.language.psi.McFunctionCommand
@@ -54,7 +54,7 @@ class McFunctionFileReference(element: PsiElement, textRange: TextRange) :
     // パスが一致するものを探す (data/<namespace>/functions/<path>.mcfunction)
     val expectedPathSuffix = "data/$namespace/functions/$path.mcfunction".replace("/", "\\")
     val alternativePathSuffix = "data/$namespace/functions/$path.mcfunction".replace("\\", "/")
-    
+
     return files.firstOrNull { file ->
       val virtualFile = file.virtualFile
       val absolutePath = virtualFile.path

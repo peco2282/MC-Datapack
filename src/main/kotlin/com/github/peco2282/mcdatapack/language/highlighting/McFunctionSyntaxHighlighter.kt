@@ -1,5 +1,6 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.highlighting
 
+import com.github.peco2282.mcdatapack.language.psi.McFunctionLexerAdapter
 import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors

@@ -1,4 +1,4 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.highlighting
 
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighter

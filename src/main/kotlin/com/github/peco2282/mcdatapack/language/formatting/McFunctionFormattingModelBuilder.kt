@@ -1,5 +1,6 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.formatting
 
+import com.github.peco2282.mcdatapack.language.psi.McFunctionLanguage
 import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
 import com.intellij.formatting.*
 import com.intellij.psi.codeStyle.CodeStyleSettings

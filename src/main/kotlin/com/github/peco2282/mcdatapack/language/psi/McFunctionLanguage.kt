@@ -1,4 +1,4 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.psi
 
 import com.intellij.lang.Language
 import com.intellij.psi.tree.IFileElementType

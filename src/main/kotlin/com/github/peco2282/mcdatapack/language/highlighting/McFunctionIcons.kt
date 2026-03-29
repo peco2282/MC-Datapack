@@ -1,4 +1,4 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.highlighting
 
 import com.intellij.openapi.util.IconLoader
 import javax.swing.Icon

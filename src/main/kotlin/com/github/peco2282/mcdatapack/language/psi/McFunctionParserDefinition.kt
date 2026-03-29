@@ -1,7 +1,6 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.psi
 
 import com.github.peco2282.mcdatapack.language.parser.McFunctionParser
-import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser

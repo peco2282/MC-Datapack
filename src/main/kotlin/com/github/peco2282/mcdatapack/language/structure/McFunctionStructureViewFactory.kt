@@ -1,5 +1,6 @@
-package com.github.peco2282.mcdatapack.language
+package com.github.peco2282.mcdatapack.language.structure
 
+import com.github.peco2282.mcdatapack.language.highlighting.McFunctionIcons
 import com.github.peco2282.mcdatapack.language.psi.McFunctionCommandLine
 import com.intellij.ide.structureView.*
 import com.intellij.ide.util.treeView.smartTree.TreeElement
