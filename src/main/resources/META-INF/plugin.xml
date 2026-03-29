@@ -9,23 +9,36 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="Minecraft Function" language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.psi.McFunctionFileType" extensions="mcfunction"/>
-        <lang.parserDefinition language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.psi.McFunctionParserDefinition"/>
-        <lang.syntaxHighlighterFactory language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.highlighting.McFunctionSyntaxHighlighterFactory"/>
-        <annotator language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.highlighting.McFunctionAnnotator"/>
-        <colorSettingsPage implementation="com.github.peco2282.mcdatapack.language.highlighting.McFunctionColorSettingsPage"/>
-        <completion.contributor language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.completion.McFunctionCompletionContributor"/>
-        <lang.commenter language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.formatting.McFunctionCommenter"/>
-        <lang.braceMatcher language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.formatting.McFunctionPairedBraceMatcher"/>
+        <fileType name="Minecraft Function" language="McFunction"
+                  implementationClass="com.github.peco2282.mcdatapack.language.psi.McFunctionFileType"
+                  extensions="mcfunction"/>
+        <lang.parserDefinition language="McFunction"
+                               implementationClass="com.github.peco2282.mcdatapack.language.psi.McFunctionParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="McFunction"
+                                       implementationClass="com.github.peco2282.mcdatapack.language.highlighting.McFunctionSyntaxHighlighterFactory"/>
+        <annotator language="McFunction"
+                   implementationClass="com.github.peco2282.mcdatapack.language.highlighting.McFunctionAnnotator"/>
+        <colorSettingsPage
+                implementation="com.github.peco2282.mcdatapack.language.highlighting.McFunctionColorSettingsPage"/>
+        <completion.contributor language="McFunction"
+                                implementationClass="com.github.peco2282.mcdatapack.language.completion.McFunctionCompletionContributor"/>
+        <lang.commenter language="McFunction"
+                        implementationClass="com.github.peco2282.mcdatapack.language.formatting.McFunctionCommenter"/>
+        <lang.braceMatcher language="McFunction"
+                           implementationClass="com.github.peco2282.mcdatapack.language.formatting.McFunctionPairedBraceMatcher"/>
         <typedHandler implementation="com.github.peco2282.mcdatapack.language.formatting.McFunctionQuoteHandler"/>
-        <lang.foldingBuilder language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.formatting.McFunctionFoldingBuilder"/>
-        <lang.psiStructureViewFactory language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.structure.McFunctionStructureViewFactory"/>
-        <psi.referenceContributor language="McFunction" implementation="com.github.peco2282.mcdatapack.language.reference.McFunctionReferenceContributor"/>
-        <lang.formatter language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.formatting.McFunctionFormattingModelBuilder"/>
+        <lang.foldingBuilder language="McFunction"
+                             implementationClass="com.github.peco2282.mcdatapack.language.formatting.McFunctionFoldingBuilder"/>
+        <lang.psiStructureViewFactory language="McFunction"
+                                      implementationClass="com.github.peco2282.mcdatapack.language.structure.McFunctionStructureViewFactory"/>
+        <psi.referenceContributor language="McFunction"
+                                  implementation="com.github.peco2282.mcdatapack.language.reference.McFunctionReferenceContributor"/>
+        <lang.formatter language="McFunction"
+                        implementationClass="com.github.peco2282.mcdatapack.language.formatting.McFunctionFormattingModelBuilder"/>
 
         <toolWindow factoryClass="com.github.peco2282.mcdatapack.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.peco2282.mcdatapack.startup.MyProjectActivity" />
+        <postStartupActivity implementation="com.github.peco2282.mcdatapack.startup.MyProjectActivity"/>
         <directoryProjectGenerator implementation="com.github.peco2282.mcdatapack.project.McDatapackProjectGenerator"/>
-        <moduleBuilder builderClass="com.github.peco2282.mcdatapack.project.McDatapackModuleBuilder" />
+        <moduleBuilder builderClass="com.github.peco2282.mcdatapack.project.McDatapackModuleBuilder"/>
     </extensions>
 </idea-plugin>
