@@ -35,6 +35,8 @@
                                   implementation="com.github.peco2282.mcdatapack.language.reference.McFunctionReferenceContributor"/>
         <lang.formatter language="McFunction"
                         implementationClass="com.github.peco2282.mcdatapack.language.formatting.McFunctionFormattingModelBuilder"/>
+        <langCodeStyleSettingsProvider
+                implementation="com.github.peco2282.mcdatapack.language.formatting.McFunctionLanguageCodeStyleSettingsProvider"/>
 
         <toolWindow factoryClass="com.github.peco2282.mcdatapack.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.peco2282.mcdatapack.startup.MyProjectActivity"/>

@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 
@@ -20,6 +21,8 @@ class McFunctionParserDefinition : ParserDefinition {
   override fun getFileNodeType(): IFileElementType = McFunctionLanguage.FILE
 
   override fun getCommentTokens(): TokenSet = TokenSet.create(McFunctionTypes.COMMENT_TOKEN)
+
+  override fun getWhitespaceTokens(): TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
 
   override fun getStringLiteralElements(): TokenSet = TokenSet.EMPTY
 

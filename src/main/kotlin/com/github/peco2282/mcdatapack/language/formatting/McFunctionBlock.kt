@@ -17,7 +17,8 @@ class McFunctionBlock(
     val blocks = mutableListOf<Block>()
     var child = myNode.firstChildNode
     while (child != null) {
-      if (child.elementType != TokenType.WHITE_SPACE && child.elementType != McFunctionTypes.CRLF_TOKEN) {
+      val elementType = child.elementType
+      if (elementType != TokenType.WHITE_SPACE) {
         blocks.add(
           McFunctionBlock(
             child,
