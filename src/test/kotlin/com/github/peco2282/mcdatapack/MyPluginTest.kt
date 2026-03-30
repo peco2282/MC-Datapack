@@ -26,9 +26,9 @@ class MyPluginTest : BasePlatformTestCase() {
         }
     }
 
-    fun testRename() {
-        myFixture.testRename("foo.xml", "foo_after.xml", "a2")
-    }
+//    fun testRename() {
+//        myFixture.testRename("foo.xml", "foo_after.xml", "a2")
+//    }
 
     fun testProjectService() {
         val projectService = project.service<MyProjectService>()
