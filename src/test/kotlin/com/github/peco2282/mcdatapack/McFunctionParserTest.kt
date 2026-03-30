@@ -268,4 +268,22 @@ class McFunctionParserTest : BasePlatformTestCase() {
         val commands = PsiTreeUtil.findChildrenOfType(file, McFunctionCommandLine::class.java)
         assertEquals(1, commands.size)
     }
+    @Test
+    fun testReportedIssueFull() {
+        val input = """
+            item replace entity @s enderchest.0 with \
+                minecraft:stone[custom_name={"italic":false,"text":"木の剣"},minecraft:lore=[{color:"aqua",italic:0b,text:"価格 : 10コイン"},{color:"white",italic:0b,text:"いたって普通の木の剣"}],minecraft:unbreakable={},minecraft:tooltip_display={hidden_components:["attribute_modifiers","unbreakable"]},custom_data={shop_item:true},item_model="minecraft:wooden_sword"]
+        """.trimIndent()
+        val file = myFixture.configureByText("reported_issue.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, com.intellij.psi.PsiErrorElement::class.java)
+        
+        if (errors.isNotEmpty()) {
+            val sb = StringBuilder()
+            dumpPsi(file, sb)
+            println("[DEBUG_LOG] PSI Tree:\n$sb")
+            println("[DEBUG_LOG] ERROR: ${errors.first().errorDescription}")
+        }
+        
+        assertTrue("Should not have parse errors: ${errors.firstOrNull()?.errorDescription}", errors.isEmpty())
+    }
 }
