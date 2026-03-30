@@ -129,7 +129,7 @@ class McFunctionAnnotator : Annotator {
     var next = element.nextSibling
     while (next != null) {
       val nextType = next.node.elementType
-      if (nextType == McFunctionTypes.WHITE_SPACE || nextType == McFunctionTypes.SPACE_TOKEN) {
+      if (nextType == McFunctionTypes.WHITE_SPACE) {
         next = next.nextSibling
         continue
       }

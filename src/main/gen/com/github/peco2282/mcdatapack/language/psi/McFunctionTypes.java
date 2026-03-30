@@ -131,7 +131,6 @@ public interface McFunctionTypes {
   IElementType SETIDLETIMEOUT_TOKEN = new McFunctionTokenType("setidletimeout");
   IElementType SETWORLDSPAWN_TOKEN = new McFunctionTokenType("setworldspawn");
   IElementType SET_TOKEN = new McFunctionTokenType("set");
-  IElementType SPACE_TOKEN = new McFunctionTokenType("SPACE_TOKEN");
   IElementType SPAWNPOINT_TOKEN = new McFunctionTokenType("spawnpoint");
   IElementType SPECTATE_TOKEN = new McFunctionTokenType("spectate");
   IElementType SPREADPLAYERS_TOKEN = new McFunctionTokenType("spreadplayers");

@@ -30,10 +30,10 @@ CRLF_TOKEN=\R
 WHITE_SPACE=[ \t\f]+
 SPACE_TOKEN=[ \t\f]+
 STRING_TOKEN=\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'
-CONTINUATION_TOKEN=\\\\(\r\n|\r|\n)
+CONTINUATION_TOKEN=\\\\([ \t\f]*\R)?
 MACRO_TOKEN=\$[a-zA-Z_][a-zA-Z0-9_]*
 COMMAND_TOKEN=[a-z_][a-z0-9_]*
-ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},]+
+ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},\\\\]+
 
 %%
 <YYINITIAL> {
