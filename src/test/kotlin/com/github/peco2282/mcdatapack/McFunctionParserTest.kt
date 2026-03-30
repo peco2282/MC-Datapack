@@ -286,4 +286,5 @@ class McFunctionParserTest : BasePlatformTestCase() {
         
         assertTrue("Should not have parse errors: ${errors.firstOrNull()?.errorDescription}", errors.isEmpty())
     }
+
 }

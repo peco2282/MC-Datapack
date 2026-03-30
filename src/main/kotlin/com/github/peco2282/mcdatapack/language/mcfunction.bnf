@@ -155,7 +155,7 @@
     SELECTOR_R            = "@r"
 
     // Layer 4: Structural symbols
-    CONTINUATION_TOKEN    = "regexp:\\\\([ \t\f]*\R)?"
+    CONTINUATION_TOKEN    = "regexp:\\([ \t\f]*\R)?"
     MACRO_TOKEN           = "regexp:\$[a-zA-Z_][a-zA-Z0-9_]*"
     DOT_TOKEN             = "."
     GTE_TOKEN             = ">="
@@ -185,11 +185,8 @@ command_line ::= (execute_command | generic_command) {pin=1}
 // execute コマンド：modifier を並べ、run の後に新しいコマンドを再帰的にパース
 execute_command ::= EXECUTE_TOKEN execute_body?
 private execute_body ::= (WHITE_SPACE | execute_modifier_with_continuation)+ (RUN_TOKEN (WHITE_SPACE command_line | execute_body))?
-private execute_modifier_with_continuation ::= CONTINUATION_TOKEN execute_modifier_line | execute_modifier
-private execute_modifier_line ::= WHITE_SPACE? execute_modifier (WHITE_SPACE execute_modifier)*
-
-// execute 以外の汎用コマンド：先頭単語を COMMAND として認識し、残りを argument でキャッチ
-generic_command ::= command (WHITE_SPACE | CONTINUATION_TOKEN | json | argument)*
+private execute_modifier_with_continuation ::= (CONTINUATION_TOKEN WHITE_SPACE?)? execute_modifier
+generic_command ::= command (WHITE_SPACE | (CONTINUATION_TOKEN WHITE_SPACE?) | json | argument)*
 
 // 行頭のコマンド名
 command ::= ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN | DAMAGE_TOKEN
