@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionGenericCommandImpl extends ASTWrapperPsiElement implements McFunctionGenericCommand {
+public class McFunctionMacroLineImpl extends ASTWrapperPsiElement implements McFunctionMacroLine {
 
-  public McFunctionGenericCommandImpl(@NotNull ASTNode node) {
+  public McFunctionMacroLineImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitGenericCommand(this);
+    visitor.visitMacroLine(this);
   }
 
   @Override
@@ -29,32 +29,32 @@ public class McFunctionGenericCommandImpl extends ASTWrapperPsiElement implement
 
   @Override
   @NotNull
-  public List<McFunctionArgument> getArgumentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionArgument.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionCommand getCommand() {
-    return findChildByClass(McFunctionCommand.class);
+  public List<McFunctionCommand> getCommandList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCommand.class);
   }
 
   @Override
   @NotNull
-  public List<McFunctionItemStack> getItemStackList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionItemStack.class);
+  public List<McFunctionKeyword> getKeywordList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionKeyword.class);
   }
 
   @Override
   @NotNull
-  public List<McFunctionJson> getJsonList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionJson.class);
+  public List<McFunctionMacroVariable> getMacroVariableList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionMacroVariable.class);
   }
 
   @Override
   @NotNull
-  public List<McFunctionNbtCompound> getNbtCompoundList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNbtCompound.class);
+  public List<McFunctionSelector> getSelectorList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionSelector.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getMacroLineStart() {
+    return findNotNullChildByType(MACRO_LINE_START);
   }
 
 }

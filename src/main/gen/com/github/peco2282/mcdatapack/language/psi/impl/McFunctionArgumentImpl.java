@@ -35,6 +35,12 @@ public class McFunctionArgumentImpl extends ASTWrapperPsiElement implements McFu
 
   @Override
   @Nullable
+  public McFunctionItemStack getItemStack() {
+    return findChildByClass(McFunctionItemStack.class);
+  }
+
+  @Override
+  @Nullable
   public McFunctionJson getJson() {
     return findChildByClass(McFunctionJson.class);
   }
@@ -43,6 +49,12 @@ public class McFunctionArgumentImpl extends ASTWrapperPsiElement implements McFu
   @Nullable
   public McFunctionKeyword getKeyword() {
     return findChildByClass(McFunctionKeyword.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionSelector getSelector() {
+    return findChildByClass(McFunctionSelector.class);
   }
 
   @Override
@@ -67,6 +79,12 @@ public class McFunctionArgumentImpl extends ASTWrapperPsiElement implements McFu
   @Nullable
   public PsiElement getMacroToken() {
     return findChildByType(MACRO_TOKEN);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getMacroVarToken() {
+    return findChildByType(MACRO_VAR_TOKEN);
   }
 
   @Override

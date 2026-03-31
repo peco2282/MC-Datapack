@@ -9,6 +9,7 @@ import com.intellij.psi.tree.IElementType
 
 class McFunctionAnnotator : Annotator {
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
+    println("annotate: ${element.javaClass.simpleName} ${element.text}")
     if (element is McFunctionCommand) {
       val token = element.firstChild ?: return
       val tokenType = token.node.elementType
@@ -62,6 +63,26 @@ class McFunctionAnnotator : Annotator {
         .range(token.textRange)
         .textAttributes(attributes)
         .create()
+    }
+
+    if (element is McFunctionItemStack) {
+      // netherite_sword[...] の netherite_sword 部分をハイライト
+      val namespacedId = element.namespacedId
+      holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .range(namespacedId.textRange)
+        .textAttributes(McFunctionSyntaxHighlighter.JSON_KEY)
+        .create()
+      return
+    }
+
+    if (element is McFunctionComponent) {
+      // attribute_modifiers={...} の attribute_modifiers 部分をハイライト
+      val namespacedId = element.namespacedId
+      holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .range(namespacedId.textRange)
+        .textAttributes(McFunctionSyntaxHighlighter.JSON_KEY)
+        .create()
+      return
     }
 
     if (element is McFunctionJson || element is McFunctionJsonObject || element is McFunctionJsonArray) {

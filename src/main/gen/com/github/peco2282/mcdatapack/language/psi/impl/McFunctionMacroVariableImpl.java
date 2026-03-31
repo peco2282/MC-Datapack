@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements McFunctionCommandLine {
+public class McFunctionMacroVariableImpl extends ASTWrapperPsiElement implements McFunctionMacroVariable {
 
-  public McFunctionCommandLineImpl(@NotNull ASTNode node) {
+  public McFunctionMacroVariableImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitCommandLine(this);
+    visitor.visitMacroVariable(this);
   }
 
   @Override
@@ -29,20 +29,14 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
 
   @Override
   @Nullable
-  public McFunctionExecuteCommand getExecuteCommand() {
-    return findChildByClass(McFunctionExecuteCommand.class);
+  public PsiElement getMacroToken() {
+    return findChildByType(MACRO_TOKEN);
   }
 
   @Override
   @Nullable
-  public McFunctionGenericCommand getGenericCommand() {
-    return findChildByClass(McFunctionGenericCommand.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionMacroLine getMacroLine() {
-    return findChildByClass(McFunctionMacroLine.class);
+  public PsiElement getMacroVarToken() {
+    return findChildByType(MACRO_VAR_TOKEN);
   }
 
 }

@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements McFunctionCommandLine {
+public class McFunctionComponentValueImpl extends ASTWrapperPsiElement implements McFunctionComponentValue {
 
-  public McFunctionCommandLineImpl(@NotNull ASTNode node) {
+  public McFunctionComponentValueImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitCommandLine(this);
+    visitor.visitComponentValue(this);
   }
 
   @Override
@@ -29,20 +29,26 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
 
   @Override
   @Nullable
-  public McFunctionExecuteCommand getExecuteCommand() {
-    return findChildByClass(McFunctionExecuteCommand.class);
+  public McFunctionNbtCompound getNbtCompound() {
+    return findChildByClass(McFunctionNbtCompound.class);
   }
 
   @Override
   @Nullable
-  public McFunctionGenericCommand getGenericCommand() {
-    return findChildByClass(McFunctionGenericCommand.class);
+  public McFunctionNbtList getNbtList() {
+    return findChildByClass(McFunctionNbtList.class);
   }
 
   @Override
   @Nullable
-  public McFunctionMacroLine getMacroLine() {
-    return findChildByClass(McFunctionMacroLine.class);
+  public McFunctionNbtPrimitive getNbtPrimitive() {
+    return findChildByClass(McFunctionNbtPrimitive.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getStringToken() {
+    return findChildByType(STRING_TOKEN);
   }
 
 }

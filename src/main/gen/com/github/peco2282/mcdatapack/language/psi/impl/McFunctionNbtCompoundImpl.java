@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements McFunctionCommandLine {
+public class McFunctionNbtCompoundImpl extends ASTWrapperPsiElement implements McFunctionNbtCompound {
 
-  public McFunctionCommandLineImpl(@NotNull ASTNode node) {
+  public McFunctionNbtCompoundImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitCommandLine(this);
+    visitor.visitNbtCompound(this);
   }
 
   @Override
@@ -28,21 +28,9 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
   }
 
   @Override
-  @Nullable
-  public McFunctionExecuteCommand getExecuteCommand() {
-    return findChildByClass(McFunctionExecuteCommand.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionGenericCommand getGenericCommand() {
-    return findChildByClass(McFunctionGenericCommand.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionMacroLine getMacroLine() {
-    return findChildByClass(McFunctionMacroLine.class);
+  @NotNull
+  public List<McFunctionNbtProperty> getNbtPropertyList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNbtProperty.class);
   }
 
 }

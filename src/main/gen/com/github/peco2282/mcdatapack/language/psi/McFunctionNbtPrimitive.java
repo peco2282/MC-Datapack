@@ -5,15 +5,18 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface McFunctionCommandLine extends PsiElement {
+public interface McFunctionNbtPrimitive extends PsiElement {
 
   @Nullable
-  McFunctionExecuteCommand getExecuteCommand();
+  McFunctionCommand getCommand();
 
   @Nullable
-  McFunctionGenericCommand getGenericCommand();
+  McFunctionKeyword getKeyword();
 
   @Nullable
-  McFunctionMacroLine getMacroLine();
+  PsiElement getArgumentToken();
+
+  @Nullable
+  PsiElement getCommandToken();
 
 }

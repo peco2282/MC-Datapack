@@ -5,15 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface McFunctionCommand extends PsiElement {
+public interface McFunctionNbtCompound extends PsiElement {
 
-  @Nullable
-  PsiElement getCommandToken();
-
-  @Nullable
-  PsiElement getMacroToken();
-
-  @Nullable
-  PsiElement getMacroVarToken();
+  @NotNull
+  List<McFunctionNbtProperty> getNbtPropertyList();
 
 }

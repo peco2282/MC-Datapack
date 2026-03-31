@@ -32,8 +32,10 @@ SPACE_TOKEN=[ \t\f]+
 STRING_TOKEN=\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'
 CONTINUATION_TOKEN=\\([ \t\f]*\R)?
 MACRO_TOKEN=\$[a-zA-Z_][a-zA-Z0-9_]*
+MACRO_VAR_TOKEN=\$\([a-zA-Z_][a-zA-Z0-9_]*(\[[0-9]+\])?\)
+MACRO_LINE_START=\$\$
 COMMAND_TOKEN=[a-z_][a-z0-9_]*
-ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},\\\\]+
+ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\\\]+
 
 %%
 <YYINITIAL> {
@@ -187,6 +189,8 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},\\\\]+
   {STRING_TOKEN}             { return STRING_TOKEN; }
   {CONTINUATION_TOKEN}       { return CONTINUATION_TOKEN; }
   {MACRO_TOKEN}              { return MACRO_TOKEN; }
+  {MACRO_VAR_TOKEN}          { return MACRO_VAR_TOKEN; }
+  {MACRO_LINE_START}         { return MACRO_LINE_START; }
   {COMMAND_TOKEN}            { return COMMAND_TOKEN; }
   {ARGUMENT_TOKEN}           { return ARGUMENT_TOKEN; }
 

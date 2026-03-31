@@ -11,12 +11,27 @@ public interface McFunctionTypes {
   IElementType ARGUMENT = new McFunctionElementType("ARGUMENT");
   IElementType COMMAND = new McFunctionElementType("COMMAND");
   IElementType COMMAND_LINE = new McFunctionElementType("COMMAND_LINE");
+  IElementType COMPONENT = new McFunctionElementType("COMPONENT");
+  IElementType COMPONENT_LIST = new McFunctionElementType("COMPONENT_LIST");
+  IElementType COMPONENT_VALUE = new McFunctionElementType("COMPONENT_VALUE");
   IElementType EXECUTE_COMMAND = new McFunctionElementType("EXECUTE_COMMAND");
   IElementType GENERIC_COMMAND = new McFunctionElementType("GENERIC_COMMAND");
+  IElementType ITEM_STACK = new McFunctionElementType("ITEM_STACK");
   IElementType JSON = new McFunctionElementType("JSON");
   IElementType JSON_ARRAY = new McFunctionElementType("JSON_ARRAY");
   IElementType JSON_OBJECT = new McFunctionElementType("JSON_OBJECT");
   IElementType KEYWORD = new McFunctionElementType("KEYWORD");
+  IElementType MACRO_LINE = new McFunctionElementType("MACRO_LINE");
+  IElementType MACRO_VARIABLE = new McFunctionElementType("MACRO_VARIABLE");
+  IElementType NAMESPACED_ID = new McFunctionElementType("NAMESPACED_ID");
+  IElementType NBT_COMPOUND = new McFunctionElementType("NBT_COMPOUND");
+  IElementType NBT_LIST = new McFunctionElementType("NBT_LIST");
+  IElementType NBT_PRIMITIVE = new McFunctionElementType("NBT_PRIMITIVE");
+  IElementType NBT_PROPERTY = new McFunctionElementType("NBT_PROPERTY");
+  IElementType NBT_VALUE = new McFunctionElementType("NBT_VALUE");
+  IElementType SELECTOR = new McFunctionElementType("SELECTOR");
+  IElementType SELECTOR_ARGUMENT = new McFunctionElementType("SELECTOR_ARGUMENT");
+  IElementType SELECTOR_ARGUMENTS = new McFunctionElementType("SELECTOR_ARGUMENTS");
 
   IElementType ACTIONBAR_TOKEN = new McFunctionTokenType("actionbar");
   IElementType ADD_TOKEN = new McFunctionTokenType("add");
@@ -86,7 +101,9 @@ public interface McFunctionTypes {
   IElementType LOOT_TOKEN = new McFunctionTokenType("loot");
   IElementType LTE_TOKEN = new McFunctionTokenType("<=");
   IElementType LT_TOKEN = new McFunctionTokenType("<");
+  IElementType MACRO_LINE_START = new McFunctionTokenType("MACRO_LINE_START");
   IElementType MACRO_TOKEN = new McFunctionTokenType("MACRO_TOKEN");
+  IElementType MACRO_VAR_TOKEN = new McFunctionTokenType("MACRO_VAR_TOKEN");
   IElementType MASTER_TOKEN = new McFunctionTokenType("master");
   IElementType MATCHES_TOKEN = new McFunctionTokenType("matches");
   IElementType MERGE_TOKEN = new McFunctionTokenType("merge");
@@ -179,11 +196,23 @@ public interface McFunctionTypes {
       else if (type == COMMAND_LINE) {
         return new McFunctionCommandLineImpl(node);
       }
+      else if (type == COMPONENT) {
+        return new McFunctionComponentImpl(node);
+      }
+      else if (type == COMPONENT_LIST) {
+        return new McFunctionComponentListImpl(node);
+      }
+      else if (type == COMPONENT_VALUE) {
+        return new McFunctionComponentValueImpl(node);
+      }
       else if (type == EXECUTE_COMMAND) {
         return new McFunctionExecuteCommandImpl(node);
       }
       else if (type == GENERIC_COMMAND) {
         return new McFunctionGenericCommandImpl(node);
+      }
+      else if (type == ITEM_STACK) {
+        return new McFunctionItemStackImpl(node);
       }
       else if (type == JSON) {
         return new McFunctionJsonImpl(node);
@@ -196,6 +225,39 @@ public interface McFunctionTypes {
       }
       else if (type == KEYWORD) {
         return new McFunctionKeywordImpl(node);
+      }
+      else if (type == MACRO_LINE) {
+        return new McFunctionMacroLineImpl(node);
+      }
+      else if (type == MACRO_VARIABLE) {
+        return new McFunctionMacroVariableImpl(node);
+      }
+      else if (type == NAMESPACED_ID) {
+        return new McFunctionNamespacedIdImpl(node);
+      }
+      else if (type == NBT_COMPOUND) {
+        return new McFunctionNbtCompoundImpl(node);
+      }
+      else if (type == NBT_LIST) {
+        return new McFunctionNbtListImpl(node);
+      }
+      else if (type == NBT_PRIMITIVE) {
+        return new McFunctionNbtPrimitiveImpl(node);
+      }
+      else if (type == NBT_PROPERTY) {
+        return new McFunctionNbtPropertyImpl(node);
+      }
+      else if (type == NBT_VALUE) {
+        return new McFunctionNbtValueImpl(node);
+      }
+      else if (type == SELECTOR) {
+        return new McFunctionSelectorImpl(node);
+      }
+      else if (type == SELECTOR_ARGUMENT) {
+        return new McFunctionSelectorArgumentImpl(node);
+      }
+      else if (type == SELECTOR_ARGUMENTS) {
+        return new McFunctionSelectorArgumentsImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

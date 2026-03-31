@@ -5,37 +5,22 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface McFunctionArgument extends PsiElement {
+public interface McFunctionNbtProperty extends PsiElement {
 
   @Nullable
   McFunctionCommand getCommand();
 
   @Nullable
-  McFunctionItemStack getItemStack();
-
-  @Nullable
-  McFunctionJson getJson();
-
-  @Nullable
   McFunctionKeyword getKeyword();
 
-  @Nullable
-  McFunctionSelector getSelector();
+  @NotNull
+  McFunctionNbtValue getNbtValue();
 
   @Nullable
   PsiElement getArgumentToken();
 
   @Nullable
   PsiElement getCommandToken();
-
-  @Nullable
-  PsiElement getContinuationToken();
-
-  @Nullable
-  PsiElement getMacroToken();
-
-  @Nullable
-  PsiElement getMacroVarToken();
 
   @Nullable
   PsiElement getStringToken();

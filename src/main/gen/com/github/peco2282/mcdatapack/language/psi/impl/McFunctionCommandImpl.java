@@ -39,4 +39,10 @@ public class McFunctionCommandImpl extends ASTWrapperPsiElement implements McFun
     return findChildByType(MACRO_TOKEN);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getMacroVarToken() {
+    return findChildByType(MACRO_VAR_TOKEN);
+  }
+
 }

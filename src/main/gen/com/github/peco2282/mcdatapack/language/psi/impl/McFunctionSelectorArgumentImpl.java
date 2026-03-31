@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionGenericCommandImpl extends ASTWrapperPsiElement implements McFunctionGenericCommand {
+public class McFunctionSelectorArgumentImpl extends ASTWrapperPsiElement implements McFunctionSelectorArgument {
 
-  public McFunctionGenericCommandImpl(@NotNull ASTNode node) {
+  public McFunctionSelectorArgumentImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitGenericCommand(this);
+    visitor.visitSelectorArgument(this);
   }
 
   @Override
@@ -29,32 +29,32 @@ public class McFunctionGenericCommandImpl extends ASTWrapperPsiElement implement
 
   @Override
   @NotNull
-  public List<McFunctionArgument> getArgumentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionArgument.class);
+  public List<McFunctionNamespacedId> getNamespacedIdList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNamespacedId.class);
   }
 
   @Override
   @Nullable
-  public McFunctionCommand getCommand() {
-    return findChildByClass(McFunctionCommand.class);
+  public McFunctionNbtCompound getNbtCompound() {
+    return findChildByClass(McFunctionNbtCompound.class);
   }
 
   @Override
-  @NotNull
-  public List<McFunctionItemStack> getItemStackList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionItemStack.class);
+  @Nullable
+  public McFunctionNbtList getNbtList() {
+    return findChildByClass(McFunctionNbtList.class);
   }
 
   @Override
-  @NotNull
-  public List<McFunctionJson> getJsonList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionJson.class);
+  @Nullable
+  public PsiElement getArgumentToken() {
+    return findChildByType(ARGUMENT_TOKEN);
   }
 
   @Override
-  @NotNull
-  public List<McFunctionNbtCompound> getNbtCompoundList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNbtCompound.class);
+  @Nullable
+  public PsiElement getStringToken() {
+    return findChildByType(STRING_TOKEN);
   }
 
 }
