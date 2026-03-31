@@ -10,3 +10,6 @@ exclude:
   - name: All
     paths:
       - .qodana
+  - name: Generated
+    paths:
+      - src/main/gen/
