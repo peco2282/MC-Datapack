@@ -321,14 +321,23 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // command (WHITE_SPACE | (CONTINUATION_TOKEN WHITE_SPACE?) | json | argument)*
+  // (command | json) (WHITE_SPACE | (CONTINUATION_TOKEN WHITE_SPACE?) | json | argument)*
   public static boolean generic_command(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, GENERIC_COMMAND, "<generic command>");
-    result_ = command(builder_, level_ + 1);
+    result_ = generic_command_0(builder_, level_ + 1);
     result_ = result_ && generic_command_1(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // command | json
+  private static boolean generic_command_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "generic_command_0")) return false;
+    boolean result_;
+    result_ = command(builder_, level_ + 1);
+    if (!result_) result_ = json(builder_, level_ + 1);
     return result_;
   }
 
@@ -469,6 +478,32 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // (argument | STRING_TOKEN | COLON)+
+  static boolean json_key(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "json_key")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = json_key_0(builder_, level_ + 1);
+    while (result_) {
+      int pos_ = current_position_(builder_);
+      if (!json_key_0(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "json_key", pos_)) break;
+    }
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // argument | STRING_TOKEN | COLON
+  private static boolean json_key_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "json_key_0")) return false;
+    boolean result_;
+    result_ = argument(builder_, level_ + 1);
+    if (!result_) result_ = consumeToken(builder_, STRING_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, COLON);
+    return result_;
+  }
+
+  /* ********************************************************** */
   // LBRACE (json_property (COMMA json_property)*)? RBRACE
   public static boolean json_object(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "json_object")) return false;
@@ -523,13 +558,13 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // WHITE_SPACE? (argument | STRING_TOKEN) WHITE_SPACE? (COLON | EQUALS) WHITE_SPACE? json_value WHITE_SPACE?
+  // WHITE_SPACE? json_key WHITE_SPACE? (COLON | EQUALS) WHITE_SPACE? json_value WHITE_SPACE?
   static boolean json_property(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "json_property")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = json_property_0(builder_, level_ + 1);
-    result_ = result_ && json_property_1(builder_, level_ + 1);
+    result_ = result_ && json_key(builder_, level_ + 1);
     result_ = result_ && json_property_2(builder_, level_ + 1);
     result_ = result_ && json_property_3(builder_, level_ + 1);
     result_ = result_ && json_property_4(builder_, level_ + 1);
@@ -544,15 +579,6 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(builder_, level_, "json_property_0")) return false;
     consumeToken(builder_, WHITE_SPACE);
     return true;
-  }
-
-  // argument | STRING_TOKEN
-  private static boolean json_property_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "json_property_1")) return false;
-    boolean result_;
-    result_ = argument(builder_, level_ + 1);
-    if (!result_) result_ = consumeToken(builder_, STRING_TOKEN);
-    return result_;
   }
 
   // WHITE_SPACE?

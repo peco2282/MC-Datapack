@@ -34,9 +34,9 @@ public class McFunctionGenericCommandImpl extends ASTWrapperPsiElement implement
   }
 
   @Override
-  @NotNull
+  @Nullable
   public McFunctionCommand getCommand() {
-    return findNotNullChildByClass(McFunctionCommand.class);
+    return findChildByClass(McFunctionCommand.class);
   }
 
   @Override

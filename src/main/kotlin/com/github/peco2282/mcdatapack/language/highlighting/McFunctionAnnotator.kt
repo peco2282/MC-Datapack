@@ -124,23 +124,52 @@ class McFunctionAnnotator : Annotator {
   private fun isJsonKey(element: PsiElement): Boolean {
     // まず、自身が ':' か '=' で終わるか、次の要素が ':' か '=' であるか
     val text = element.text
-    if (text.endsWith(":") || text.endsWith("=")) return true
+    if (text.endsWith(":") || text.endsWith("=")) {
+      // 自身が ':' か '=' で終わる場合も、キーとしての文脈を確認
+      val keyPart = text.dropLast(1)
+      if (keyPart.isEmpty()) return false
+      
+      var prev = element.prevSibling
+      while (prev != null && (prev.node.elementType == McFunctionTypes.WHITE_SPACE || prev.node.elementType == McFunctionTypes.CRLF_TOKEN)) {
+        prev = prev.prevSibling
+      }
+      return prev == null || 
+          prev.node.elementType == McFunctionTypes.LBRACK || 
+          prev.node.elementType == McFunctionTypes.LBRACE || 
+          prev.node.elementType == McFunctionTypes.COMMA ||
+          (prev is McFunctionArgument && (prev.lastChild?.node?.elementType == McFunctionTypes.LBRACK || prev.lastChild?.node?.elementType == McFunctionTypes.LBRACE || prev.lastChild?.node?.elementType == McFunctionTypes.COMMA))
+    }
+
+    // セレクター引数 ([tag=...]) や JSON ([custom_name={...}]) のキー判定
+    // 前後に '[' や ',' がある場合も考慮する
+    var prev = element.prevSibling
+    while (prev != null && (prev.node.elementType == McFunctionTypes.WHITE_SPACE || prev.node.elementType == McFunctionTypes.CRLF_TOKEN)) {
+      prev = prev.prevSibling
+    }
+    val isAfterOpeningOrSeparator = prev == null || 
+        prev.node.elementType == McFunctionTypes.LBRACK || 
+        prev.node.elementType == McFunctionTypes.LBRACE || 
+        prev.node.elementType == McFunctionTypes.COMMA ||
+        (prev is McFunctionArgument && (prev.lastChild?.node?.elementType == McFunctionTypes.LBRACK || prev.lastChild?.node?.elementType == McFunctionTypes.LBRACE || prev.lastChild?.node?.elementType == McFunctionTypes.COMMA))
 
     var next = element.nextSibling
     while (next != null) {
       val nextType = next.node.elementType
-      if (nextType == McFunctionTypes.WHITE_SPACE) {
+      if (nextType == McFunctionTypes.WHITE_SPACE || nextType == McFunctionTypes.CRLF_TOKEN) {
         next = next.nextSibling
         continue
       }
       // 直接 ':' か '=' が来る場合、あるいは McFunctionArgument の中の最初の子要素が ':' か '=' の場合
       if (nextType == McFunctionTypes.COLON || nextType == McFunctionTypes.EQUALS ||
         next.text.startsWith(":") || next.text.startsWith("=")
-      ) return true
+      ) {
+        return isAfterOpeningOrSeparator
+      }
       break
     }
     // 親要素の隣も見る (PSI構造が ARGUMENT(KEY), ARGUMENT(:) に分かれている場合)
     if (element.parent is McFunctionArgument && element.parent.firstChild == element) {
+      // 親が McFunctionArgument の場合、その親 (更なる上位) の文脈をチェックする必要がある
       return isJsonKey(element.parent)
     }
     return false

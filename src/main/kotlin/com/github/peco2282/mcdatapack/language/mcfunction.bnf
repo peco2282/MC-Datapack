@@ -186,7 +186,7 @@ command_line ::= (execute_command | generic_command) {pin=1}
 execute_command ::= EXECUTE_TOKEN execute_body?
 private execute_body ::= (WHITE_SPACE | execute_modifier_with_continuation)+ (RUN_TOKEN (WHITE_SPACE command_line | execute_body))?
 private execute_modifier_with_continuation ::= (CONTINUATION_TOKEN WHITE_SPACE?)? execute_modifier
-generic_command ::= command (WHITE_SPACE | (CONTINUATION_TOKEN WHITE_SPACE?) | json | argument)*
+generic_command ::= (command | json) (WHITE_SPACE | (CONTINUATION_TOKEN WHITE_SPACE?) | json | argument)*
 
 // 行頭のコマンド名
 command ::= ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN | DAMAGE_TOKEN
@@ -231,4 +231,5 @@ json_object ::= LBRACE (json_property (COMMA json_property)*)? RBRACE
 private json_value ::= json | (argument | STRING_TOKEN)+ json?
 
 private json_element  ::= WHITE_SPACE? json_value WHITE_SPACE?
-private json_property ::= WHITE_SPACE? (argument | STRING_TOKEN) WHITE_SPACE? (COLON | EQUALS) WHITE_SPACE? json_value WHITE_SPACE?
+private json_key ::= (argument | STRING_TOKEN | COLON)+
+private json_property ::= WHITE_SPACE? json_key WHITE_SPACE? (COLON | EQUALS) WHITE_SPACE? json_value WHITE_SPACE?

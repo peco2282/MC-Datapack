@@ -66,7 +66,7 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
         if (element is McFunctionCommandLine) {
           val generic = element.genericCommand
           if (generic != null) {
-            val commandText = generic.command.text.lowercase()
+            val commandText = generic.command?.text?.lowercase() ?: ""
             return getIconForCommand(commandText)
           }
           if (element.executeCommand != null) {

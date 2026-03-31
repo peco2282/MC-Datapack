@@ -10,7 +10,7 @@ public interface McFunctionGenericCommand extends PsiElement {
   @NotNull
   List<McFunctionArgument> getArgumentList();
 
-  @NotNull
+  @Nullable
   McFunctionCommand getCommand();
 
   @NotNull
