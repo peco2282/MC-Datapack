@@ -5,21 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface McFunctionItemCommand extends PsiElement {
+public interface McFunctionItemTarget extends PsiElement {
 
   @Nullable
-  McFunctionItemSlot getItemSlot();
-
-  @Nullable
-  McFunctionItemStack getItemStack();
-
-  @Nullable
-  McFunctionItemTarget getItemTarget();
+  McFunctionCoordinate getCoordinate();
 
   @Nullable
   McFunctionNamespacedId getNamespacedId();
 
   @Nullable
-  PsiElement getArgumentToken();
+  McFunctionSelector getSelector();
 
 }

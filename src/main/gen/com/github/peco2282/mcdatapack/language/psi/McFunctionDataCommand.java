@@ -20,6 +20,9 @@ public interface McFunctionDataCommand extends PsiElement {
   McFunctionNbtCompound getNbtCompound();
 
   @Nullable
+  McFunctionNbtPath getNbtPath();
+
+  @Nullable
   McFunctionNbtValue getNbtValue();
 
   @NotNull

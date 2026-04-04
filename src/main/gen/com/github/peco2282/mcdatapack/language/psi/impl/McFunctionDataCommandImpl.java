@@ -53,6 +53,12 @@ public class McFunctionDataCommandImpl extends ASTWrapperPsiElement implements M
 
   @Override
   @Nullable
+  public McFunctionNbtPath getNbtPath() {
+    return findChildByClass(McFunctionNbtPath.class);
+  }
+
+  @Override
+  @Nullable
   public McFunctionNbtValue getNbtValue() {
     return findChildByClass(McFunctionNbtValue.class);
   }

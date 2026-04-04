@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionExecuteGenericModifierImpl extends ASTWrapperPsiElement implements McFunctionExecuteGenericModifier {
+public class McFunctionItemTargetImpl extends ASTWrapperPsiElement implements McFunctionItemTarget {
 
-  public McFunctionExecuteGenericModifierImpl(@NotNull ASTNode node) {
+  public McFunctionItemTargetImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitExecuteGenericModifier(this);
+    visitor.visitItemTarget(this);
   }
 
   @Override
@@ -35,62 +35,14 @@ public class McFunctionExecuteGenericModifierImpl extends ASTWrapperPsiElement i
 
   @Override
   @Nullable
-  public McFunctionItemStack getItemStack() {
-    return findChildByClass(McFunctionItemStack.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionJson getJson() {
-    return findChildByClass(McFunctionJson.class);
-  }
-
-  @Override
-  @Nullable
   public McFunctionNamespacedId getNamespacedId() {
     return findChildByClass(McFunctionNamespacedId.class);
   }
 
   @Override
   @Nullable
-  public McFunctionNbtCompound getNbtCompound() {
-    return findChildByClass(McFunctionNbtCompound.class);
-  }
-
-  @Override
-  @Nullable
   public McFunctionSelector getSelector() {
     return findChildByClass(McFunctionSelector.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getArgumentToken() {
-    return findChildByType(ARGUMENT_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getCoordToken() {
-    return findChildByType(COORD_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getMacroToken() {
-    return findChildByType(MACRO_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getMacroVarToken() {
-    return findChildByType(MACRO_VAR_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getStringToken() {
-    return findChildByType(STRING_TOKEN);
   }
 
 }

@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionItemCommandImpl extends ASTWrapperPsiElement implements McFunctionItemCommand {
+public class McFunctionItemSlotImpl extends ASTWrapperPsiElement implements McFunctionItemSlot {
 
-  public McFunctionItemCommandImpl(@NotNull ASTNode node) {
+  public McFunctionItemSlotImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitItemCommand(this);
+    visitor.visitItemSlot(this);
   }
 
   @Override
@@ -29,26 +29,14 @@ public class McFunctionItemCommandImpl extends ASTWrapperPsiElement implements M
 
   @Override
   @Nullable
-  public McFunctionItemSlot getItemSlot() {
-    return findChildByClass(McFunctionItemSlot.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionItemStack getItemStack() {
-    return findChildByClass(McFunctionItemStack.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionItemTarget getItemTarget() {
-    return findChildByClass(McFunctionItemTarget.class);
-  }
-
-  @Override
-  @Nullable
   public McFunctionNamespacedId getNamespacedId() {
     return findChildByClass(McFunctionNamespacedId.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionSlotId getSlotId() {
+    return findChildByClass(McFunctionSlotId.class);
   }
 
   @Override

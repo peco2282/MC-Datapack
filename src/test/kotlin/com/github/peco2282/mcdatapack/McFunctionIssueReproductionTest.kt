@@ -108,6 +108,14 @@ class McFunctionIssueReproductionTest : BasePlatformTestCase() {
         val input = "item modify entity @s weapon.mainhand my_datapack:super_sharpness"
         val file = myFixture.configureByText("item_modify.mcfunction", input)
         val errors = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
+        if (errors.isNotEmpty()) {
+            val sb = StringBuilder()
+            dumpPsi(file, sb)
+            System.err.println("[DEBUG_LOG] ItemModify PSI Tree:\n$sb")
+            for (error in errors) {
+                System.err.println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
+            }
+        }
         assertTrue("item modify command should not have parse errors, but found ${errors.size}", errors.isEmpty())
     }
 
@@ -116,6 +124,14 @@ class McFunctionIssueReproductionTest : BasePlatformTestCase() {
         val input = "item replace entity @s weapon.mainhand with diamond_sword"
         val file = myFixture.configureByText("item_replace.mcfunction", input)
         val errors = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
+        if (errors.isNotEmpty()) {
+            val sb = StringBuilder()
+            dumpPsi(file, sb)
+            System.err.println("[DEBUG_LOG] ItemReplace PSI Tree:\n$sb")
+            for (error in errors) {
+                System.err.println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
+            }
+        }
         assertTrue("item replace command should not have parse errors, but found ${errors.size}", errors.isEmpty())
     }
 

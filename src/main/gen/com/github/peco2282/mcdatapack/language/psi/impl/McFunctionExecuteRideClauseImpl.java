@@ -11,50 +11,20 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionCommandImpl extends ASTWrapperPsiElement implements McFunctionCommand {
+public class McFunctionExecuteRideClauseImpl extends ASTWrapperPsiElement implements McFunctionExecuteRideClause {
 
-  public McFunctionCommandImpl(@NotNull ASTNode node) {
+  public McFunctionExecuteRideClauseImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitCommand(this);
+    visitor.visitExecuteRideClause(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof McFunctionVisitor) accept((McFunctionVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionDamageCommand getDamageCommand() {
-    return findChildByClass(McFunctionDamageCommand.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionRideCommand getRideCommand() {
-    return findChildByClass(McFunctionRideCommand.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getCommandToken() {
-    return findChildByType(COMMAND_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getMacroToken() {
-    return findChildByType(MACRO_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getMacroVarToken() {
-    return findChildByType(MACRO_VAR_TOKEN);
   }
 
 }

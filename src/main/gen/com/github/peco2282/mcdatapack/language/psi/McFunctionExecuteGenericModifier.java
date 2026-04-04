@@ -7,23 +7,26 @@ import com.intellij.psi.PsiElement;
 
 public interface McFunctionExecuteGenericModifier extends PsiElement {
 
-  @NotNull
-  List<McFunctionCommand> getCommandList();
-
-  @Nullable
-  McFunctionComponentList getComponentList();
-
   @Nullable
   McFunctionCoordinate getCoordinate();
 
   @Nullable
+  McFunctionItemStack getItemStack();
+
+  @Nullable
   McFunctionJson getJson();
+
+  @Nullable
+  McFunctionNamespacedId getNamespacedId();
 
   @Nullable
   McFunctionNbtCompound getNbtCompound();
 
   @Nullable
   McFunctionSelector getSelector();
+
+  @Nullable
+  PsiElement getArgumentToken();
 
   @Nullable
   PsiElement getCoordToken();

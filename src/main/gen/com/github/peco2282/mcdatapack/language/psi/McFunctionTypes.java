@@ -17,6 +17,7 @@ public interface McFunctionTypes {
   IElementType COMPONENT_LIST = new McFunctionElementType("COMPONENT_LIST");
   IElementType COMPONENT_VALUE = new McFunctionElementType("COMPONENT_VALUE");
   IElementType COORDINATE = new McFunctionElementType("COORDINATE");
+  IElementType DAMAGE_COMMAND = new McFunctionElementType("DAMAGE_COMMAND");
   IElementType DATA_COMMAND = new McFunctionElementType("DATA_COMMAND");
   IElementType EXECUTE_ALIGN_CLAUSE = new McFunctionElementType("EXECUTE_ALIGN_CLAUSE");
   IElementType EXECUTE_ANCHORED_CLAUSE = new McFunctionElementType("EXECUTE_ANCHORED_CLAUSE");
@@ -30,6 +31,7 @@ public interface McFunctionTypes {
   IElementType EXECUTE_MODIFIER_CLAUSE = new McFunctionElementType("EXECUTE_MODIFIER_CLAUSE");
   IElementType EXECUTE_ON_CLAUSE = new McFunctionElementType("EXECUTE_ON_CLAUSE");
   IElementType EXECUTE_POSITION_CLAUSE = new McFunctionElementType("EXECUTE_POSITION_CLAUSE");
+  IElementType EXECUTE_RIDE_CLAUSE = new McFunctionElementType("EXECUTE_RIDE_CLAUSE");
   IElementType EXECUTE_ROTATED_CLAUSE = new McFunctionElementType("EXECUTE_ROTATED_CLAUSE");
   IElementType EXECUTE_STORE_CLAUSE = new McFunctionElementType("EXECUTE_STORE_CLAUSE");
   IElementType EXECUTE_SUMMON_CLAUSE = new McFunctionElementType("EXECUTE_SUMMON_CLAUSE");
@@ -38,7 +40,9 @@ public interface McFunctionTypes {
   IElementType GIVE_COMMAND = new McFunctionElementType("GIVE_COMMAND");
   IElementType ITEM_COMMAND = new McFunctionElementType("ITEM_COMMAND");
   IElementType ITEM_ID = new McFunctionElementType("ITEM_ID");
+  IElementType ITEM_SLOT = new McFunctionElementType("ITEM_SLOT");
   IElementType ITEM_STACK = new McFunctionElementType("ITEM_STACK");
+  IElementType ITEM_TARGET = new McFunctionElementType("ITEM_TARGET");
   IElementType JSON = new McFunctionElementType("JSON");
   IElementType JSON_ARRAY = new McFunctionElementType("JSON_ARRAY");
   IElementType JSON_OBJECT = new McFunctionElementType("JSON_OBJECT");
@@ -48,19 +52,22 @@ public interface McFunctionTypes {
   IElementType NAMESPACED_ID = new McFunctionElementType("NAMESPACED_ID");
   IElementType NBT_COMPOUND = new McFunctionElementType("NBT_COMPOUND");
   IElementType NBT_LIST = new McFunctionElementType("NBT_LIST");
+  IElementType NBT_PATH = new McFunctionElementType("NBT_PATH");
   IElementType NBT_PRIMITIVE = new McFunctionElementType("NBT_PRIMITIVE");
   IElementType NBT_PROPERTY = new McFunctionElementType("NBT_PROPERTY");
   IElementType NBT_VALUE = new McFunctionElementType("NBT_VALUE");
+  IElementType RIDE_COMMAND = new McFunctionElementType("RIDE_COMMAND");
   IElementType SELECTOR = new McFunctionElementType("SELECTOR");
   IElementType SELECTOR_ARGUMENT = new McFunctionElementType("SELECTOR_ARGUMENT");
   IElementType SELECTOR_ARGUMENTS = new McFunctionElementType("SELECTOR_ARGUMENTS");
   IElementType SELECTOR_ARG_KEY = new McFunctionElementType("SELECTOR_ARG_KEY");
+  IElementType SLOT_ID = new McFunctionElementType("SLOT_ID");
 
   IElementType ACTIONBAR_TOKEN = new McFunctionTokenType("actionbar");
   IElementType ADD_TOKEN = new McFunctionTokenType("add");
   IElementType ADVANCEMENT_TOKEN = new McFunctionTokenType("advancement");
   IElementType ALIGN_TOKEN = new McFunctionTokenType("align");
-  IElementType ANCHORED_TOKEN = new McFunctionTokenType("ANCHORED_TOKEN");
+  IElementType ANCHORED_TOKEN = new McFunctionTokenType("anchored");
   IElementType ARGUMENT_TOKEN = new McFunctionTokenType("ARGUMENT_TOKEN");
   IElementType AS_TOKEN = new McFunctionTokenType("as");
   IElementType ATTRIBUTE_TOKEN = new McFunctionTokenType("attribute");
@@ -68,6 +75,7 @@ public interface McFunctionTypes {
   IElementType BASE_TOKEN = new McFunctionTokenType("base");
   IElementType BLOCK_TOKEN = new McFunctionTokenType("block");
   IElementType BOSSBAR_TOKEN = new McFunctionTokenType("bossbar");
+  IElementType BY_TOKEN = new McFunctionTokenType("by");
   IElementType CENTER_TOKEN = new McFunctionTokenType("center");
   IElementType CLEAR_TOKEN = new McFunctionTokenType("clear");
   IElementType CLONE_TOKEN = new McFunctionTokenType("clone");
@@ -77,6 +85,7 @@ public interface McFunctionTypes {
   IElementType COMMENT_TOKEN = new McFunctionTokenType("COMMENT_TOKEN");
   IElementType CONTINUATION_TOKEN = new McFunctionTokenType("CONTINUATION_TOKEN");
   IElementType COORD_TOKEN = new McFunctionTokenType("COORD_TOKEN");
+  IElementType COPY_TOKEN = new McFunctionTokenType("copy");
   IElementType CRLF_TOKEN = new McFunctionTokenType("CRLF_TOKEN");
   IElementType DAMAGE_TOKEN = new McFunctionTokenType("damage");
   IElementType DATAPACK_TOKEN = new McFunctionTokenType("datapack");
@@ -85,6 +94,7 @@ public interface McFunctionTypes {
   IElementType DEFAULTGAMEMODE_TOKEN = new McFunctionTokenType("defaultgamemode");
   IElementType DIFFICULTY_TOKEN = new McFunctionTokenType("difficulty");
   IElementType DISABLE_TOKEN = new McFunctionTokenType("disable");
+  IElementType DISMOUNT_TOKEN = new McFunctionTokenType("dismount");
   IElementType DOTDOT_TOKEN = new McFunctionTokenType("..");
   IElementType DOT_TOKEN = new McFunctionTokenType(".");
   IElementType EFFECT_TOKEN = new McFunctionTokenType("effect");
@@ -137,6 +147,7 @@ public interface McFunctionTypes {
   IElementType ME_TOKEN = new McFunctionTokenType("me");
   IElementType MODIFIER_TOKEN = new McFunctionTokenType("modifier");
   IElementType MODIFY_TOKEN = new McFunctionTokenType("modify");
+  IElementType MOUNT_TOKEN = new McFunctionTokenType("mount");
   IElementType MSG_TOKEN = new McFunctionTokenType("msg");
   IElementType MUSIC_TOKEN = new McFunctionTokenType("music");
   IElementType OBJECTIVES_TOKEN = new McFunctionTokenType("objectives");
@@ -157,6 +168,7 @@ public interface McFunctionTypes {
   IElementType RECIPE_TOKEN = new McFunctionTokenType("recipe");
   IElementType RELOAD_TOKEN = new McFunctionTokenType("reload");
   IElementType REMOVE_TOKEN = new McFunctionTokenType("remove");
+  IElementType REPLACE_TOKEN = new McFunctionTokenType("replace");
   IElementType RESULT_TOKEN = new McFunctionTokenType("result");
   IElementType RETURN_TOKEN = new McFunctionTokenType("return");
   IElementType REVOKE_TOKEN = new McFunctionTokenType("revoke");
@@ -209,8 +221,11 @@ public interface McFunctionTypes {
   IElementType UNLESS_TOKEN = new McFunctionTokenType("unless");
   IElementType VALUE_TOKEN = new McFunctionTokenType("value");
   IElementType WARNING_TOKEN = new McFunctionTokenType("warning");
+  IElementType WEAPON_MAINHAND_TOKEN = new McFunctionTokenType("weapon.mainhand");
+  IElementType WEAPON_OFFHAND_TOKEN = new McFunctionTokenType("weapon.offhand");
   IElementType WEATHER_TOKEN = new McFunctionTokenType("weather");
   IElementType WHITELIST_TOKEN = new McFunctionTokenType("whitelist");
+  IElementType WITH_TOKEN = new McFunctionTokenType("with");
   IElementType WORLDBORDER_TOKEN = new McFunctionTokenType("worldborder");
   IElementType XP_TOKEN = new McFunctionTokenType("xp");
 
@@ -243,6 +258,9 @@ public interface McFunctionTypes {
       }
       else if (type == COORDINATE) {
         return new McFunctionCoordinateImpl(node);
+      }
+      else if (type == DAMAGE_COMMAND) {
+        return new McFunctionDamageCommandImpl(node);
       }
       else if (type == DATA_COMMAND) {
         return new McFunctionDataCommandImpl(node);
@@ -283,6 +301,9 @@ public interface McFunctionTypes {
       else if (type == EXECUTE_POSITION_CLAUSE) {
         return new McFunctionExecutePositionClauseImpl(node);
       }
+      else if (type == EXECUTE_RIDE_CLAUSE) {
+        return new McFunctionExecuteRideClauseImpl(node);
+      }
       else if (type == EXECUTE_ROTATED_CLAUSE) {
         return new McFunctionExecuteRotatedClauseImpl(node);
       }
@@ -307,8 +328,14 @@ public interface McFunctionTypes {
       else if (type == ITEM_ID) {
         return new McFunctionItemIdImpl(node);
       }
+      else if (type == ITEM_SLOT) {
+        return new McFunctionItemSlotImpl(node);
+      }
       else if (type == ITEM_STACK) {
         return new McFunctionItemStackImpl(node);
+      }
+      else if (type == ITEM_TARGET) {
+        return new McFunctionItemTargetImpl(node);
       }
       else if (type == JSON) {
         return new McFunctionJsonImpl(node);
@@ -337,6 +364,9 @@ public interface McFunctionTypes {
       else if (type == NBT_LIST) {
         return new McFunctionNbtListImpl(node);
       }
+      else if (type == NBT_PATH) {
+        return new McFunctionNbtPathImpl(node);
+      }
       else if (type == NBT_PRIMITIVE) {
         return new McFunctionNbtPrimitiveImpl(node);
       }
@@ -345,6 +375,9 @@ public interface McFunctionTypes {
       }
       else if (type == NBT_VALUE) {
         return new McFunctionNbtValueImpl(node);
+      }
+      else if (type == RIDE_COMMAND) {
+        return new McFunctionRideCommandImpl(node);
       }
       else if (type == SELECTOR) {
         return new McFunctionSelectorImpl(node);
@@ -357,6 +390,9 @@ public interface McFunctionTypes {
       }
       else if (type == SELECTOR_ARG_KEY) {
         return new McFunctionSelectorArgKeyImpl(node);
+      }
+      else if (type == SLOT_ID) {
+        return new McFunctionSlotIdImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionItemCommandImpl extends ASTWrapperPsiElement implements McFunctionItemCommand {
+public class McFunctionNbtPathImpl extends ASTWrapperPsiElement implements McFunctionNbtPath {
 
-  public McFunctionItemCommandImpl(@NotNull ASTNode node) {
+  public McFunctionNbtPathImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitItemCommand(this);
+    visitor.visitNbtPath(this);
   }
 
   @Override
@@ -28,33 +28,21 @@ public class McFunctionItemCommandImpl extends ASTWrapperPsiElement implements M
   }
 
   @Override
-  @Nullable
-  public McFunctionItemSlot getItemSlot() {
-    return findChildByClass(McFunctionItemSlot.class);
+  @NotNull
+  public List<McFunctionKeyword> getKeywordList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionKeyword.class);
   }
 
   @Override
-  @Nullable
-  public McFunctionItemStack getItemStack() {
-    return findChildByClass(McFunctionItemStack.class);
+  @NotNull
+  public List<McFunctionNamespacedId> getNamespacedIdList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNamespacedId.class);
   }
 
   @Override
-  @Nullable
-  public McFunctionItemTarget getItemTarget() {
-    return findChildByClass(McFunctionItemTarget.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionNamespacedId getNamespacedId() {
-    return findChildByClass(McFunctionNamespacedId.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getArgumentToken() {
-    return findChildByType(ARGUMENT_TOKEN);
+  @NotNull
+  public List<McFunctionNbtCompound> getNbtCompoundList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNbtCompound.class);
   }
 
 }

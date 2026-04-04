@@ -61,18 +61,41 @@ class McFunctionCompletionContributor : CompletionContributor() {
 
   private fun isCommandPosition(position: com.intellij.psi.PsiElement): Boolean {
     // 1. 行の最初（前にあるのが改行やスペースのみ）
-    var prev = position.prevSibling
-    while (prev != null && (prev.node.elementType == com.intellij.psi.TokenType.WHITE_SPACE || prev.node.elementType == McFunctionTypes.CONTINUATION_TOKEN)) {
-      prev = prev.prevSibling
+    // position が McFunctionCommand の中にあるか、または親が McFunctionCommandLine の最初の子（の空白以外）であるか
+    var element = position
+    while (element != null && element !is com.intellij.psi.PsiFile) {
+        val prev = element.prevSibling
+        if (prev != null) {
+            // 前に何か（空白以外）があれば、それは行頭ではない
+            if (prev.node.elementType != com.intellij.psi.TokenType.WHITE_SPACE && prev.node.elementType != McFunctionTypes.CONTINUATION_TOKEN) {
+                // ただし run の直後なら OK
+                if (prev.node.elementType == McFunctionTypes.RUN_TOKEN) return true
+                
+                // さらに遡る（run の後に空白がある場合など）
+                var p = prev
+                while (p != null && (p.node.elementType == com.intellij.psi.TokenType.WHITE_SPACE || p.node.elementType == McFunctionTypes.CONTINUATION_TOKEN)) {
+                    p = p.prevSibling
+                }
+                if (p != null && p.node.elementType == McFunctionTypes.RUN_TOKEN) return true
+                
+                return false
+            }
+        } else {
+            // 前に兄弟がいない場合、親へ
+            element = element.parent
+            continue
+        }
+        // 前が空白ならさらに前を見る
+        var p = prev
+        while (p != null && (p.node.elementType == com.intellij.psi.TokenType.WHITE_SPACE || p.node.elementType == McFunctionTypes.CONTINUATION_TOKEN)) {
+            p = p.prevSibling
+        }
+        if (p == null) return true // 行頭
+        if (p.node.elementType == McFunctionTypes.CRLF_TOKEN) return true // 行頭
+        if (p.node.elementType == McFunctionTypes.RUN_TOKEN) return true
+        return false
     }
-    if (prev == null || prev.node.elementType == McFunctionTypes.CRLF_TOKEN) return true
-
-    // 2. run の直後
-    if (prev.node.elementType == McFunctionTypes.RUN_TOKEN) return true
-
-    // 3. McFunctionCommand の直後であればコマンドではない（引数のはず）
-    // ただし、execute の modifiers の途中などは KEYWORDS を出したい
-    return false
+    return true
   }
 
   override fun beforeCompletion(context: CompletionInitializationContext) {

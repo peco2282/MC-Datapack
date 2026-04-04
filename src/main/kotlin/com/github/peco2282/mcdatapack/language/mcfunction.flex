@@ -170,6 +170,15 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\]+
   "warning"                  { return WARNING_TOKEN; }
   "master"                   { return MASTER_TOKEN; }
   "music"                    { return MUSIC_TOKEN; }
+  "by"                       { return BY_TOKEN; }
+  "mount"                    { return MOUNT_TOKEN; }
+  "anchored"                 { return ANCHORED_TOKEN; }
+  "weapon.mainhand"          { return WEAPON_MAINHAND_TOKEN; }
+  "weapon.offhand"           { return WEAPON_OFFHAND_TOKEN; }
+  "copy"                     { return COPY_TOKEN; }
+  "replace"                  { return REPLACE_TOKEN; }
+  "with"                     { return WITH_TOKEN; }
+  "dismount"                 { return DISMOUNT_TOKEN; }
   "@s"                       { return SELECTOR_S; }
   "@a"                       { return SELECTOR_A; }
   "@p"                       { return SELECTOR_P; }
@@ -188,7 +197,6 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\]+
   ":"                        { return COLON; }
   "="                        { return EQUALS; }
   ","                        { return COMMA; }
-  "ANCHORED_TOKEN"           { return ANCHORED_TOKEN; }
 
   {COMMENT_TOKEN}            { return COMMENT_TOKEN; }
   {CRLF_TOKEN}               { return CRLF_TOKEN; }

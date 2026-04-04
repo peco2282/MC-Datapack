@@ -38,6 +38,9 @@ public interface McFunctionExecuteModifierClause extends PsiElement {
   McFunctionExecutePositionClause getExecutePositionClause();
 
   @Nullable
+  McFunctionExecuteRideClause getExecuteRideClause();
+
+  @Nullable
   McFunctionExecuteRotatedClause getExecuteRotatedClause();
 
   @Nullable

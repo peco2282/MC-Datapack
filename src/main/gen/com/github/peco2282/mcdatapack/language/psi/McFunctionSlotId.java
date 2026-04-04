@@ -5,21 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface McFunctionCommand extends PsiElement {
+public interface McFunctionSlotId extends PsiElement {
 
   @Nullable
-  McFunctionDamageCommand getDamageCommand();
-
-  @Nullable
-  McFunctionRideCommand getRideCommand();
+  PsiElement getArgumentToken();
 
   @Nullable
   PsiElement getCommandToken();
-
-  @Nullable
-  PsiElement getMacroToken();
-
-  @Nullable
-  PsiElement getMacroVarToken();
 
 }

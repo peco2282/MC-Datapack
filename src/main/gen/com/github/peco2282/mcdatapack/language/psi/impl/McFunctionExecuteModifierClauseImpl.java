@@ -89,6 +89,12 @@ public class McFunctionExecuteModifierClauseImpl extends ASTWrapperPsiElement im
 
   @Override
   @Nullable
+  public McFunctionExecuteRideClause getExecuteRideClause() {
+    return findChildByClass(McFunctionExecuteRideClause.class);
+  }
+
+  @Override
+  @Nullable
   public McFunctionExecuteRotatedClause getExecuteRotatedClause() {
     return findChildByClass(McFunctionExecuteRotatedClause.class);
   }

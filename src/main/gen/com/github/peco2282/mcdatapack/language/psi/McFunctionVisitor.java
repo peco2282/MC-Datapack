@@ -43,6 +43,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitDamageCommand(@NotNull McFunctionDamageCommand o) {
+    visitPsiElement(o);
+  }
+
   public void visitDataCommand(@NotNull McFunctionDataCommand o) {
     visitPsiElement(o);
   }
@@ -95,6 +99,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitExecuteRideClause(@NotNull McFunctionExecuteRideClause o) {
+    visitPsiElement(o);
+  }
+
   public void visitExecuteRotatedClause(@NotNull McFunctionExecuteRotatedClause o) {
     visitPsiElement(o);
   }
@@ -127,7 +135,15 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitItemSlot(@NotNull McFunctionItemSlot o) {
+    visitPsiElement(o);
+  }
+
   public void visitItemStack(@NotNull McFunctionItemStack o) {
+    visitPsiElement(o);
+  }
+
+  public void visitItemTarget(@NotNull McFunctionItemTarget o) {
     visitPsiElement(o);
   }
 
@@ -167,6 +183,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitNbtPath(@NotNull McFunctionNbtPath o) {
+    visitPsiElement(o);
+  }
+
   public void visitNbtPrimitive(@NotNull McFunctionNbtPrimitive o) {
     visitPsiElement(o);
   }
@@ -176,6 +196,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
   }
 
   public void visitNbtValue(@NotNull McFunctionNbtValue o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRideCommand(@NotNull McFunctionRideCommand o) {
     visitPsiElement(o);
   }
 
@@ -192,6 +216,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
   }
 
   public void visitSelectorArguments(@NotNull McFunctionSelectorArguments o) {
+    visitPsiElement(o);
+  }
+
+  public void visitSlotId(@NotNull McFunctionSlotId o) {
     visitPsiElement(o);
   }
 

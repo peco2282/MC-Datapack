@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionCommandImpl extends ASTWrapperPsiElement implements McFunctionCommand {
+public class McFunctionRideCommandImpl extends ASTWrapperPsiElement implements McFunctionRideCommand {
 
-  public McFunctionCommandImpl(@NotNull ASTNode node) {
+  public McFunctionRideCommandImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitCommand(this);
+    visitor.visitRideCommand(this);
   }
 
   @Override
@@ -28,33 +28,9 @@ public class McFunctionCommandImpl extends ASTWrapperPsiElement implements McFun
   }
 
   @Override
-  @Nullable
-  public McFunctionDamageCommand getDamageCommand() {
-    return findChildByClass(McFunctionDamageCommand.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionRideCommand getRideCommand() {
-    return findChildByClass(McFunctionRideCommand.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getCommandToken() {
-    return findChildByType(COMMAND_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getMacroToken() {
-    return findChildByType(MACRO_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getMacroVarToken() {
-    return findChildByType(MACRO_VAR_TOKEN);
+  @NotNull
+  public List<McFunctionSelector> getSelectorList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionSelector.class);
   }
 
 }
