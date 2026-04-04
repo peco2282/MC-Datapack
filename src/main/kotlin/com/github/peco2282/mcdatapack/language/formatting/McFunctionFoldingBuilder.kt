@@ -3,6 +3,7 @@ package com.github.peco2282.mcdatapack.language.formatting
 import com.github.peco2282.mcdatapack.language.psi.McFunctionJsonObject
 import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
 import com.intellij.lang.ASTNode
+import com.intellij.psi.TokenType
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
@@ -31,7 +32,7 @@ class McFunctionFoldingBuilder : FoldingBuilderEx(), DumbAware {
         var next = child.nextSibling
         while (next != null && (next.node.elementType == McFunctionTypes.COMMENT_TOKEN ||
               next.node.elementType == McFunctionTypes.CRLF_TOKEN ||
-              next.node.elementType == McFunctionTypes.WHITE_SPACE)
+              next.node.elementType == TokenType.WHITE_SPACE)
         ) {
           if (next.node.elementType == McFunctionTypes.COMMENT_TOKEN) {
             lastComment = next
