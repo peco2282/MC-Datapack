@@ -29,14 +29,14 @@ public class McFunctionExecuteCommandImpl extends ASTWrapperPsiElement implement
 
   @Override
   @NotNull
-  public List<McFunctionArgument> getArgumentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionArgument.class);
+  public List<McFunctionCommandLine> getCommandLineList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCommandLine.class);
   }
 
   @Override
   @NotNull
-  public List<McFunctionCommandLine> getCommandLineList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCommandLine.class);
+  public List<McFunctionComponentList> getComponentListList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionComponentList.class);
   }
 
   @Override
@@ -49,6 +49,12 @@ public class McFunctionExecuteCommandImpl extends ASTWrapperPsiElement implement
   @NotNull
   public List<McFunctionKeyword> getKeywordList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionKeyword.class);
+  }
+
+  @Override
+  @NotNull
+  public List<McFunctionSelector> getSelectorList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionSelector.class);
   }
 
 }

@@ -8,15 +8,18 @@ import com.intellij.psi.PsiElement;
 public interface McFunctionExecuteCommand extends PsiElement {
 
   @NotNull
-  List<McFunctionArgument> getArgumentList();
+  List<McFunctionCommandLine> getCommandLineList();
 
   @NotNull
-  List<McFunctionCommandLine> getCommandLineList();
+  List<McFunctionComponentList> getComponentListList();
 
   @NotNull
   List<McFunctionJson> getJsonList();
 
   @NotNull
   List<McFunctionKeyword> getKeywordList();
+
+  @NotNull
+  List<McFunctionSelector> getSelectorList();
 
 }

@@ -9,7 +9,8 @@ import com.intellij.psi.tree.IElementType
 
 class McFunctionAnnotator : Annotator {
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-    println("annotate: ${element.javaClass.simpleName} ${element.text}")
+    if (element.javaClass.simpleName.startsWith("McFunction") && element !is McFunctionFile)
+      println("annotate: ${element.javaClass.simpleName} ${element.text}")
     if (element is McFunctionCommand) {
       val token = element.firstChild ?: return
       val tokenType = token.node.elementType

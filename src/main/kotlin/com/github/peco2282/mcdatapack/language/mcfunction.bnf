@@ -197,8 +197,9 @@ macro_variable ::= MACRO_VAR_TOKEN | MACRO_TOKEN
 
 // execute コマンド：modifier を並べ、run の後に新しいコマンドを再帰的にパース
 execute_command ::= EXECUTE_TOKEN execute_body?
-private execute_body ::= (WHITE_SPACE | execute_modifier_with_continuation)+ (RUN_TOKEN (WHITE_SPACE command_line | execute_body))?
-private execute_modifier_with_continuation ::= (CONTINUATION_TOKEN WHITE_SPACE?)? execute_modifier
+// WHITE_SPACE はフレームワークが自動スキップするため明示的消費不要
+private execute_body ::= execute_modifier_with_continuation+ (RUN_TOKEN (command_line | execute_body))?
+private execute_modifier_with_continuation ::= CONTINUATION_TOKEN? execute_modifier
 generic_command ::= (command | json) (WHITE_SPACE | (CONTINUATION_TOKEN WHITE_SPACE?) | item_stack | nbt_compound | json | argument)*
 
 // 行頭のコマンド名（MACRO_LINE_STARTは macro_line で処理するため除外）
@@ -214,7 +215,8 @@ command ::= ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN 
   | IF_TOKEN | MACRO_TOKEN | MACRO_VAR_TOKEN | COMMAND_TOKEN
 
 // execute の modifier 部分やサブコマンド等
-keyword ::= RUN_TOKEN | ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN | SET_TOKEN
+// RUN_TOKEN は execute_body_3 で専用処理するため keyword から除外
+keyword ::= ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN | SET_TOKEN
   | FROM_TOKEN | ADD_TOKEN | PLAYERS_TOKEN | ACTIONBAR_TOKEN | MATCHES_TOKEN | AS_TOKEN | AT_TOKEN | ANCHORED_TOKEN | FACING_TOKEN | BLOCK_TOKEN
   | ITEMS_TOKEN | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | TEXT_TOKEN | VALUE_TOKEN | EYES_TOKEN | REVOKE_TOKEN | GRANT_TOKEN | DATA_TOKEN
   | GET_TOKEN | MERGE_TOKEN | REMOVE_TOKEN | ENABLE_TOKEN | DISABLE_TOKEN | BASE_TOKEN | MODIFIER_TOKEN
@@ -223,8 +225,27 @@ keyword ::= RUN_TOKEN | ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN
   | CENTER_TOKEN | WARNING_TOKEN | MASTER_TOKEN | MUSIC_TOKEN
   | IF_TOKEN | UNLESS_TOKEN
 
-// execute の modifier 内：keyword か json か argument のどちらか
-private execute_modifier ::= keyword | json | argument
+// execute の modifier 内：keyword か json か execute_argument のどちらか
+// command トークンは含めない（run 後の新コマンドと区別するため）
+private execute_modifier ::= keyword | json | execute_argument
+
+// execute modifier 専用の引数（command トークンを除外）
+// item_stack の代わりに execute_item_stack を使い、command が identifier に入らないようにする
+private execute_argument ::= selector | execute_item_stack | ARGUMENT_TOKEN | STRING_TOKEN
+  | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
+  | MACRO_TOKEN | MACRO_VAR_TOKEN
+  | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
+  | COLON | EQUALS | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
+
+// execute 内専用の item_stack（command トークンを identifier として使わない）
+private execute_item_stack ::= execute_namespaced_id component_list?
+
+// execute 内専用の namespaced_id（command トークンを除外した safe_identifier を使用）
+private execute_namespaced_id ::= safe_identifier (COLON safe_namespaced_path)?
+private safe_namespaced_path ::= safe_identifier (DOT_TOKEN safe_identifier)*
+
+// command トークンを含まない安全な識別子（execute modifier 内で使用）
+private safe_identifier ::= COMMAND_TOKEN | ARGUMENT_TOKEN | keyword
 
 // -----------------------------------------------------------------------
 // Namespaced ID: minecraft:stone  または  stone
@@ -236,6 +257,7 @@ namespaced_id ::= identifier (COLON namespaced_path)?
 private namespaced_path ::= identifier (DOT_TOKEN identifier)*
 
 // 識別子の構成要素（キーワードトークンも識別子として使える）
+// command を含むことで namespaced_id が execute/particle 等を消費できる（generic_command 内では必要）
 private identifier ::= COMMAND_TOKEN | ARGUMENT_TOKEN | keyword | command
 
 // -----------------------------------------------------------------------
