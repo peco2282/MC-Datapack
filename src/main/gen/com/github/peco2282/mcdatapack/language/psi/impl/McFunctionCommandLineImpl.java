@@ -35,6 +35,18 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
 
   @Override
   @Nullable
+  public McFunctionClearCommand getClearCommand() {
+    return findChildByClass(McFunctionClearCommand.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionDataCommand getDataCommand() {
+    return findChildByClass(McFunctionDataCommand.class);
+  }
+
+  @Override
+  @Nullable
   public McFunctionExecuteCommand getExecuteCommand() {
     return findChildByClass(McFunctionExecuteCommand.class);
   }
@@ -47,8 +59,32 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
 
   @Override
   @Nullable
+  public McFunctionGiveCommand getGiveCommand() {
+    return findChildByClass(McFunctionGiveCommand.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionItemCommand getItemCommand() {
+    return findChildByClass(McFunctionItemCommand.class);
+  }
+
+  @Override
+  @Nullable
   public McFunctionMacroLine getMacroLine() {
     return findChildByClass(McFunctionMacroLine.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCommentToken() {
+    return findChildByType(COMMENT_TOKEN);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCrlfToken() {
+    return findChildByType(CRLF_TOKEN);
   }
 
 }

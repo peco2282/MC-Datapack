@@ -14,10 +14,10 @@ public interface McFunctionGenericCommand extends PsiElement {
   McFunctionCommand getCommand();
 
   @NotNull
-  List<McFunctionItemStack> getItemStackList();
+  List<McFunctionJson> getJsonList();
 
   @NotNull
-  List<McFunctionJson> getJsonList();
+  List<McFunctionNamespacedId> getNamespacedIdList();
 
   @NotNull
   List<McFunctionNbtCompound> getNbtCompoundList();

@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionExecuteCommandImpl extends ASTWrapperPsiElement implements McFunctionExecuteCommand {
+public class McFunctionExecuteStoreClauseImpl extends ASTWrapperPsiElement implements McFunctionExecuteStoreClause {
 
-  public McFunctionExecuteCommandImpl(@NotNull ASTNode node) {
+  public McFunctionExecuteStoreClauseImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitExecuteCommand(this);
+    visitor.visitExecuteStoreClause(this);
   }
 
   @Override
@@ -28,15 +28,21 @@ public class McFunctionExecuteCommandImpl extends ASTWrapperPsiElement implement
   }
 
   @Override
-  @Nullable
-  public McFunctionCommandLine getCommandLine() {
-    return findChildByClass(McFunctionCommandLine.class);
+  @NotNull
+  public List<McFunctionCommand> getCommandList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCommand.class);
   }
 
   @Override
-  @NotNull
-  public List<McFunctionExecuteModifierClause> getExecuteModifierClauseList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionExecuteModifierClause.class);
+  @Nullable
+  public McFunctionCoordinate getCoordinate() {
+    return findChildByClass(McFunctionCoordinate.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionSelector getSelector() {
+    return findChildByClass(McFunctionSelector.class);
   }
 
 }

@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionArgumentImpl extends ASTWrapperPsiElement implements McFunctionArgument {
+public class McFunctionExecuteGenericModifierImpl extends ASTWrapperPsiElement implements McFunctionExecuteGenericModifier {
 
-  public McFunctionArgumentImpl(@NotNull ASTNode node) {
+  public McFunctionExecuteGenericModifierImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitArgument(this);
+    visitor.visitExecuteGenericModifier(this);
   }
 
   @Override
@@ -28,9 +28,15 @@ public class McFunctionArgumentImpl extends ASTWrapperPsiElement implements McFu
   }
 
   @Override
+  @NotNull
+  public List<McFunctionCommand> getCommandList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCommand.class);
+  }
+
+  @Override
   @Nullable
-  public McFunctionCommand getCommand() {
-    return findChildByClass(McFunctionCommand.class);
+  public McFunctionComponentList getComponentList() {
+    return findChildByClass(McFunctionComponentList.class);
   }
 
   @Override
@@ -47,32 +53,14 @@ public class McFunctionArgumentImpl extends ASTWrapperPsiElement implements McFu
 
   @Override
   @Nullable
-  public McFunctionKeyword getKeyword() {
-    return findChildByClass(McFunctionKeyword.class);
+  public McFunctionNbtCompound getNbtCompound() {
+    return findChildByClass(McFunctionNbtCompound.class);
   }
 
   @Override
   @Nullable
   public McFunctionSelector getSelector() {
     return findChildByClass(McFunctionSelector.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getArgumentToken() {
-    return findChildByType(ARGUMENT_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getCommandToken() {
-    return findChildByType(COMMAND_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getContinuationToken() {
-    return findChildByType(CONTINUATION_TOKEN);
   }
 
   @Override

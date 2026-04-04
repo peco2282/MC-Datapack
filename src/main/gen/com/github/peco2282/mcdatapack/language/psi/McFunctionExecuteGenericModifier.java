@@ -5,10 +5,13 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface McFunctionArgument extends PsiElement {
+public interface McFunctionExecuteGenericModifier extends PsiElement {
+
+  @NotNull
+  List<McFunctionCommand> getCommandList();
 
   @Nullable
-  McFunctionCommand getCommand();
+  McFunctionComponentList getComponentList();
 
   @Nullable
   McFunctionCoordinate getCoordinate();
@@ -17,19 +20,10 @@ public interface McFunctionArgument extends PsiElement {
   McFunctionJson getJson();
 
   @Nullable
-  McFunctionKeyword getKeyword();
+  McFunctionNbtCompound getNbtCompound();
 
   @Nullable
   McFunctionSelector getSelector();
-
-  @Nullable
-  PsiElement getArgumentToken();
-
-  @Nullable
-  PsiElement getCommandToken();
-
-  @Nullable
-  PsiElement getContinuationToken();
 
   @Nullable
   PsiElement getCoordToken();

@@ -5,12 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface McFunctionExecuteCommand extends PsiElement {
-
-  @Nullable
-  McFunctionCommandLine getCommandLine();
+public interface McFunctionClearCommand extends PsiElement {
 
   @NotNull
-  List<McFunctionExecuteModifierClause> getExecuteModifierClauseList();
+  List<McFunctionArgument> getArgumentList();
+
+  @Nullable
+  McFunctionItemId getItemId();
+
+  @Nullable
+  McFunctionSelector getSelector();
 
 }

@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface McFunctionExecuteCommand extends PsiElement {
+public interface McFunctionExecuteInClause extends PsiElement {
 
   @Nullable
-  McFunctionCommandLine getCommandLine();
-
-  @NotNull
-  List<McFunctionExecuteModifierClause> getExecuteModifierClauseList();
+  McFunctionNamespacedId getNamespacedId();
 
 }

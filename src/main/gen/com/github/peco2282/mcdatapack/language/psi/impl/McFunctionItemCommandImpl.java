@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionExecuteCommandImpl extends ASTWrapperPsiElement implements McFunctionExecuteCommand {
+public class McFunctionItemCommandImpl extends ASTWrapperPsiElement implements McFunctionItemCommand {
 
-  public McFunctionExecuteCommandImpl(@NotNull ASTNode node) {
+  public McFunctionItemCommandImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitExecuteCommand(this);
+    visitor.visitItemCommand(this);
   }
 
   @Override
@@ -28,15 +28,9 @@ public class McFunctionExecuteCommandImpl extends ASTWrapperPsiElement implement
   }
 
   @Override
-  @Nullable
-  public McFunctionCommandLine getCommandLine() {
-    return findChildByClass(McFunctionCommandLine.class);
-  }
-
-  @Override
   @NotNull
-  public List<McFunctionExecuteModifierClause> getExecuteModifierClauseList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionExecuteModifierClause.class);
+  public List<McFunctionArgument> getArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionArgument.class);
   }
 
 }

@@ -41,14 +41,14 @@ public class McFunctionGenericCommandImpl extends ASTWrapperPsiElement implement
 
   @Override
   @NotNull
-  public List<McFunctionItemStack> getItemStackList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionItemStack.class);
+  public List<McFunctionJson> getJsonList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionJson.class);
   }
 
   @Override
   @NotNull
-  public List<McFunctionJson> getJsonList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionJson.class);
+  public List<McFunctionNamespacedId> getNamespacedIdList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNamespacedId.class);
   }
 
   @Override

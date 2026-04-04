@@ -11,12 +11,30 @@ public interface McFunctionCommandLine extends PsiElement {
   McFunctionAttributeCommand getAttributeCommand();
 
   @Nullable
+  McFunctionClearCommand getClearCommand();
+
+  @Nullable
+  McFunctionDataCommand getDataCommand();
+
+  @Nullable
   McFunctionExecuteCommand getExecuteCommand();
 
   @Nullable
   McFunctionGenericCommand getGenericCommand();
 
   @Nullable
+  McFunctionGiveCommand getGiveCommand();
+
+  @Nullable
+  McFunctionItemCommand getItemCommand();
+
+  @Nullable
   McFunctionMacroLine getMacroLine();
+
+  @Nullable
+  PsiElement getCommentToken();
+
+  @Nullable
+  PsiElement getCrlfToken();
 
 }

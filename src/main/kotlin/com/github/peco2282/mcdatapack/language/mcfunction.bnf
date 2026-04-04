@@ -108,12 +108,20 @@
     MATCHES_TOKEN         = "matches"
     AS_TOKEN              = "as"
     AT_TOKEN              = "at"
-    ANCHORED_TOKEN        = "anchored"
+    RUN_TOKEN             = "run"
     FACING_TOKEN          = "facing"
+    ROTATED_TOKEN         = "rotated"
+    POSITION_TOKEN        = "position"
+    ON_TOKEN              = "on"
+    IN_TOKEN              = "in"
+    ALIGN_TOKEN           = "align"
+    EYES_TOKEN            = "eyes"
+    FEET_TOKEN            = "feet"
     BLOCK_TOKEN           = "block"
     ITEMS_TOKEN           = "items"
     STORE_TOKEN           = "store"
     RESULT_TOKEN          = "result"
+    SUCCESS_TOKEN         = "success"
     SCORE_TOKEN           = "score"
     TEXT_TOKEN            = "text"
     VALUE_TOKEN           = "value"
@@ -174,15 +182,15 @@
     EQUALS                = "="
     COMMA                 = ","
 
-    COMMAND_TOKEN         = "regexp:[a-z_][a-z0-9_]*"
-    ARGUMENT_TOKEN        = "regexp:[^ \n\r\t\f#\"'\[\]{},=:\\\\]+"
+    COORD_TOKEN           = "regexp:[~\^][^ \n\r\t\f#\"'\[\]{},=:\\]*"
+    COMMAND_TOKEN         = "regexp:[a-zA-Z_][a-zA-Z0-9_]*"
+    ARGUMENT_TOKEN        = "regexp:[^ \n\r\t\f#\"'\[\]{},=:\\]+"
   ]
 }
 
-mcFunctionFile ::= (command_line | COMMENT_TOKEN | CRLF_TOKEN | CONTINUATION_TOKEN)*
+mcFunctionFile ::= (command_line | CRLF_TOKEN | COMMENT_TOKEN | CONTINUATION_TOKEN)*
 
-// コマンド行：マクロ行、execute コマンド、attribute コマンド、それ以外の汎用コマンド
-command_line ::= (macro_line | execute_command | attribute_command | generic_command) {pin=1}
+command_line ::= (macro_line | execute_command | attribute_command | give_command | clear_command | data_command | item_command | generic_command) (CRLF_TOKEN | COMMENT_TOKEN | <<eof>>)?
 
 // マクロ行: $$ で始まる行。行内の $(変数名) を macro_variable として識別
 macro_line ::= MACRO_LINE_START macro_line_content* {pin=1}
@@ -195,9 +203,11 @@ private macro_line_content ::= macro_variable | ARGUMENT_TOKEN | COMMAND_TOKEN |
 // マクロ変数: $(変数名) または $(変数名[インデックス])
 macro_variable ::= MACRO_VAR_TOKEN | MACRO_TOKEN
 
+// -----------------------------------------------------------------------
 // attribute コマンド専用ルール: attribute <selector> <namespaced_id> <subcommand>
 // modifier/add/remove/get/base などをキーワードとして固定待機し、item_stack 誤判定を防ぐ
 // attribute_namespaced_id は ARGUMENT_TOKEN も許可（generic.attack_damage のようなドット含む文字列対応）
+// -----------------------------------------------------------------------
 attribute_command ::= ATTRIBUTE_TOKEN selector attribute_namespaced_id attribute_subcommand? {pin=1}
 private attribute_namespaced_id ::= attr_ns_identifier (COLON attribute_namespaced_path)?
 private attribute_namespaced_path ::= attr_ns_identifier (DOT_TOKEN attr_ns_identifier)*
@@ -213,12 +223,110 @@ private attribute_modifier_op ::= ADD_TOKEN ARGUMENT_TOKEN (STRING_TOKEN | ARGUM
   | REMOVE_TOKEN namespaced_id
   | GET_TOKEN namespaced_id ARGUMENT_TOKEN?
 
+// -----------------------------------------------------------------------
+// give コマンド専用ルール: give <selector> <item_stack> [count]
+// item_stack はここでのみ明示的に呼び出す（generic_command では呼ばない）
+// pin=1 により GIVE_TOKEN を確認した時点でこのルールに確定する
+// -----------------------------------------------------------------------
+give_command ::= GIVE_TOKEN selector item_stack argument* {pin=1}
+
+// -----------------------------------------------------------------------
+// clear コマンド専用ルール: clear [<selector>] [<item_id>] [<count>]
+// item_id（namespaced_id のエイリアス）を使用し、item_stack の誤判定を防ぐ
+// pin=1 により CLEAR_TOKEN を確認した時点でこのルールに確定する
+// -----------------------------------------------------------------------
+clear_command ::= CLEAR_TOKEN selector? item_id? argument* {pin=1}
+
+// -----------------------------------------------------------------------
+// data コマンド専用ルール: data get/merge/modify/remove/storage ...
+// get/merge/modify/remove/storage を Keyword として確実に認識させる
+// pin=1 により DATA_TOKEN を確認した時点でこのルールに確定する
+// -----------------------------------------------------------------------
+data_command ::= DATA_TOKEN data_subcommand {pin=1}
+private data_subcommand ::= GET_TOKEN data_target (namespaced_id ARGUMENT_TOKEN* )?
+  | MERGE_TOKEN data_target nbt_compound
+  | MODIFY_TOKEN data_target namespaced_id data_modify_source
+  | REMOVE_TOKEN data_target namespaced_id
+private data_target ::= (BLOCK_TOKEN coordinate | ENTITY_TOKEN selector | STORAGE_TOKEN namespaced_id)
+private data_modify_source ::= (SET_TOKEN | MERGE_TOKEN | keyword | COMMAND_TOKEN) data_source_value
+private data_source_value ::= FROM_TOKEN data_target namespaced_id? | VALUE_TOKEN nbt_value
+
+// -----------------------------------------------------------------------
+// item コマンド専用ルール: item block/entity <pos> <slot> [replace/modify]
+// item_stack はここでのみ明示的に呼び出す（generic_command では呼ばない）
+// pin=1 により ITEM_TOKEN を確認した時点でこのルールに確定する
+// -----------------------------------------------------------------------
+item_command ::= ITEM_TOKEN (MODIFY_TOKEN | BLOCK_TOKEN | ENTITY_TOKEN) argument+ {pin=1}
+
+// -----------------------------------------------------------------------
 // execute コマンド：modifier を並べ、run の後に新しいコマンドを再帰的にパース
-execute_command ::= EXECUTE_TOKEN execute_body?
+// -----------------------------------------------------------------------
+execute_command ::= EXECUTE_TOKEN execute_body? {pin=1}
 // WHITE_SPACE はフレームワークが自動スキップするため明示的消費不要
-private execute_body ::= execute_modifier_with_continuation+ (RUN_TOKEN (command_line | execute_body))?
-private execute_modifier_with_continuation ::= CONTINUATION_TOKEN? execute_modifier
-generic_command ::= (command | json) (CONTINUATION_TOKEN? (item_stack | nbt_compound | json | argument))*
+private execute_body ::= execute_modifier_clause* (RUN_TOKEN command_line)?
+execute_modifier_clause ::= execute_as_clause
+  | execute_at_clause
+  | execute_store_clause
+  | execute_if_clause
+  | execute_unless_clause
+  | execute_facing_clause
+  | execute_rotated_clause
+  | execute_position_clause
+  | execute_on_clause
+  | execute_summon_clause
+  | execute_anchored_clause
+  | execute_in_clause
+  | execute_align_clause
+  | execute_generic_modifier
+
+execute_generic_modifier ::= (keyword_not_namespaced | json | execute_argument)
+
+execute_if_clause ::= IF_TOKEN execute_if_condition {pin=1}
+execute_unless_clause ::= UNLESS_TOKEN execute_if_condition {pin=1}
+execute_as_clause ::= AS_TOKEN selector {pin=1}
+execute_at_clause ::= AT_TOKEN selector {pin=1}
+execute_store_clause ::= STORE_TOKEN (RESULT_TOKEN | SUCCESS_TOKEN) (execute_store_storage | execute_store_entity | execute_store_block | execute_store_score | ARGUMENT_TOKEN*) {pin=1}
+execute_facing_clause ::= FACING_TOKEN (ENTITY_TOKEN selector (EYES_TOKEN | FEET_TOKEN) | coordinate) {pin=1}
+execute_rotated_clause ::= ROTATED_TOKEN (AS_TOKEN selector | coordinate) {pin=1}
+execute_position_clause ::= POSITION_TOKEN (AS_TOKEN selector | coordinate) {pin=1}
+execute_on_clause ::= ON_TOKEN (ARGUMENT_TOKEN | COMMAND_TOKEN | keyword) {pin=1}
+execute_summon_clause ::= SUMMON_TOKEN namespaced_id {pin=1}
+execute_anchored_clause ::= ANCHORED_TOKEN (EYES_TOKEN | FEET_TOKEN) {pin=1}
+execute_in_clause ::= IN_TOKEN namespaced_id {pin=1}
+execute_align_clause ::= ALIGN_TOKEN (ARGUMENT_TOKEN | COMMAND_TOKEN | keyword) {pin=1}
+
+private execute_if_condition ::= (BLOCK_TOKEN coordinate namespaced_id | ENTITY_TOKEN selector | SCORE_TOKEN selector namespaced_id (MATCHES_TOKEN ARGUMENT_TOKEN | (GT_TOKEN | LT_TOKEN | GTE_TOKEN | LTE_TOKEN | EQUALS) selector namespaced_id) | STORAGE_TOKEN namespaced_id namespaced_id | DATA_TOKEN (BLOCK_TOKEN coordinate | ENTITY_TOKEN selector | STORAGE_TOKEN namespaced_id) namespaced_id?)
+
+private execute_store_clause ::= STORE_TOKEN (RESULT_TOKEN | SUCCESS_TOKEN) (execute_store_storage | execute_store_entity | execute_store_block | execute_store_score | ARGUMENT_TOKEN*) {pin=1}
+private execute_store_storage ::= STORAGE_TOKEN execute_namespaced_id execute_namespaced_id (COMMAND_TOKEN | keyword_not_namespaced) ARGUMENT_TOKEN
+private execute_store_entity ::= ENTITY_TOKEN selector execute_namespaced_id (COMMAND_TOKEN | keyword_not_namespaced) ARGUMENT_TOKEN
+private execute_store_block ::= BLOCK_TOKEN coordinate execute_namespaced_id (COMMAND_TOKEN | keyword_not_namespaced) ARGUMENT_TOKEN
+private execute_store_score ::= SCORE_TOKEN selector execute_namespaced_id
+
+// execute modifier 専用の引数（command トークンを除外）
+// item_stack の代わりに execute_item_stack を使い、command が identifier に入らないようにする
+private execute_argument ::= selector | coordinate | nbt_compound | execute_item_stack | COORD_TOKEN | ARGUMENT_TOKEN | STRING_TOKEN
+  | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
+  | MACRO_TOKEN | MACRO_VAR_TOKEN
+  | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
+  | COLON | EQUALS | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
+
+// execute 内専用の item_stack（command トークンを identifier として使わない）
+private execute_item_stack ::= execute_namespaced_id component_list?
+
+// execute 内専用の namespaced_id（command トークンを除外した safe_identifier を使用）
+private execute_namespaced_id ::= safe_identifier (COLON safe_namespaced_path)?
+private safe_namespaced_path ::= safe_identifier (DOT_TOKEN safe_identifier)*
+
+// command トークンを含まない安全な識別子（execute modifier 内で使用）
+private safe_identifier ::= !(RUN_TOKEN | CRLF_TOKEN | COMMENT_TOKEN) (COMMAND_TOKEN | keyword_not_namespaced | command | ARGUMENT_TOKEN)
+
+// -----------------------------------------------------------------------
+// generic_command: 専用ルールに該当しないコマンドのフォールバック
+// item_stack はここでは試行しない（give/clear/item コマンドの専用ルールで処理）
+// 代わりに namespaced_id または argument でパースし、誤ったコンポーネント解析を防ぐ
+// -----------------------------------------------------------------------
+generic_command ::= (command | json) (CONTINUATION_TOKEN? (nbt_compound | json | namespaced_id | argument))*
 
 // 行頭のコマンド名（MACRO_LINE_STARTは macro_line で処理するため除外）
 command ::= ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN | DAMAGE_TOKEN
@@ -233,7 +341,7 @@ command ::= ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN 
   | IF_TOKEN | MACRO_TOKEN | MACRO_VAR_TOKEN | COMMAND_TOKEN
 
 // execute の modifier 部分やサブコマンド等
-// RUN_TOKEN は execute_body_3 で専用処理するため keyword から除外
+// RUN_TOKEN は execute_body で専用処理するため keyword から除外
 keyword ::= ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN | SET_TOKEN
   | FROM_TOKEN | ADD_TOKEN | PLAYERS_TOKEN | ACTIONBAR_TOKEN | MATCHES_TOKEN | AS_TOKEN | AT_TOKEN | ANCHORED_TOKEN | FACING_TOKEN | BLOCK_TOKEN
   | ITEMS_TOKEN | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | TEXT_TOKEN | VALUE_TOKEN | EYES_TOKEN | REVOKE_TOKEN | GRANT_TOKEN | DATA_TOKEN
@@ -243,32 +351,19 @@ keyword ::= ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN | SET_TOKEN
   | CENTER_TOKEN | WARNING_TOKEN | MASTER_TOKEN | MUSIC_TOKEN
   | IF_TOKEN | UNLESS_TOKEN
 
-// execute の modifier 内：keyword か json か execute_argument のどちらか
-// command トークンは含めない（run 後の新コマンドと区別するため）
-private execute_modifier ::= keyword | json | execute_argument
-
-// execute modifier 専用の引数（command トークンを除外）
-// item_stack の代わりに execute_item_stack を使い、command が identifier に入らないようにする
-private execute_argument ::= selector | nbt_compound | execute_item_stack | ARGUMENT_TOKEN | STRING_TOKEN
-  | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
-  | MACRO_TOKEN | MACRO_VAR_TOKEN
-  | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
-  | COLON | EQUALS | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
-
-// execute 内専用の item_stack（command トークンを identifier として使わない）
-private execute_item_stack ::= execute_namespaced_id component_list?
-
-// execute 内専用の namespaced_id（command トークンを除外した safe_identifier を使用）
-private execute_namespaced_id ::= safe_identifier (COLON safe_namespaced_path)?
-private safe_namespaced_path ::= safe_identifier (DOT_TOKEN safe_identifier)*
-
-// command トークンを含まない安全な識別子（execute modifier 内で使用）
-private safe_identifier ::= COMMAND_TOKEN | ARGUMENT_TOKEN | keyword
+// -----------------------------------------------------------------------
+// 座標（Coordinate）: ^, ~ を含む座標系を独立した PSI 型として定義
+// 例: ~ ~ ~  /  ^1 ^2 ^3  /  1 2 3  /  ~-1 ~0 ~1
+// McFunctionArgument に埋もれていた座標を McFunctionCoordinate として識別可能にする
+// -----------------------------------------------------------------------
+coordinate ::= COORD_TOKEN COORD_TOKEN COORD_TOKEN?
+private coordinate_component ::= COORD_TOKEN | ARGUMENT_TOKEN | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN
 
 // -----------------------------------------------------------------------
 // Namespaced ID: minecraft:stone  または  stone
 // パス部分にはドット(.)やスラッシュ(/)が含まれることを考慮
 // 数値・レンジ（5.0, ..10 等）は ns_identifier に含めず、NamespacedId への誤マッチを防ぐ
+// ARGUMENT_TOKEN を除外することで、5.0 や ..10 が NamespacedId に含まれることを防ぐ
 // -----------------------------------------------------------------------
 namespaced_id ::= ns_identifier (COLON namespaced_path)?
 
@@ -279,8 +374,31 @@ private namespaced_path ::= ns_identifier (DOT_TOKEN ns_identifier)*
 // ARGUMENT_TOKEN は数値や ..10 等も含むため、ここでは COMMAND_TOKEN・keyword・command のみ許可
 private ns_identifier ::= COMMAND_TOKEN | keyword | command
 
+private keyword_not_namespaced ::= ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | SET_TOKEN
+  | FROM_TOKEN | ADD_TOKEN | PLAYERS_TOKEN | ACTIONBAR_TOKEN | MATCHES_TOKEN | ANCHORED_TOKEN | FACING_TOKEN
+  | ITEMS_TOKEN | TEXT_TOKEN | VALUE_TOKEN | EYES_TOKEN | REVOKE_TOKEN | GRANT_TOKEN
+  | MERGE_TOKEN | REMOVE_TOKEN | ENABLE_TOKEN | DISABLE_TOKEN | BASE_TOKEN | MODIFIER_TOKEN
+  | QUERY_TOKEN | TAKE_TOKEN | OBJECTIVES_TOKEN | SETDISPLAY_TOKEN | EMPTY_TOKEN | JOIN_TOKEN | LEAVE_TOKEN
+  | RATE_TOKEN | FREEZE_TOKEN | STEP_TOKEN | STOP_TOKEN | UNFREEZE_TOKEN | SUBTITLE_TOKEN | TIMES_TOKEN
+  | CENTER_TOKEN | WARNING_TOKEN | MASTER_TOKEN | MUSIC_TOKEN
+  | FEET_TOKEN
+
 // 汎用識別子（nbt_key や nbt_primitive など数値も許容する文脈で使用）
 private identifier ::= COMMAND_TOKEN | ARGUMENT_TOKEN | keyword | command
+
+// -----------------------------------------------------------------------
+// PSI 型エイリアス: 役割に応じた型分離
+// 中身の定義は namespaced_id と同じだが、型を分けることで
+// Annotator での色分けと補完を独立して制御できる
+// -----------------------------------------------------------------------
+
+// セレクタ引数のキー部分（例: @e[tag=foo] の tag）
+// namespaced_id と同じ構造だが、セレクタキーとして独立した PSI 型を持つ
+selector_arg_key ::= ns_identifier (COLON namespaced_path)?
+
+// アイテム ID（give/clear コマンドで使用）
+// namespaced_id と同じ構造だが、アイテム識別子として独立した PSI 型を持つ
+item_id ::= ns_identifier (COLON namespaced_path)?
 
 // -----------------------------------------------------------------------
 // Target Selector: @s, @a, @p, @e, @r  および  @e[key=value,...]
@@ -289,11 +407,13 @@ selector ::= selector_base selector_arguments?
 private selector_base ::= SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
 selector_arguments ::= LBRACK (selector_argument (COMMA selector_argument)*)? RBRACK
 selector_argument  ::= selector_arg_key EQUALS selector_arg_value
-private selector_arg_key   ::= namespaced_id
+// selector_arg_key は専用 PSI 型（上記参照）を使用
 private selector_arg_value ::= nbt_compound | nbt_list | STRING_TOKEN | namespaced_id | ARGUMENT_TOKEN
 
 // -----------------------------------------------------------------------
 // Item Stack: <namespaced_id>[component_list]  (コンポーネントは省略可)
+// give/item コマンドなど「本当にアイテムが必要な場所」でのみ明示的に呼び出す
+// generic_command では呼ばないことで、誤ったコンポーネント解析（[key=value]）を防ぐ
 // -----------------------------------------------------------------------
 item_stack ::= namespaced_id component_list?
 
@@ -304,6 +424,8 @@ component_list ::= LBRACK (component (COMMA component)*)? RBRACK {pin=1}
 component ::= component_key (EQUALS | COLON) component_value
             | ARGUMENT_TOKEN component_key  // !key 形式 (例: !enchantments)
 
+// component_key は namespaced_id と同じ構造だが、コンポーネントキーとして独立した PSI 型を持つ
+// これにより Annotator でコンポーネントキーを独立してハイライト可能
 private component_key   ::= namespaced_id
 component_value ::= nbt_compound | nbt_list | STRING_TOKEN | nbt_primitive
 
@@ -317,12 +439,15 @@ nbt_value ::= nbt_compound | nbt_list | STRING_TOKEN | nbt_primitive
 // Compound: { key: value, key: value, ... }
 nbt_compound ::= LBRACE (nbt_property (COMMA nbt_property)*)? RBRACE {pin=1}
 nbt_property ::= nbt_key (COLON | EQUALS) nbt_value
+// nbt_key は STRING_TOKEN・COMMAND_TOKEN・ARGUMENT_TOKEN・keyword・command を許容する
+// NBT のキーは数値や特殊文字を含む場合があるため、identifier（ARGUMENT_TOKEN 含む）を使用
 private nbt_key ::= STRING_TOKEN | COMMAND_TOKEN | ARGUMENT_TOKEN | keyword | command
 
 // List / Array: [ value, value, ... ]
 nbt_list ::= LBRACK (nbt_value (COMMA nbt_value)*)? RBRACK {pin=1}
 
 // プリミティブ値: 数値サフィックス付き (10b, 1.0f, 255L 等) または 裸の識別子 (true/false 等)
+// ARGUMENT_TOKEN を含むことで 5.0 や ..10 などの数値リテラルを正しく処理する
 nbt_primitive ::= ARGUMENT_TOKEN | COMMAND_TOKEN | keyword | command
                 | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
 
@@ -343,11 +468,13 @@ private json_property ::= json_key (COLON | EQUALS) json_value
 
 // -----------------------------------------------------------------------
 // Generic argument (フォールバック)
-// item_stack は generic_command 側で先に試行するため、ここでは除外して二重マッチを防ぐ
+// item_stack は generic_command 側では試行しないため、ここでは除外して二重マッチを防ぐ
 // -----------------------------------------------------------------------
-argument ::= selector | json | ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
+argument ::= selector | coordinate | json | COORD_TOKEN | ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
   | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
   | MACRO_TOKEN | MACRO_VAR_TOKEN
   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
   | COLON | EQUALS | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
   | CONTINUATION_TOKEN
+
+private command_line_recover ::= !(CRLF_TOKEN | COMMENT_TOKEN)

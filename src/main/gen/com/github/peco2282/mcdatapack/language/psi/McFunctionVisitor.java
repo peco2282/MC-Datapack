@@ -15,6 +15,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitClearCommand(@NotNull McFunctionClearCommand o) {
+    visitPsiElement(o);
+  }
+
   public void visitCommand(@NotNull McFunctionCommand o) {
     visitPsiElement(o);
   }
@@ -35,11 +39,91 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCoordinate(@NotNull McFunctionCoordinate o) {
+    visitPsiElement(o);
+  }
+
+  public void visitDataCommand(@NotNull McFunctionDataCommand o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteAlignClause(@NotNull McFunctionExecuteAlignClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteAnchoredClause(@NotNull McFunctionExecuteAnchoredClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteAsClause(@NotNull McFunctionExecuteAsClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteAtClause(@NotNull McFunctionExecuteAtClause o) {
+    visitPsiElement(o);
+  }
+
   public void visitExecuteCommand(@NotNull McFunctionExecuteCommand o) {
     visitPsiElement(o);
   }
 
+  public void visitExecuteFacingClause(@NotNull McFunctionExecuteFacingClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteGenericModifier(@NotNull McFunctionExecuteGenericModifier o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteIfClause(@NotNull McFunctionExecuteIfClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteInClause(@NotNull McFunctionExecuteInClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteModifierClause(@NotNull McFunctionExecuteModifierClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteOnClause(@NotNull McFunctionExecuteOnClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecutePositionClause(@NotNull McFunctionExecutePositionClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteRotatedClause(@NotNull McFunctionExecuteRotatedClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteStoreClause(@NotNull McFunctionExecuteStoreClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteSummonClause(@NotNull McFunctionExecuteSummonClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteUnlessClause(@NotNull McFunctionExecuteUnlessClause o) {
+    visitPsiElement(o);
+  }
+
   public void visitGenericCommand(@NotNull McFunctionGenericCommand o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGiveCommand(@NotNull McFunctionGiveCommand o) {
+    visitPsiElement(o);
+  }
+
+  public void visitItemCommand(@NotNull McFunctionItemCommand o) {
+    visitPsiElement(o);
+  }
+
+  public void visitItemId(@NotNull McFunctionItemId o) {
     visitPsiElement(o);
   }
 
@@ -96,6 +180,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
   }
 
   public void visitSelector(@NotNull McFunctionSelector o) {
+    visitPsiElement(o);
+  }
+
+  public void visitSelectorArgKey(@NotNull McFunctionSelectorArgKey o) {
     visitPsiElement(o);
   }
 

@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionSelectorArgumentImpl extends ASTWrapperPsiElement implements McFunctionSelectorArgument {
+public class McFunctionDataCommandImpl extends ASTWrapperPsiElement implements McFunctionDataCommand {
 
-  public McFunctionSelectorArgumentImpl(@NotNull ASTNode node) {
+  public McFunctionDataCommandImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitSelectorArgument(this);
+    visitor.visitDataCommand(this);
   }
 
   @Override
@@ -28,9 +28,21 @@ public class McFunctionSelectorArgumentImpl extends ASTWrapperPsiElement impleme
   }
 
   @Override
+  @NotNull
+  public List<McFunctionCoordinate> getCoordinateList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCoordinate.class);
+  }
+
+  @Override
   @Nullable
-  public McFunctionNamespacedId getNamespacedId() {
-    return findChildByClass(McFunctionNamespacedId.class);
+  public McFunctionKeyword getKeyword() {
+    return findChildByClass(McFunctionKeyword.class);
+  }
+
+  @Override
+  @NotNull
+  public List<McFunctionNamespacedId> getNamespacedIdList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNamespacedId.class);
   }
 
   @Override
@@ -41,26 +53,20 @@ public class McFunctionSelectorArgumentImpl extends ASTWrapperPsiElement impleme
 
   @Override
   @Nullable
-  public McFunctionNbtList getNbtList() {
-    return findChildByClass(McFunctionNbtList.class);
+  public McFunctionNbtValue getNbtValue() {
+    return findChildByClass(McFunctionNbtValue.class);
   }
 
   @Override
   @NotNull
-  public McFunctionSelectorArgKey getSelectorArgKey() {
-    return findNotNullChildByClass(McFunctionSelectorArgKey.class);
+  public List<McFunctionSelector> getSelectorList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionSelector.class);
   }
 
   @Override
   @Nullable
-  public PsiElement getArgumentToken() {
-    return findChildByType(ARGUMENT_TOKEN);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getStringToken() {
-    return findChildByType(STRING_TOKEN);
+  public PsiElement getCommandToken() {
+    return findChildByType(COMMAND_TOKEN);
   }
 
 }

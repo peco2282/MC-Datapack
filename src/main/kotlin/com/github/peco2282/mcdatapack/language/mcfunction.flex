@@ -34,8 +34,9 @@ CONTINUATION_TOKEN=\\([ \t\f]*\R)?
 MACRO_TOKEN=\$[a-zA-Z_][a-zA-Z0-9_]*
 MACRO_VAR_TOKEN=\$\([a-zA-Z_][a-zA-Z0-9_]*(\[[0-9]+\])?\)
 MACRO_LINE_START=\$\$
-COMMAND_TOKEN=[a-z_][a-z0-9_]*
-ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\\\]+
+COORD_TOKEN=[~\^][^ \n\r\t\f#\"'\[\]{},=:\\]*
+COMMAND_TOKEN=[a-zA-Z_][a-zA-Z0-9_]*
+ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\]+
 
 %%
 <YYINITIAL> {
@@ -126,16 +127,22 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\\\]+
   "matches"                  { return MATCHES_TOKEN; }
   "as"                       { return AS_TOKEN; }
   "at"                       { return AT_TOKEN; }
-  "anchored"                 { return ANCHORED_TOKEN; }
   "facing"                   { return FACING_TOKEN; }
+  "rotated"                  { return ROTATED_TOKEN; }
+  "position"                 { return POSITION_TOKEN; }
+  "on"                       { return ON_TOKEN; }
+  "in"                       { return IN_TOKEN; }
+  "align"                    { return ALIGN_TOKEN; }
+  "eyes"                     { return EYES_TOKEN; }
+  "feet"                     { return FEET_TOKEN; }
   "block"                    { return BLOCK_TOKEN; }
   "items"                    { return ITEMS_TOKEN; }
   "store"                    { return STORE_TOKEN; }
   "result"                   { return RESULT_TOKEN; }
+  "success"                  { return SUCCESS_TOKEN; }
   "score"                    { return SCORE_TOKEN; }
   "text"                     { return TEXT_TOKEN; }
   "value"                    { return VALUE_TOKEN; }
-  "eyes"                     { return EYES_TOKEN; }
   "revoke"                   { return REVOKE_TOKEN; }
   "grant"                    { return GRANT_TOKEN; }
   "get"                      { return GET_TOKEN; }
@@ -181,6 +188,7 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\\\]+
   ":"                        { return COLON; }
   "="                        { return EQUALS; }
   ","                        { return COMMA; }
+  "ANCHORED_TOKEN"           { return ANCHORED_TOKEN; }
 
   {COMMENT_TOKEN}            { return COMMENT_TOKEN; }
   {CRLF_TOKEN}               { return CRLF_TOKEN; }
@@ -191,6 +199,7 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\\\]+
   {MACRO_TOKEN}              { return MACRO_TOKEN; }
   {MACRO_VAR_TOKEN}          { return MACRO_VAR_TOKEN; }
   {MACRO_LINE_START}         { return MACRO_LINE_START; }
+  {COORD_TOKEN}              { return COORD_TOKEN; }
   {COMMAND_TOKEN}            { return COMMAND_TOKEN; }
   {ARGUMENT_TOKEN}           { return ARGUMENT_TOKEN; }
 

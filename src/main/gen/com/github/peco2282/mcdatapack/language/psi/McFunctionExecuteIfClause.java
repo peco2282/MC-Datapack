@@ -5,24 +5,18 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface McFunctionSelectorArgument extends PsiElement {
+public interface McFunctionExecuteIfClause extends PsiElement {
+
+  @Nullable
+  McFunctionCoordinate getCoordinate();
 
   @Nullable
   McFunctionNamespacedId getNamespacedId();
 
   @Nullable
-  McFunctionNbtCompound getNbtCompound();
-
-  @Nullable
-  McFunctionNbtList getNbtList();
-
-  @NotNull
-  McFunctionSelectorArgKey getSelectorArgKey();
+  McFunctionSelector getSelector();
 
   @Nullable
   PsiElement getArgumentToken();
-
-  @Nullable
-  PsiElement getStringToken();
 
 }
