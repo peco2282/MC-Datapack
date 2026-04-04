@@ -6,6 +6,17 @@ import org.junit.Test
 
 class McFunctionLexerTest : BasePlatformTestCase() {
     @Test
+    fun testExecuteRunTokens() {
+        val adapter = McFunctionLexerAdapter()
+        val input = "execute as @a at @s anchored eyes run execute facing entity @s eyes run function my:namespace"
+        adapter.start(input)
+        while (adapter.tokenType != null) {
+            println("[DEBUG_LOG] Token: ${adapter.tokenType}, text: '${adapter.tokenText}'")
+            adapter.advance()
+        }
+    }
+
+    @Test
     fun testLexerCrash() {
         val adapter = McFunctionLexerAdapter()
         // We try common characters that might be missed or causing issues.

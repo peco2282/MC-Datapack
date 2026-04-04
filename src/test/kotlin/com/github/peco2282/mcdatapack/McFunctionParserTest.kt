@@ -70,8 +70,9 @@ class McFunctionParserTest : BasePlatformTestCase() {
         val file = myFixture.configureByText("execute_at.mcfunction", "execute as @s at @e[type=marker,tag=chest] run particle minecraft:end_rod ~ ~0.8 ~ 0.1 0.1 0.1 0 1 force @s")
         val errors = PsiTreeUtil.findChildrenOfType(file, com.intellij.psi.PsiErrorElement::class.java)
         assertTrue("Should not have parse errors after fix", errors.isEmpty())
-        val commands = PsiTreeUtil.findChildrenOfType(file, McFunctionCommandLine::class.java)
-        assertEquals(1, commands.size)
+        // トップレベルの COMMAND_LINE のみ取得（PsiFile の直接の子）
+        val topLevel = file.children.filterIsInstance<McFunctionCommandLine>()
+        assertEquals(1, topLevel.size)
     }
 
     @Test
@@ -82,12 +83,13 @@ class McFunctionParserTest : BasePlatformTestCase() {
             execute as @a run say hi
         """.trimIndent()
         val file = myFixture.configureByText("multi.mcfunction", input)
-        val commands = PsiTreeUtil.findChildrenOfType(file, McFunctionCommandLine::class.java)
+        // トップレベルの COMMAND_LINE のみ取得（PsiFile の直接の子）
+        val topLevel = file.children.filterIsInstance<McFunctionCommandLine>()
         
         val sb = StringBuilder()
         dumpPsi(file, sb)
         val output = sb.toString()
-        assertEquals("Expected 3 commands, but found ${commands.size}.\nPSI Tree:\n$output", 3, commands.size)
+        assertEquals("Expected 3 top-level commands, but found ${topLevel.size}.\nPSI Tree:\n$output", 3, topLevel.size)
     }
 
     private fun dumpPsi(element: com.intellij.psi.PsiElement, sb: StringBuilder) {
