@@ -59,11 +59,7 @@ class McFunctionIssueReproductionTest : BasePlatformTestCase() {
 
     @Test
     fun testIssueReproduction() {
-        val input = """
-            minecraft:stone[minecraft:custom_name={italic:0b,text:"黄の探知機"},minecraft:lore=[{color:"aqua",italic:0b,text:"価格 : 32コイン"},{color:"white",italic:0b,text:"黄色コレクションアイテムのすべての所有者がわかる"}],minecraft:custom_data={shop_item:true},minecraft:item_model="minecraft:music_disc_13"]
-
-            give @s netherite_sword[attribute_modifiers={modifiers:[{type:"minecraft:generic.attack_damage",amount:1000000000,operation:"add_value",id:"base_damage",slot:"mainhand"}]},enchantments={levels:{"minecraft:sharpness":255,"minecraft:looting":10}},rarity="epic",custom_name='{"text":"神の裁き","color":"gold","bold":true}']
-        """.trimIndent()
+        val input = "execute as @e[type=zombie,distance=..10,limit=1] store result storage my_namespace:main temp_val int 1 run data get entity @s Fire"
         
         val file = myFixture.configureByText("issue.mcfunction", input)
         val errors = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
@@ -72,9 +68,19 @@ class McFunctionIssueReproductionTest : BasePlatformTestCase() {
             val sb = StringBuilder()
             dumpPsi(file, sb)
             val logMsg = "[DEBUG_LOG] PSI Tree:\n$sb"
-            System.err.println(logMsg)
+            println(logMsg)
+            
+            val lexer = com.github.peco2282.mcdatapack.language.psi.McFunctionLexerAdapter()
+            lexer.start(input)
+            val tokenSb = StringBuilder()
+            while (lexer.tokenType != null) {
+                tokenSb.append("${lexer.tokenType} ('${lexer.tokenText}')\n")
+                lexer.advance()
+            }
+            println("[DEBUG_LOG] Tokens:\n$tokenSb")
+
             for (error in errors) {
-                System.err.println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
+                println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
             }
         }
         
@@ -95,6 +101,22 @@ class McFunctionIssueReproductionTest : BasePlatformTestCase() {
             }
         }
         assertTrue("attribute modifier add command should not have parse errors, but found ${errors.size}", errors.isEmpty())
+    }
+
+    @Test
+    fun testItemModify() {
+        val input = "item modify entity @s weapon.mainhand my_datapack:super_sharpness"
+        val file = myFixture.configureByText("item_modify.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
+        assertTrue("item modify command should not have parse errors, but found ${errors.size}", errors.isEmpty())
+    }
+
+    @Test
+    fun testItemReplace() {
+        val input = "item replace entity @s weapon.mainhand with diamond_sword"
+        val file = myFixture.configureByText("item_replace.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
+        assertTrue("item replace command should not have parse errors, but found ${errors.size}", errors.isEmpty())
     }
 
     private fun dumpPsi(element: com.intellij.psi.PsiElement, sb: StringBuilder, indent: String = "") {

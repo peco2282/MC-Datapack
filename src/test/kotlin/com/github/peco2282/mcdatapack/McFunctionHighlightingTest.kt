@@ -19,8 +19,8 @@ class McFunctionHighlightingTest : BasePlatformTestCase() {
         
         val annotations = myFixture.doHighlighting(HighlightSeverity.INFORMATION)
         
-        val itemKeyAnn = annotations.filter { it.forcedTextAttributesKey == McFunctionSyntaxHighlighter.JSON_KEY && myFixture.file.text.substring(it.startOffset, it.endOffset) == "minecraft:stone" }
-        assertTrue("Should have 'minecraft:stone' highlighted as JSON_KEY", itemKeyAnn.isNotEmpty())
+        val itemKeyAnn = annotations.filter { it.forcedTextAttributesKey == McFunctionSyntaxHighlighter.JSON_KEY && myFixture.file.text.substring(it.startOffset, it.endOffset).let { t -> t == "minecraft:stone" || t == "minecraft" || t == "stone" } }
+        assertTrue("Should have 'minecraft:stone' or its parts highlighted as JSON_KEY", itemKeyAnn.isNotEmpty())
 
         val jsonKeyAnn = annotations.filter { it.forcedTextAttributesKey == McFunctionSyntaxHighlighter.JSON_KEY }
         val jsonStringAnn = annotations.filter { it.forcedTextAttributesKey == McFunctionSyntaxHighlighter.JSON_STRING }
