@@ -11,6 +11,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAttributeCommand(@NotNull McFunctionAttributeCommand o) {
+    visitPsiElement(o);
+  }
+
   public void visitCommand(@NotNull McFunctionCommand o) {
     visitPsiElement(o);
   }

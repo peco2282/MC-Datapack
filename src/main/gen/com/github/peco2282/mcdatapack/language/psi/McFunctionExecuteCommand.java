@@ -20,6 +20,9 @@ public interface McFunctionExecuteCommand extends PsiElement {
   List<McFunctionKeyword> getKeywordList();
 
   @NotNull
+  List<McFunctionNbtCompound> getNbtCompoundList();
+
+  @NotNull
   List<McFunctionSelector> getSelectorList();
 
 }

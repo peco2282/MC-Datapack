@@ -9,6 +9,7 @@ import com.github.peco2282.mcdatapack.language.psi.impl.*;
 public interface McFunctionTypes {
 
   IElementType ARGUMENT = new McFunctionElementType("ARGUMENT");
+  IElementType ATTRIBUTE_COMMAND = new McFunctionElementType("ATTRIBUTE_COMMAND");
   IElementType COMMAND = new McFunctionElementType("COMMAND");
   IElementType COMMAND_LINE = new McFunctionElementType("COMMAND_LINE");
   IElementType COMPONENT = new McFunctionElementType("COMPONENT");
@@ -180,7 +181,6 @@ public interface McFunctionTypes {
   IElementType WARNING_TOKEN = new McFunctionTokenType("warning");
   IElementType WEATHER_TOKEN = new McFunctionTokenType("weather");
   IElementType WHITELIST_TOKEN = new McFunctionTokenType("whitelist");
-  IElementType WHITE_SPACE = new McFunctionTokenType("WHITE_SPACE");
   IElementType WORLDBORDER_TOKEN = new McFunctionTokenType("worldborder");
   IElementType XP_TOKEN = new McFunctionTokenType("xp");
 
@@ -189,6 +189,9 @@ public interface McFunctionTypes {
       IElementType type = node.getElementType();
       if (type == ARGUMENT) {
         return new McFunctionArgumentImpl(node);
+      }
+      else if (type == ATTRIBUTE_COMMAND) {
+        return new McFunctionAttributeCommandImpl(node);
       }
       else if (type == COMMAND) {
         return new McFunctionCommandImpl(node);

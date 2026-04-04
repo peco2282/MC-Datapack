@@ -53,6 +53,12 @@ public class McFunctionExecuteCommandImpl extends ASTWrapperPsiElement implement
 
   @Override
   @NotNull
+  public List<McFunctionNbtCompound> getNbtCompoundList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNbtCompound.class);
+  }
+
+  @Override
+  @NotNull
   public List<McFunctionSelector> getSelectorList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionSelector.class);
   }

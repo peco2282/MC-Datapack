@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface McFunctionCommandLine extends PsiElement {
 
   @Nullable
+  McFunctionAttributeCommand getAttributeCommand();
+
+  @Nullable
   McFunctionExecuteCommand getExecuteCommand();
 
   @Nullable

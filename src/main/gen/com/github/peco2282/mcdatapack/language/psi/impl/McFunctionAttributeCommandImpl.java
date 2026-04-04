@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements McFunctionCommandLine {
+public class McFunctionAttributeCommandImpl extends ASTWrapperPsiElement implements McFunctionAttributeCommand {
 
-  public McFunctionCommandLineImpl(@NotNull ASTNode node) {
+  public McFunctionAttributeCommandImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitCommandLine(this);
+    visitor.visitAttributeCommand(this);
   }
 
   @Override
@@ -28,27 +28,33 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
   }
 
   @Override
-  @Nullable
-  public McFunctionAttributeCommand getAttributeCommand() {
-    return findChildByClass(McFunctionAttributeCommand.class);
+  @NotNull
+  public List<McFunctionCommand> getCommandList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCommand.class);
+  }
+
+  @Override
+  @NotNull
+  public List<McFunctionKeyword> getKeywordList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionKeyword.class);
   }
 
   @Override
   @Nullable
-  public McFunctionExecuteCommand getExecuteCommand() {
-    return findChildByClass(McFunctionExecuteCommand.class);
+  public McFunctionNamespacedId getNamespacedId() {
+    return findChildByClass(McFunctionNamespacedId.class);
   }
 
   @Override
   @Nullable
-  public McFunctionGenericCommand getGenericCommand() {
-    return findChildByClass(McFunctionGenericCommand.class);
+  public McFunctionSelector getSelector() {
+    return findChildByClass(McFunctionSelector.class);
   }
 
   @Override
   @Nullable
-  public McFunctionMacroLine getMacroLine() {
-    return findChildByClass(McFunctionMacroLine.class);
+  public PsiElement getStringToken() {
+    return findChildByType(STRING_TOKEN);
   }
 
 }

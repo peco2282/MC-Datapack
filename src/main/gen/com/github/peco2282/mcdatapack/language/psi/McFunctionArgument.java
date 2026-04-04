@@ -11,9 +11,6 @@ public interface McFunctionArgument extends PsiElement {
   McFunctionCommand getCommand();
 
   @Nullable
-  McFunctionItemStack getItemStack();
-
-  @Nullable
   McFunctionJson getJson();
 
   @Nullable

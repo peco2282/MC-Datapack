@@ -35,12 +35,6 @@ public class McFunctionArgumentImpl extends ASTWrapperPsiElement implements McFu
 
   @Override
   @Nullable
-  public McFunctionItemStack getItemStack() {
-    return findChildByClass(McFunctionItemStack.class);
-  }
-
-  @Override
-  @Nullable
   public McFunctionJson getJson() {
     return findChildByClass(McFunctionJson.class);
   }

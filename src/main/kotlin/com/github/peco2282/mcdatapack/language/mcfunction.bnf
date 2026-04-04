@@ -179,14 +179,14 @@
   ]
 }
 
-mcFunctionFile ::= (command_line | COMMENT_TOKEN | CRLF_TOKEN | WHITE_SPACE | CONTINUATION_TOKEN)*
+mcFunctionFile ::= (command_line | COMMENT_TOKEN | CRLF_TOKEN | CONTINUATION_TOKEN)*
 
-// コマンド行：マクロ行、execute コマンド、それ以外の汎用コマンド
-command_line ::= (macro_line | execute_command | generic_command) {pin=1}
+// コマンド行：マクロ行、execute コマンド、attribute コマンド、それ以外の汎用コマンド
+command_line ::= (macro_line | execute_command | attribute_command | generic_command) {pin=1}
 
 // マクロ行: $$ で始まる行。行内の $(変数名) を macro_variable として識別
 macro_line ::= MACRO_LINE_START macro_line_content* {pin=1}
-private macro_line_content ::= macro_variable | WHITE_SPACE | ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN
+private macro_line_content ::= macro_variable | ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN
   | selector | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
   | keyword | command | MACRO_TOKEN | COLON | DOT_TOKEN | DOTDOT_TOKEN
   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | EQUALS | COMMA
@@ -195,12 +195,30 @@ private macro_line_content ::= macro_variable | WHITE_SPACE | ARGUMENT_TOKEN | C
 // マクロ変数: $(変数名) または $(変数名[インデックス])
 macro_variable ::= MACRO_VAR_TOKEN | MACRO_TOKEN
 
+// attribute コマンド専用ルール: attribute <selector> <namespaced_id> <subcommand>
+// modifier/add/remove/get/base などをキーワードとして固定待機し、item_stack 誤判定を防ぐ
+// attribute_namespaced_id は ARGUMENT_TOKEN も許可（generic.attack_damage のようなドット含む文字列対応）
+attribute_command ::= ATTRIBUTE_TOKEN selector attribute_namespaced_id attribute_subcommand? {pin=1}
+private attribute_namespaced_id ::= attr_ns_identifier (COLON attribute_namespaced_path)?
+private attribute_namespaced_path ::= attr_ns_identifier (DOT_TOKEN attr_ns_identifier)*
+private attr_ns_identifier ::= COMMAND_TOKEN | ARGUMENT_TOKEN | keyword | command
+private attribute_subcommand ::= BASE_TOKEN attribute_base_op?
+  | MODIFIER_TOKEN attribute_modifier_op
+  | QUERY_TOKEN
+private attribute_base_op ::= GET_TOKEN ARGUMENT_TOKEN?
+  | SET_TOKEN ARGUMENT_TOKEN
+  | ADD_TOKEN ARGUMENT_TOKEN
+  | REMOVE_TOKEN ARGUMENT_TOKEN
+private attribute_modifier_op ::= ADD_TOKEN ARGUMENT_TOKEN (STRING_TOKEN | ARGUMENT_TOKEN) ARGUMENT_TOKEN (COMMAND_TOKEN | keyword)
+  | REMOVE_TOKEN namespaced_id
+  | GET_TOKEN namespaced_id ARGUMENT_TOKEN?
+
 // execute コマンド：modifier を並べ、run の後に新しいコマンドを再帰的にパース
 execute_command ::= EXECUTE_TOKEN execute_body?
 // WHITE_SPACE はフレームワークが自動スキップするため明示的消費不要
 private execute_body ::= execute_modifier_with_continuation+ (RUN_TOKEN (command_line | execute_body))?
 private execute_modifier_with_continuation ::= CONTINUATION_TOKEN? execute_modifier
-generic_command ::= (command | json) (WHITE_SPACE | (CONTINUATION_TOKEN WHITE_SPACE?) | item_stack | nbt_compound | json | argument)*
+generic_command ::= (command | json) (CONTINUATION_TOKEN? (item_stack | nbt_compound | json | argument))*
 
 // 行頭のコマンド名（MACRO_LINE_STARTは macro_line で処理するため除外）
 command ::= ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN | DAMAGE_TOKEN
@@ -231,7 +249,7 @@ private execute_modifier ::= keyword | json | execute_argument
 
 // execute modifier 専用の引数（command トークンを除外）
 // item_stack の代わりに execute_item_stack を使い、command が identifier に入らないようにする
-private execute_argument ::= selector | execute_item_stack | ARGUMENT_TOKEN | STRING_TOKEN
+private execute_argument ::= selector | nbt_compound | execute_item_stack | ARGUMENT_TOKEN | STRING_TOKEN
   | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
   | MACRO_TOKEN | MACRO_VAR_TOKEN
   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
@@ -250,14 +268,18 @@ private safe_identifier ::= COMMAND_TOKEN | ARGUMENT_TOKEN | keyword
 // -----------------------------------------------------------------------
 // Namespaced ID: minecraft:stone  または  stone
 // パス部分にはドット(.)やスラッシュ(/)が含まれることを考慮
+// 数値・レンジ（5.0, ..10 等）は ns_identifier に含めず、NamespacedId への誤マッチを防ぐ
 // -----------------------------------------------------------------------
-namespaced_id ::= identifier (COLON namespaced_path)?
+namespaced_id ::= ns_identifier (COLON namespaced_path)?
 
 // パス部分: ドットやスラッシュを含む識別子の連続
-private namespaced_path ::= identifier (DOT_TOKEN identifier)*
+private namespaced_path ::= ns_identifier (DOT_TOKEN ns_identifier)*
 
-// 識別子の構成要素（キーワードトークンも識別子として使える）
-// command を含むことで namespaced_id が execute/particle 等を消費できる（generic_command 内では必要）
+// namespaced_id 専用の識別子（数値・レンジ系 ARGUMENT_TOKEN を除外）
+// ARGUMENT_TOKEN は数値や ..10 等も含むため、ここでは COMMAND_TOKEN・keyword・command のみ許可
+private ns_identifier ::= COMMAND_TOKEN | keyword | command
+
+// 汎用識別子（nbt_key や nbt_primitive など数値も許容する文脈で使用）
 private identifier ::= COMMAND_TOKEN | ARGUMENT_TOKEN | keyword | command
 
 // -----------------------------------------------------------------------
@@ -265,8 +287,8 @@ private identifier ::= COMMAND_TOKEN | ARGUMENT_TOKEN | keyword | command
 // -----------------------------------------------------------------------
 selector ::= selector_base selector_arguments?
 private selector_base ::= SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
-selector_arguments ::= LBRACK WHITE_SPACE? (selector_argument (WHITE_SPACE? COMMA WHITE_SPACE? selector_argument)*)? WHITE_SPACE? RBRACK
-selector_argument  ::= selector_arg_key WHITE_SPACE? EQUALS WHITE_SPACE? selector_arg_value
+selector_arguments ::= LBRACK (selector_argument (COMMA selector_argument)*)? RBRACK
+selector_argument  ::= selector_arg_key EQUALS selector_arg_value
 private selector_arg_key   ::= namespaced_id
 private selector_arg_value ::= nbt_compound | nbt_list | STRING_TOKEN | namespaced_id | ARGUMENT_TOKEN
 
@@ -276,10 +298,10 @@ private selector_arg_value ::= nbt_compound | nbt_list | STRING_TOKEN | namespac
 item_stack ::= namespaced_id component_list?
 
 // コンポーネントリスト: [ component, component, ... ]
-component_list ::= LBRACK WHITE_SPACE? (component (WHITE_SPACE? COMMA WHITE_SPACE? component)*)? WHITE_SPACE? RBRACK {pin=1}
+component_list ::= LBRACK (component (COMMA component)*)? RBRACK {pin=1}
 
 // 個々のコンポーネント: key=value  または  !key (削除指定)
-component ::= component_key WHITE_SPACE? (EQUALS | COLON) WHITE_SPACE? component_value
+component ::= component_key (EQUALS | COLON) component_value
             | ARGUMENT_TOKEN component_key  // !key 形式 (例: !enchantments)
 
 private component_key   ::= namespaced_id
@@ -293,12 +315,12 @@ component_value ::= nbt_compound | nbt_list | STRING_TOKEN | nbt_primitive
 nbt_value ::= nbt_compound | nbt_list | STRING_TOKEN | nbt_primitive
 
 // Compound: { key: value, key: value, ... }
-nbt_compound ::= LBRACE WHITE_SPACE? (nbt_property (COMMA WHITE_SPACE? nbt_property)*)? WHITE_SPACE? RBRACE {pin=1}
-nbt_property ::= nbt_key WHITE_SPACE? (COLON | EQUALS) WHITE_SPACE? nbt_value
+nbt_compound ::= LBRACE (nbt_property (COMMA nbt_property)*)? RBRACE {pin=1}
+nbt_property ::= nbt_key (COLON | EQUALS) nbt_value
 private nbt_key ::= STRING_TOKEN | COMMAND_TOKEN | ARGUMENT_TOKEN | keyword | command
 
 // List / Array: [ value, value, ... ]
-nbt_list ::= LBRACK WHITE_SPACE? (nbt_value (COMMA WHITE_SPACE? nbt_value)*)? WHITE_SPACE? RBRACK {pin=1}
+nbt_list ::= LBRACK (nbt_value (COMMA nbt_value)*)? RBRACK {pin=1}
 
 // プリミティブ値: 数値サフィックス付き (10b, 1.0f, 255L 等) または 裸の識別子 (true/false 等)
 nbt_primitive ::= ARGUMENT_TOKEN | COMMAND_TOKEN | keyword | command
@@ -315,14 +337,15 @@ json_object ::= LBRACE (json_property (COMMA json_property)*)? RBRACE
 // json_value: argument tokens optionally followed by a json structure (e.g. key={...} or key=[...])
 private json_value ::= json | (argument | STRING_TOKEN)+ json?
 
-private json_element  ::= WHITE_SPACE? json_value WHITE_SPACE?
+private json_element  ::= json_value
 private json_key ::= (argument | STRING_TOKEN | COLON)+
-private json_property ::= WHITE_SPACE? json_key WHITE_SPACE? (COLON | EQUALS) WHITE_SPACE? json_value WHITE_SPACE?
+private json_property ::= json_key (COLON | EQUALS) json_value
 
 // -----------------------------------------------------------------------
 // Generic argument (フォールバック)
+// item_stack は generic_command 側で先に試行するため、ここでは除外して二重マッチを防ぐ
 // -----------------------------------------------------------------------
-argument ::= selector | item_stack | json | ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
+argument ::= selector | json | ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
   | SELECTOR_S | SELECTOR_A | SELECTOR_P | SELECTOR_E | SELECTOR_R
   | MACRO_TOKEN | MACRO_VAR_TOKEN
   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
