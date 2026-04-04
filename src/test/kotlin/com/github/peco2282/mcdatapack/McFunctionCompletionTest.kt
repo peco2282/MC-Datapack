@@ -18,8 +18,15 @@ class McFunctionCompletionTest : BasePlatformTestCase() {
         myFixture.configureByText("test.mcfunction", "execute ru<caret>")
         myFixture.completeBasic()
         val lookupElementStrings = myFixture.lookupElementStrings
-        assertNotNull(lookupElementStrings)
-        assertTrue("Expected 'run' in $lookupElementStrings", lookupElementStrings!!.contains("run"))
+        // 補完候補がある場合は run が含まれることを確認する
+        // 候補が1つに絞られて自動補完された場合は lookupElementStrings が null になる
+        if (lookupElementStrings != null) {
+            assertTrue("Expected 'run' in $lookupElementStrings", lookupElementStrings.contains("run"))
+        } else {
+            // 自動補完された場合、エディタのテキストに "run" が含まれているはず
+            val text = myFixture.editor.document.text
+            assertTrue("Expected 'run' to be auto-completed in: $text", text.contains("run"))
+        }
     }
 
     @Test

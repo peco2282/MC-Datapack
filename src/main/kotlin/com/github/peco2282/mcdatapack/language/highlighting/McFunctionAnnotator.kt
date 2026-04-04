@@ -5,6 +5,7 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
+import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 
 class McFunctionAnnotator : Annotator {
@@ -152,11 +153,11 @@ class McFunctionAnnotator : Annotator {
       if (keyPart.isEmpty()) return false
       
       var prev = element.prevSibling
-      while (prev != null && (prev.node.elementType == McFunctionTypes.WHITE_SPACE || prev.node.elementType == McFunctionTypes.CRLF_TOKEN)) {
+      while (prev != null && (prev.node.elementType == TokenType.WHITE_SPACE || prev.node.elementType == McFunctionTypes.CRLF_TOKEN)) {
         prev = prev.prevSibling
       }
       return prev == null || 
-          prev.node.elementType == McFunctionTypes.LBRACK || 
+          prev.node.elementType == McFunctionTypes.LBRACK ||
           prev.node.elementType == McFunctionTypes.LBRACE || 
           prev.node.elementType == McFunctionTypes.COMMA ||
           (prev is McFunctionArgument && (prev.lastChild?.node?.elementType == McFunctionTypes.LBRACK || prev.lastChild?.node?.elementType == McFunctionTypes.LBRACE || prev.lastChild?.node?.elementType == McFunctionTypes.COMMA))
@@ -165,7 +166,7 @@ class McFunctionAnnotator : Annotator {
     // セレクター引数 ([tag=...]) や JSON ([custom_name={...}]) のキー判定
     // 前後に '[' や ',' がある場合も考慮する
     var prev = element.prevSibling
-    while (prev != null && (prev.node.elementType == McFunctionTypes.WHITE_SPACE || prev.node.elementType == McFunctionTypes.CRLF_TOKEN)) {
+    while (prev != null && (prev.node.elementType == TokenType.WHITE_SPACE || prev.node.elementType == McFunctionTypes.CRLF_TOKEN)) {
       prev = prev.prevSibling
     }
     val isAfterOpeningOrSeparator = prev == null || 
@@ -177,7 +178,7 @@ class McFunctionAnnotator : Annotator {
     var next = element.nextSibling
     while (next != null) {
       val nextType = next.node.elementType
-      if (nextType == McFunctionTypes.WHITE_SPACE || nextType == McFunctionTypes.CRLF_TOKEN) {
+      if (nextType == TokenType.WHITE_SPACE || nextType == McFunctionTypes.CRLF_TOKEN) {
         next = next.nextSibling
         continue
       }

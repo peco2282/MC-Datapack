@@ -81,6 +81,22 @@ class McFunctionIssueReproductionTest : BasePlatformTestCase() {
         assertTrue("Should not have parse errors, but found ${errors.size} errors", errors.isEmpty())
     }
 
+    @Test
+    fun testAttributeModifierAdd() {
+        val input = "execute if data storage my_namespace:main {temp_val:1s} run attribute @s minecraft:generic.attack_damage modifier add 1-2-3-4-5 \"PowerBoost\" 5.0 add_value"
+        val file = myFixture.configureByText("attribute_modifier.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
+        if (errors.isNotEmpty()) {
+            val sb = StringBuilder()
+            dumpPsi(file, sb)
+            System.err.println("[DEBUG_LOG] PSI Tree:\n$sb")
+            for (error in errors) {
+                System.err.println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
+            }
+        }
+        assertTrue("attribute modifier add command should not have parse errors, but found ${errors.size}", errors.isEmpty())
+    }
+
     private fun dumpPsi(element: com.intellij.psi.PsiElement, sb: StringBuilder, indent: String = "") {
         sb.append(indent).append(element.toString()).append(" ('").append(element.text.replace("\n", "\\n")).append("')").append("\n")
         for (child in element.children) {

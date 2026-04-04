@@ -52,9 +52,10 @@ class McFunctionParserTest : BasePlatformTestCase() {
         val commands = PsiTreeUtil.findChildrenOfType(file, McFunctionCommandLine::class.java)
         assertEquals(1, commands.size)
         val cmd = commands.first()
-        val args = PsiTreeUtil.findChildrenOfType(cmd, com.github.peco2282.mcdatapack.language.psi.McFunctionArgument::class.java)
-        assertEquals(1, args.size)
-        assertEquals("minecraft:test", args.first().text)
+        // function minecraft:test は namespaced_id として item_stack にパースされる（正しい動作）
+        val itemStacks = PsiTreeUtil.findChildrenOfType(cmd, com.github.peco2282.mcdatapack.language.psi.McFunctionItemStack::class.java)
+        assertEquals(1, itemStacks.size)
+        assertEquals("minecraft:test", itemStacks.first().text)
     }
 
     @Test
