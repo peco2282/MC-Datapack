@@ -142,7 +142,6 @@ tasks {
     generateLexer {
         sourceFile.set(file("src/main/kotlin/com/github/peco2282/mcdatapack/language/mcfunction.flex"))
         targetOutputDir.set(file("src/main/gen/com/github/peco2282/mcdatapack/language"))
-        purgeOldFiles.set(false)
     }
 
     generateParser {
@@ -150,7 +149,6 @@ tasks {
         targetRootOutputDir.set(file("src/main/gen"))
         pathToParser.set("/com/github/peco2282/mcdatapack/language/parser/McFunctionParser.java")
         pathToPsiRoot.set("/com/github/peco2282/mcdatapack/language/psi")
-        purgeOldFiles.set(false)
     }
 
     withType<KotlinCompile> {
