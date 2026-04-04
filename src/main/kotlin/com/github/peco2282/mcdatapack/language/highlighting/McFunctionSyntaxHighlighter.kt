@@ -41,6 +41,11 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
       "MC_SELECTOR", DefaultLanguageHighlighterColors.METADATA
     )
 
+    // Namespace (リソース識別子のコロンの前の部分)
+    val NAMESPACE = TextAttributesKey.createTextAttributesKey(
+      "MC_NAMESPACE", DefaultLanguageHighlighterColors.CLASS_NAME
+    )
+
     // Values / Literals (水色 / 緑 / 白)
     val STRING = TextAttributesKey.createTextAttributesKey(
       "MC_STRING", DefaultLanguageHighlighterColors.STRING

@@ -365,7 +365,12 @@ private coordinate_component ::= COORD_TOKEN | ARGUMENT_TOKEN | GTE_TOKEN | LTE_
 // 数値・レンジ（5.0, ..10 等）は ns_identifier に含めず、NamespacedId への誤マッチを防ぐ
 // ARGUMENT_TOKEN を除外することで、5.0 や ..10 が NamespacedId に含まれることを防ぐ
 // -----------------------------------------------------------------------
-namespaced_id ::= ns_identifier (COLON namespaced_path)?
+namespaced_id ::= ns_identifier (COLON namespaced_path)? {
+  methods=[
+    namespace="ns_identifier"
+    path="namespaced_path"
+  ]
+}
 
 // パス部分: ドットやスラッシュを含む識別子の連続
 private namespaced_path ::= ns_identifier (DOT_TOKEN ns_identifier)*

@@ -4,6 +4,7 @@ import com.github.peco2282.mcdatapack.language.psi.*
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
@@ -12,6 +13,23 @@ class McFunctionAnnotator : Annotator {
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
     if (element.javaClass.simpleName.startsWith("McFunction") && element !is McFunctionFile)
       println("annotate: ${element.javaClass.simpleName} ${element.text}")
+
+    if (element is McFunctionNamespacedId) {
+      holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .range(element.textRange)
+        .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE)
+//      val colon = element.node.findChildByType(McFunctionTypes.COLON)
+//      if (colon != null) {
+//        // コロンの前の部分を NAMESPACE でハイライト
+//        val ns = element.firstChild
+//        if (ns != null && ns.node.startOffset < colon.startOffset) {
+//          holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+//            .range(TextRange(element.textRange.startOffset, colon.startOffset))
+//            .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE)
+//            .create()
+//        }
+//      }
+    }
     if (element is McFunctionCommand) {
       val token = element.firstChild ?: return
       val tokenType = token.node.elementType
@@ -69,23 +87,44 @@ class McFunctionAnnotator : Annotator {
 
     if (element is McFunctionItemStack) {
       // netherite_sword[...] の netherite_sword 部分をハイライト
-      val namespacedId = element.namespacedId
-      holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .range(namespacedId.textRange)
-        .textAttributes(McFunctionSyntaxHighlighter.JSON_KEY)
-        .create()
-      return
+      // NamespacedId 自体のハイライト (NAMESPACE) は NamespacedId のハンドラに任せる
     }
 
     if (element is McFunctionComponent) {
       // attribute_modifiers={...} の attribute_modifiers 部分をハイライト
-      val namespacedId = element.namespacedId
+      // NamespacedId 自体のハイライト (NAMESPACE) は NamespacedId のハンドラに任せる
+    }
+
+    // McFunctionItemId: give/clear コマンドのアイテム識別子（例: minecraft:stone）
+    // item_id は namespaced_id と同じ構造だが、独立した PSI 型として色分け可能
+     if (element is McFunctionItemId) {
+       // NamespacedId 自体のハイライト (NAMESPACE) は NamespacedId のハンドラに任せる
+       return
+     }
+
+    // McFunctionSelectorArgKey: セレクタ引数のキー部分（例: @e[tag=foo] の tag）
+    // selector_arg_key は独立した PSI 型として補完・色分けを制御可能
+     if (element is McFunctionSelectorArgKey) {
+       // NamespacedId 自体のハイライト (NAMESPACE) は NamespacedId のハンドラに任せる
+       return
+     }
+
+    // McFunctionCoordinate: ^ や ~ を含む座標系（例: ~ ~ ~, ^1 ^2 ^3）
+    // McFunctionArgument に埋もれていた座標を独立した PSI 型として識別
+    if (element is McFunctionCoordinate) {
       holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .range(namespacedId.textRange)
-        .textAttributes(McFunctionSyntaxHighlighter.JSON_KEY)
+        .range(element.textRange)
+        .textAttributes(McFunctionSyntaxHighlighter.COORDINATE)
         .create()
       return
     }
+
+    // 専用コマンドルール（give/clear/data/item）はそれ自体へのアノテーションをスキップし、
+    // 子要素（command/keyword/item_stack 等）の処理に委ねる
+     if (element is McFunctionGiveCommand || element is McFunctionClearCommand
+       || element is McFunctionDataCommand || element is McFunctionItemCommand) {
+       return
+     }
 
     if (element is McFunctionJson || element is McFunctionJsonObject || element is McFunctionJsonArray) {
       return
@@ -223,7 +262,7 @@ class McFunctionAnnotator : Annotator {
             val startOffset = text.indexOf(valPart)
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
               .range(
-                com.intellij.openapi.util.TextRange(
+                TextRange(
                   element.textRange.startOffset + startOffset,
                   element.textRange.endOffset
                 )
