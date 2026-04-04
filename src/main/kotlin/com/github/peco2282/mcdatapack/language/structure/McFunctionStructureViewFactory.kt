@@ -101,9 +101,8 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
     if (element is McFunctionCommandLine) {
       val executeCommand = element.executeCommand
       if (executeCommand != null) {
-        return executeCommand.commandLineList
-          .map { McFunctionStructureViewElement(it) }
-          .toTypedArray()
+        val commandLine = executeCommand.commandLine ?: return emptyArray()
+        return arrayOf(McFunctionStructureViewElement(commandLine))
       }
     }
     return emptyArray()

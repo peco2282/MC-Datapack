@@ -72,6 +72,11 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
       "MC_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT
     )
 
+    // Coordinates (水色: ~ ^ で始まる座標)
+    val COORDINATE = TextAttributesKey.createTextAttributesKey(
+      "MC_COORDINATE", DefaultLanguageHighlighterColors.NUMBER
+    )
+
     val MAJOR_COMMAND_TOKENS = TokenSet.create(
       McFunctionTypes.ADVANCEMENT_TOKEN,
       McFunctionTypes.ATTRIBUTE_TOKEN,
@@ -237,6 +242,7 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
       in STRUCTURE_TOKENS -> arrayOf(STRUCTURE)
       McFunctionTypes.MACRO_TOKEN -> arrayOf(MACRO)
       McFunctionTypes.STRING_TOKEN -> arrayOf(STRING)
+      McFunctionTypes.COORD_TOKEN -> arrayOf(COORDINATE)
       McFunctionTypes.ARGUMENT_TOKEN, McFunctionTypes.COMMAND_TOKEN -> arrayOf(ARGUMENT)
       else -> emptyArray()
     }
