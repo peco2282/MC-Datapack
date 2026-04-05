@@ -32,7 +32,7 @@ class McFunctionCompletionContributor : CompletionContributor() {
           
           // 行頭
           if (isCommandPosition(position)) {
-            COMMANDS.forEach {
+            McFunctionConstants.COMMANDS.forEach {
               result.addElement(
                 LookupElementBuilder.create(it)
                   .withBoldness(true)
@@ -44,7 +44,7 @@ class McFunctionCompletionContributor : CompletionContributor() {
 
           // execute ... run の後の全コマンド補完
           if (isAfterRun(position)) {
-            COMMANDS.forEach {
+            McFunctionConstants.COMMANDS.forEach {
               result.addElement(
                 LookupElementBuilder.create(it)
                   .withBoldness(true)
@@ -54,13 +54,34 @@ class McFunctionCompletionContributor : CompletionContributor() {
             return
           }
 
+          if (isInsideSelectorType(position)) {
+              McFunctionConstants.ENTITY_IDS.forEach {
+                  val id = it.removePrefix("minecraft:")
+                  result.addElement(LookupElementBuilder.create(id).withIcon(McFunctionIcons.COMMAND))
+                  result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+              }
+              // アイテムやブロックのタグも type= 内で使える場合があるが、ここでは主にエンティティ
+              addEntityTags(parameters, result)
+              return
+          }
+
           // 文脈に応じた補完
           val prevVisible = getPreviousVisibleElement(position) ?: return
           val prevText = prevVisible.text.lowercase()
           
           when (prevText) {
+            "run" -> {
+                // execute ... run の直後は全コマンド
+                McFunctionConstants.COMMANDS.forEach {
+                    result.addElement(
+                        LookupElementBuilder.create(it)
+                            .withBoldness(true)
+                            .withIcon(getIconForCommand(it))
+                    )
+                }
+            }
             "execute" -> {
-              EXECUTE_SUBCOMMANDS.forEach {
+              McFunctionConstants.EXECUTE_SUBCOMMANDS.forEach {
                 var priority = 0.0
                 if (it == "as" || it == "at") priority = 100.0
                 else if (it == "run") priority = -100.0
@@ -74,8 +95,11 @@ class McFunctionCompletionContributor : CompletionContributor() {
               }
             }
             "if", "unless", "while", "until" -> {
-              IF_UNLESS_SUBCOMMANDS.forEach {
+              McFunctionConstants.IF_UNLESS_SUBCOMMANDS.forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+              }
+              if (prevText == "if" || prevText == "unless") {
+                  result.addElement(LookupElementBuilder.create("function").withIcon(McFunctionIcons.COMMAND))
               }
             }
             "as", "at", "facing", "rotated", "position" -> {
@@ -86,28 +110,79 @@ class McFunctionCompletionContributor : CompletionContributor() {
                 }
               }
               // セレクター候補
-              SELECTORS.forEach {
+              McFunctionConstants.SELECTORS.forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
               }
             }
             "on" -> {
-              ON_SUBCOMMANDS.forEach {
+              McFunctionConstants.ON_SUBCOMMANDS.forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
               }
             }
+            "rotate" -> {
+                result.addElement(LookupElementBuilder.create("as").withIcon(McFunctionIcons.COMMAND))
+                McFunctionConstants.SELECTORS.forEach {
+                    result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
+                }
+            }
             "summon" -> {
-              // 本来はエンティティIDのリストを出すべきだが、一旦主要なものか空
+                McFunctionConstants.ENTITY_IDS.forEach {
+                    val id = it.removePrefix("minecraft:")
+                    result.addElement(LookupElementBuilder.create(id).withIcon(McFunctionIcons.COMMAND))
+                    result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+                }
+            }
+            "setblock" -> {
+                McFunctionConstants.BLOCK_IDS.forEach {
+                    val id = it.removePrefix("minecraft:")
+                    result.addElement(LookupElementBuilder.create(id).withIcon(McFunctionIcons.COMMAND))
+                    result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+                }
             }
             "give", "tp", "teleport", "kill", "damage", "effect", "enchant", "gamemode", "clear" -> {
               // ターゲットセレクター
-              SELECTORS.forEach {
+              McFunctionConstants.SELECTORS.forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
               }
+              if (prevText == "give" || prevText == "clear") {
+                  // give @p <item>
+                  // clear @p <item>
+                  // セレクターの後であればアイテムIDを補完
+                  // ここでは単純に次の位置であれば出すようにする
+                  McFunctionConstants.ITEM_IDS.forEach {
+                      val id = it.removePrefix("minecraft:")
+                      result.addElement(LookupElementBuilder.create(id).withIcon(McFunctionIcons.COMMAND))
+                      result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+                  }
+              }
+            }
+            "item" -> {
+                // item replace entity <selector> ...
+                // item replace block <pos> ...
+                listOf("replace", "modify").forEach {
+                    result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+                }
+            }
+            "replace" -> {
+                val p2 = getPreviousVisibleElement(prevVisible)
+                if (p2?.text?.lowercase() == "item") {
+                    listOf("block", "entity").forEach {
+                        result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+                    }
+                }
             }
             "data" -> {
               listOf("get", "merge", "modify", "remove").forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
               }
+            }
+            "modify" -> {
+                val p2 = getPreviousVisibleElement(prevVisible)
+                if (p2?.text?.lowercase() == "data") {
+                    listOf("block", "entity", "storage").forEach {
+                        result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+                    }
+                }
             }
             "weather" -> {
               listOf("clear", "rain", "thunder").forEach {
@@ -120,16 +195,18 @@ class McFunctionCompletionContributor : CompletionContributor() {
               }
             }
             "gamerule" -> {
-              GAME_RULES.forEach {
+              McFunctionConstants.GAME_RULES.forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
               }
             }
             "block", "entity", "storage" -> {
               // 文脈により座標、セレクター、または名前空間ID
               if (prevText == "entity") {
-                SELECTORS.forEach {
+                McFunctionConstants.SELECTORS.forEach {
                   result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
                 }
+              } else if (prevText == "storage") {
+                  addStorageNames(parameters, result)
               }
             }
             "function" -> {
@@ -154,7 +231,7 @@ class McFunctionCompletionContributor : CompletionContributor() {
           context: ProcessingContext,
           result: CompletionResultSet
         ) {
-          SELECTOR_ARGUMENTS.forEach {
+          McFunctionConstants.SELECTOR_ARGUMENTS.forEach {
             result.addElement(LookupElementBuilder.create(it).withTailText("="))
           }
         }
@@ -183,7 +260,7 @@ class McFunctionCompletionContributor : CompletionContributor() {
             "sort" -> listOf("nearest", "furthest", "random", "arbitrary").forEach {
               result.addElement(LookupElementBuilder.create(it))
             }
-            "type" -> ENTITY_IDS.forEach {
+            "type" -> McFunctionConstants.ENTITY_IDS.forEach {
               result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
             }
             "limit" -> result.addElement(LookupElementBuilder.create("1"))
@@ -211,7 +288,7 @@ class McFunctionCompletionContributor : CompletionContributor() {
           val prev3 = getPreviousVisibleElement(prev2) ?: return
           
           if (prevText(prev2) == "add" && prevText(prev3) == "objectives") {
-              CRITERIA.forEach {
+              McFunctionConstants.CRITERIA.forEach {
                   result.addElement(LookupElementBuilder.create(it))
               }
           }
@@ -286,9 +363,9 @@ class McFunctionCompletionContributor : CompletionContributor() {
       val psiFile = PsiManager.getInstance(project).findFile(file) ?: continue
       val text = psiFile.text
       // tag <selector> add <name>
-      val regex = Regex("tag\\s+@\\w+(\\[.*])?\\s+add\\s+(\\w+)")
+      val regex = Regex("tag\\s+\\S+\\s+add\\s+([a-zA-Z0-9_.-]+)")
       regex.findAll(text).forEach {
-        tags.add(it.groupValues[2])
+        tags.add(it.groupValues[1])
       }
     }
     tags.forEach {
@@ -297,17 +374,15 @@ class McFunctionCompletionContributor : CompletionContributor() {
   }
 
   private fun addStorageNames(parameters: CompletionParameters, result: CompletionResultSet) {
-      // storage 名は namespaced_id なので、addFunctionReferences と同様のロジックでプロジェクト内の resource 等から取得するのが望ましいが、
-      // ここでは mcfunction 内で使われているものを収集する
       val project = parameters.originalFile.project
       val files = FilenameIndex.getAllFilesByExt(project, "mcfunction", GlobalSearchScope.allScope(project))
-      val storages = mutableSetOf<String>()
+      val storages = mutableSetOf("minecraft:default") // デフォルト
 
       for (file in files) {
           val psiFile = PsiManager.getInstance(project).findFile(file) ?: continue
           val text = psiFile.text
           // data ... storage <name>
-          val regex = Regex("storage\\s+([a-z0-9_.-]+:[a-z0-9_./-]+|[a-z0-9_./-]+)")
+          val regex = Regex("storage\\s+([a-zA-Z0-9_.-]+:[a-zA-Z0-9_./-]+|[a-zA-Z0-9_./-]+)")
           regex.findAll(text).forEach {
               storages.add(it.groupValues[1])
           }
@@ -341,15 +416,24 @@ class McFunctionCompletionContributor : CompletionContributor() {
     // PSI構造による厳密な判定
     var parent = element.parent
     while (parent != null) {
-      if (parent is com.github.peco2282.mcdatapack.language.psi.McFunctionExecuteCommand) {
-        val runToken = parent.node.findChildByType(McFunctionTypes.RUN_TOKEN)
-        if (runToken != null && element.textOffset > runToken.startOffset) {
-          return true
+      if (parent.toString().contains("McFunctionExecuteCommand")) {
+        // execute ... run の構造を簡易的に文字列判定
+        if (parent.text.lowercase().contains(" run ")) {
+            return true
         }
       }
       parent = parent.parent
     }
     return false
+  }
+
+  private fun isInsideSelectorType(element: PsiElement): Boolean {
+      val text = element.containingFile.text
+      val offset = element.textOffset
+      if (offset <= 0) return false
+      val prefix = text.substring(0, offset)
+      // 直前が [ または , で、その後に type= が続いているか、あるいは type= の直後かを確認
+      return prefix.trimEnd().endsWith("type=") || prefix.trimEnd().endsWith("type =")
   }
 
   private fun addFunctionReferences(parameters: CompletionParameters, result: CompletionResultSet) {
@@ -366,10 +450,12 @@ class McFunctionCompletionContributor : CompletionContributor() {
         if (parts.size >= 3 && parts[1] == "functions") {
           val namespace = parts[0]
           val functionPath = parts.drop(2).joinToString("/").removeSuffix(".mcfunction")
+          // 候補を追加
           result.addElement(
             LookupElementBuilder.create("$namespace:$functionPath")
               .withIcon(McFunctionIcons.FUNCTION)
           )
+          // minecraft: 省略形
           if (namespace == "minecraft") {
             result.addElement(
               LookupElementBuilder.create(functionPath)
@@ -440,54 +526,6 @@ class McFunctionCompletionContributor : CompletionContributor() {
 }
 
 private val EXECUTE_SUBCOMMANDS = listOf(
-  "as", "at", "anchored", "facing", "in", "on", "positioned", "rotated", "store", "summon", "if", "unless", "while", "until", "run"
-)
-
-private val IF_UNLESS_SUBCOMMANDS = listOf(
-  "block", "blocks", "data", "dimension", "entity", "function", "items", "loaded", "predicate", "score", "storage"
-)
-
-private val ON_SUBCOMMANDS = listOf(
-  "attacker", "controller", "leasher", "origin", "owner", "passengers", "target", "vehicle"
-)
-
-private val SELECTORS = listOf("@a", "@e", "@p", "@r", "@s")
-
-private val SELECTOR_ARGUMENTS = listOf(
-  "advancements", "distance", "dx", "dy", "dz", "gamemode", "level", "limit", "name", "nbt", "predicate", "scores", "sort", "tag", "team", "type", "x", "x_rotation", "y", "y_rotation", "z"
-)
-
-private val CRITERIA = listOf(
-    "dummy", "trigger", "deathCount", "playerKillCount", "totalKillCount", "health", "food", "air", "armor", "level", "xp"
-)
-
-private val ENTITY_IDS = listOf(
-    "minecraft:player", "minecraft:zombie", "minecraft:skeleton", "minecraft:creeper", "minecraft:spider", "minecraft:enderman"
-)
-
-private val GAME_RULES = listOf(
-  "announceAdvancements", "commandBlockOutput", "disableElytraMovementCheck", "disableRaids", "doDaylightCycle",
-  "doEntityDrops", "doFireTick", "doImmediateRespawn", "doInsomnia", "doLimitedCrafting", "doMobLoot",
-  "doMobSpawning", "doPatrolSpawning", "doTileDrops", "doTraderSpawning", "doWeatherCycle", "drowningDamage",
-  "fallDamage", "fireDamage", "forgiveDeadPlayers", "freezeDamage", "keepInventory", "logAdminCommands",
-  "maxCommandChainLength", "maxEntityCramming", "mobGriefing", "naturalRegeneration", "playersSleepingPercentage",
-  "randomTickSpeed", "reducedDebugInfo", "sendCommandFeedback", "showDeathMessages", "spawnRadius",
-  "spectatorsGenerateChunks", "universalAnger"
-)
-
-private val COMMANDS = listOf(
-  "advancement", "attribute", "execute", "bossbar", "clear", "clone", "damage",
-  "data", "datapack", "debug", "defaultgamemode", "difficulty", "effect", "enchant",
-  "experience", "fill", "fillbiome", "forceload", "function", "gamemode", "gamerule",
-  "give", "help", "item", "jfr", "kick", "kill", "list", "locate", "loot",
-  "me", "msg", "particle", "perf", "place", "playsound", "recipe", "return",
-  "ride", "say", "schedule", "scoreboard", "setblock", "setidletimeout", "setworldspawn",
-  "spawnpoint", "spectate", "spreadplayers", "stopsound", "summon", "tag", "team",
-  "teammsg", "teleport", "tell", "tellraw", "tick", "time", "title", "tm",
-  "tp", "trigger", "weather", "whitelist", "worldborder", "xp", "if"
-)
-
-private val KEYWORDS = listOf(
   "run", "only", "entity", "modify", "storage", "set", "from", "add", "players",
   "actionbar", "matches", "as", "at", "anchored", "facing", "block", "items",
   "store", "result", "score", "text", "value", "eyes", "revoke", "grant",
