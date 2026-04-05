@@ -21,7 +21,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
 
   public void parseLight(IElementType root_, PsiBuilder builder_) {
     boolean result_;
-    builder_ = adapt_builder_(root_, builder_, this, null);
+    builder_ = adapt_builder_(root_, builder_, this, EXTENDS_SETS_);
     Marker marker_ = enter_section_(builder_, 0, _COLLAPSE_, null);
     result_ = parse_root_(root_, builder_);
     exit_section_(builder_, 0, marker_, root_, result_, true, TRUE_CONDITION);
@@ -34,6 +34,10 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   static boolean parse_root_(IElementType root_, PsiBuilder builder_, int level_) {
     return mcFunctionFile(builder_, level_ + 1);
   }
+
+  public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
+    create_token_set_(ATTRIBUTE_NAMESPACED_ID, EXECUTE_NAMESPACED_ID, NAMESPACED_ID),
+  };
 
   /* ********************************************************** */
   // selector | coordinate | json | COORD_TOKEN | ARGUMENT_TOKEN | COMMAND_TOKEN | STRING_TOKEN | command | keyword
@@ -228,13 +232,13 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // attr_ns_identifier (COLON attribute_namespaced_path)?
-  static boolean attribute_namespaced_id(PsiBuilder builder_, int level_) {
+  public static boolean attribute_namespaced_id(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "attribute_namespaced_id")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, ATTRIBUTE_NAMESPACED_ID, "<attribute namespaced id>");
     result_ = attr_ns_identifier(builder_, level_ + 1);
     result_ = result_ && attribute_namespaced_id_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
@@ -1248,7 +1252,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // BLOCK_TOKEN coordinate namespaced_id | ENTITY_TOKEN selector | SCORE_TOKEN selector namespaced_id (MATCHES_TOKEN ARGUMENT_TOKEN | (GT_TOKEN | LT_TOKEN | GTE_TOKEN | LTE_TOKEN | EQUALS) selector namespaced_id) | STORAGE_TOKEN namespaced_id namespaced_id | DATA_TOKEN (BLOCK_TOKEN coordinate | ENTITY_TOKEN selector | STORAGE_TOKEN namespaced_id) namespaced_id?
+  // BLOCK_TOKEN coordinate namespaced_id | ENTITY_TOKEN selector | SCORE_TOKEN selector namespaced_id (MATCHES_TOKEN ARGUMENT_TOKEN | (GT_TOKEN | LT_TOKEN | GTE_TOKEN | LTE_TOKEN | EQUALS) selector namespaced_id) | STORAGE_TOKEN namespaced_id execute_namespaced_id | DATA_TOKEN (BLOCK_TOKEN coordinate | ENTITY_TOKEN selector | STORAGE_TOKEN namespaced_id) execute_namespaced_id?
   static boolean execute_if_condition(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_if_condition")) return false;
     boolean result_;
@@ -1333,19 +1337,19 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // STORAGE_TOKEN namespaced_id namespaced_id
+  // STORAGE_TOKEN namespaced_id execute_namespaced_id
   private static boolean execute_if_condition_3(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_if_condition_3")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, STORAGE_TOKEN);
     result_ = result_ && namespaced_id(builder_, level_ + 1);
-    result_ = result_ && namespaced_id(builder_, level_ + 1);
+    result_ = result_ && execute_namespaced_id(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
-  // DATA_TOKEN (BLOCK_TOKEN coordinate | ENTITY_TOKEN selector | STORAGE_TOKEN namespaced_id) namespaced_id?
+  // DATA_TOKEN (BLOCK_TOKEN coordinate | ENTITY_TOKEN selector | STORAGE_TOKEN namespaced_id) execute_namespaced_id?
   private static boolean execute_if_condition_4(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_if_condition_4")) return false;
     boolean result_;
@@ -1402,10 +1406,10 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // namespaced_id?
+  // execute_namespaced_id?
   private static boolean execute_if_condition_4_2(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_if_condition_4_2")) return false;
-    namespaced_id(builder_, level_ + 1);
+    execute_namespaced_id(builder_, level_ + 1);
     return true;
   }
 
@@ -1483,13 +1487,13 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // safe_identifier (COLON safe_namespaced_path)?
-  static boolean execute_namespaced_id(PsiBuilder builder_, int level_) {
+  public static boolean execute_namespaced_id(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_namespaced_id")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, EXECUTE_NAMESPACED_ID, "<execute namespaced id>");
     result_ = safe_identifier(builder_, level_ + 1);
     result_ = result_ && execute_namespaced_id_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 

@@ -10,6 +10,7 @@ public interface McFunctionTypes {
 
   IElementType ARGUMENT = new McFunctionElementType("ARGUMENT");
   IElementType ATTRIBUTE_COMMAND = new McFunctionElementType("ATTRIBUTE_COMMAND");
+  IElementType ATTRIBUTE_NAMESPACED_ID = new McFunctionElementType("ATTRIBUTE_NAMESPACED_ID");
   IElementType CLEAR_COMMAND = new McFunctionElementType("CLEAR_COMMAND");
   IElementType COMMAND = new McFunctionElementType("COMMAND");
   IElementType COMMAND_LINE = new McFunctionElementType("COMMAND_LINE");
@@ -30,6 +31,7 @@ public interface McFunctionTypes {
   IElementType EXECUTE_IF_CLAUSE = new McFunctionElementType("EXECUTE_IF_CLAUSE");
   IElementType EXECUTE_IN_CLAUSE = new McFunctionElementType("EXECUTE_IN_CLAUSE");
   IElementType EXECUTE_MODIFIER_CLAUSE = new McFunctionElementType("EXECUTE_MODIFIER_CLAUSE");
+  IElementType EXECUTE_NAMESPACED_ID = new McFunctionElementType("EXECUTE_NAMESPACED_ID");
   IElementType EXECUTE_ON_CLAUSE = new McFunctionElementType("EXECUTE_ON_CLAUSE");
   IElementType EXECUTE_POSITION_CLAUSE = new McFunctionElementType("EXECUTE_POSITION_CLAUSE");
   IElementType EXECUTE_RIDE_CLAUSE = new McFunctionElementType("EXECUTE_RIDE_CLAUSE");
@@ -241,6 +243,9 @@ public interface McFunctionTypes {
       else if (type == ATTRIBUTE_COMMAND) {
         return new McFunctionAttributeCommandImpl(node);
       }
+      else if (type == ATTRIBUTE_NAMESPACED_ID) {
+        return new McFunctionAttributeNamespacedIdImpl(node);
+      }
       else if (type == CLEAR_COMMAND) {
         return new McFunctionClearCommandImpl(node);
       }
@@ -300,6 +305,9 @@ public interface McFunctionTypes {
       }
       else if (type == EXECUTE_MODIFIER_CLAUSE) {
         return new McFunctionExecuteModifierClauseImpl(node);
+      }
+      else if (type == EXECUTE_NAMESPACED_ID) {
+        return new McFunctionExecuteNamespacedIdImpl(node);
       }
       else if (type == EXECUTE_ON_CLAUSE) {
         return new McFunctionExecuteOnClauseImpl(node);

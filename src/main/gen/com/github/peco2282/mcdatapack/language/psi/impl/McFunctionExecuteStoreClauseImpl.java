@@ -28,21 +28,33 @@ public class McFunctionExecuteStoreClauseImpl extends ASTWrapperPsiElement imple
   }
 
   @Override
-  @NotNull
-  public List<McFunctionCommand> getCommandList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCommand.class);
-  }
-
-  @Override
   @Nullable
   public McFunctionCoordinate getCoordinate() {
     return findChildByClass(McFunctionCoordinate.class);
   }
 
   @Override
+  @NotNull
+  public List<McFunctionExecuteNamespacedId> getExecuteNamespacedIdList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionExecuteNamespacedId.class);
+  }
+
+  @Override
   @Nullable
   public McFunctionSelector getSelector() {
     return findChildByClass(McFunctionSelector.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getArgumentToken() {
+    return findChildByType(ARGUMENT_TOKEN);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCommandToken() {
+    return findChildByType(COMMAND_TOKEN);
   }
 
 }

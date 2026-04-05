@@ -28,27 +28,33 @@ public class McFunctionAttributeCommandImpl extends ASTWrapperPsiElement impleme
   }
 
   @Override
-  @NotNull
-  public List<McFunctionCommand> getCommandList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCommand.class);
-  }
-
-  @Override
-  @NotNull
-  public List<McFunctionKeyword> getKeywordList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionKeyword.class);
-  }
-
-  @Override
   @Nullable
-  public McFunctionNamespacedId getNamespacedId() {
-    return findChildByClass(McFunctionNamespacedId.class);
+  public McFunctionKeyword getKeyword() {
+    return findChildByClass(McFunctionKeyword.class);
+  }
+
+  @Override
+  @NotNull
+  public List<McFunctionNamespacedId> getNamespacedIdList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNamespacedId.class);
   }
 
   @Override
   @Nullable
   public McFunctionSelector getSelector() {
     return findChildByClass(McFunctionSelector.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getArgumentToken() {
+    return findChildByType(ARGUMENT_TOKEN);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCommandToken() {
+    return findChildByType(COMMAND_TOKEN);
   }
 
   @Override

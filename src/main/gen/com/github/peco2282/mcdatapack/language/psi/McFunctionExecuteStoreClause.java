@@ -7,13 +7,19 @@ import com.intellij.psi.PsiElement;
 
 public interface McFunctionExecuteStoreClause extends PsiElement {
 
-  @NotNull
-  List<McFunctionCommand> getCommandList();
-
   @Nullable
   McFunctionCoordinate getCoordinate();
 
+  @NotNull
+  List<McFunctionExecuteNamespacedId> getExecuteNamespacedIdList();
+
   @Nullable
   McFunctionSelector getSelector();
+
+  @Nullable
+  PsiElement getArgumentToken();
+
+  @Nullable
+  PsiElement getCommandToken();
 
 }

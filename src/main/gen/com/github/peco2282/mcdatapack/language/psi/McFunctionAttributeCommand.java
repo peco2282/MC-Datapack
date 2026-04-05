@@ -7,17 +7,20 @@ import com.intellij.psi.PsiElement;
 
 public interface McFunctionAttributeCommand extends PsiElement {
 
-  @NotNull
-  List<McFunctionCommand> getCommandList();
-
-  @NotNull
-  List<McFunctionKeyword> getKeywordList();
-
   @Nullable
-  McFunctionNamespacedId getNamespacedId();
+  McFunctionKeyword getKeyword();
+
+  @NotNull
+  List<McFunctionNamespacedId> getNamespacedIdList();
 
   @Nullable
   McFunctionSelector getSelector();
+
+  @Nullable
+  PsiElement getArgumentToken();
+
+  @Nullable
+  PsiElement getCommandToken();
 
   @Nullable
   PsiElement getStringToken();

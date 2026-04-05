@@ -216,7 +216,7 @@ macro_variable ::= MACRO_VAR_TOKEN | MACRO_TOKEN
 // attribute_namespaced_id は ARGUMENT_TOKEN も許可（generic.attack_damage のようなドット含む文字列対応）
 // -----------------------------------------------------------------------
 attribute_command ::= ATTRIBUTE_TOKEN selector attribute_namespaced_id attribute_subcommand? {pin=1}
-private attribute_namespaced_id ::= attr_ns_identifier (COLON attribute_namespaced_path)?
+attribute_namespaced_id ::= attr_ns_identifier (COLON attribute_namespaced_path)? {extends=namespaced_id}
 private attribute_namespaced_path ::= attr_ns_identifier (DOT_TOKEN attr_ns_identifier)*
 private attr_ns_identifier ::= COMMAND_TOKEN | ARGUMENT_TOKEN | keyword | command
 private attribute_subcommand ::= BASE_TOKEN attribute_base_op?
@@ -325,7 +325,7 @@ execute_anchored_clause ::= ANCHORED_TOKEN (EYES_TOKEN | FEET_TOKEN) {pin=1}
 execute_in_clause ::= IN_TOKEN namespaced_id {pin=1}
 execute_align_clause ::= ALIGN_TOKEN (ARGUMENT_TOKEN | COMMAND_TOKEN | keyword) {pin=1}
 
-private execute_if_condition ::= (BLOCK_TOKEN coordinate namespaced_id | ENTITY_TOKEN selector | SCORE_TOKEN selector namespaced_id (MATCHES_TOKEN ARGUMENT_TOKEN | (GT_TOKEN | LT_TOKEN | GTE_TOKEN | LTE_TOKEN | EQUALS) selector namespaced_id) | STORAGE_TOKEN namespaced_id namespaced_id | DATA_TOKEN (BLOCK_TOKEN coordinate | ENTITY_TOKEN selector | STORAGE_TOKEN namespaced_id) namespaced_id?)
+private execute_if_condition ::= (BLOCK_TOKEN coordinate namespaced_id | ENTITY_TOKEN selector | SCORE_TOKEN selector namespaced_id (MATCHES_TOKEN ARGUMENT_TOKEN | (GT_TOKEN | LT_TOKEN | GTE_TOKEN | LTE_TOKEN | EQUALS) selector namespaced_id) | STORAGE_TOKEN namespaced_id execute_namespaced_id | DATA_TOKEN (BLOCK_TOKEN coordinate | ENTITY_TOKEN selector | STORAGE_TOKEN namespaced_id) execute_namespaced_id?)
 
 private execute_store_clause ::= STORE_TOKEN (RESULT_TOKEN | SUCCESS_TOKEN) (execute_store_storage | execute_store_entity | execute_store_block | execute_store_score | ARGUMENT_TOKEN*) {pin=1}
 private execute_store_storage ::= STORAGE_TOKEN execute_namespaced_id execute_namespaced_id (COMMAND_TOKEN | keyword_not_namespaced) ARGUMENT_TOKEN
@@ -345,7 +345,7 @@ private execute_argument ::= namespaced_id | selector | coordinate | nbt_compoun
 private execute_item_stack ::= execute_namespaced_id component_list?
 
 // execute 内専用の namespaced_id（command トークンを除外した safe_identifier を使用）
-private execute_namespaced_id ::= safe_identifier (COLON safe_namespaced_path)?
+execute_namespaced_id ::= safe_identifier (COLON safe_namespaced_path)? {extends=namespaced_id}
 private safe_namespaced_path ::= safe_identifier (DOT_TOKEN safe_identifier)*
 
 // command トークンを含まない安全な識別子（execute modifier 内で使用）

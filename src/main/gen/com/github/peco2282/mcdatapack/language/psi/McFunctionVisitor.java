@@ -15,6 +15,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAttributeNamespacedId(@NotNull McFunctionAttributeNamespacedId o) {
+    visitNamespacedId(o);
+  }
+
   public void visitClearCommand(@NotNull McFunctionClearCommand o) {
     visitPsiElement(o);
   }
@@ -93,6 +97,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
 
   public void visitExecuteModifierClause(@NotNull McFunctionExecuteModifierClause o) {
     visitPsiElement(o);
+  }
+
+  public void visitExecuteNamespacedId(@NotNull McFunctionExecuteNamespacedId o) {
+    visitNamespacedId(o);
   }
 
   public void visitExecuteOnClause(@NotNull McFunctionExecuteOnClause o) {
