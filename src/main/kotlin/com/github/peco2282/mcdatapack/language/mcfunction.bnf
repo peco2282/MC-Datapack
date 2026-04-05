@@ -16,7 +16,7 @@
   tokens = [
     COMMENT_TOKEN         = "regexp:#.*"
     CRLF_TOKEN            = "regexp:\R"
-//    WHITE_SPACE           = "regexp:[ \t\f]+"
+    WHITE_SPACE           = "regexp:[ \t\f]+"
     SPACE_TOKEN           = "regexp:[ \t\f]+"
     STRING_TOKEN          = "regexp:\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'"
 
