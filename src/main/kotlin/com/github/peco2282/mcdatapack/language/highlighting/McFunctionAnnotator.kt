@@ -15,20 +15,23 @@ class McFunctionAnnotator : Annotator {
       println("annotate: ${element.javaClass.simpleName} ${element.node.elementType} ${element.text}")
 
     if (element is McFunctionNamespacedId) {
-      holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .range(element.textRange)
-        .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE)
-//      val colon = element.node.findChildByType(McFunctionTypes.COLON)
-//      if (colon != null) {
-//        // コロンの前の部分を NAMESPACE でハイライト
-//        val ns = element.firstChild
-//        if (ns != null && ns.node.startOffset < colon.startOffset) {
-//          holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-//            .range(TextRange(element.textRange.startOffset, colon.startOffset))
-//            .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE)
-//            .create()
-//        }
-//      }
+      val colon = element.node.findChildByType(McFunctionTypes.COLON)
+      if (colon != null) {
+        // コロンの前の部分を NAMESPACE でハイライト
+        val ns = element.firstChild
+        if (ns != null && ns.node.startOffset < colon.startOffset) {
+          holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+            .range(TextRange(element.textRange.startOffset, colon.startOffset))
+            .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE)
+            .create()
+        }
+      } else {
+        // コロンがない場合も、NamespacedId 全体を NAMESPACE でハイライト（必要に応じて）
+        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+          .range(element.textRange)
+          .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE)
+          .create()
+      }
     }
     if (element is McFunctionCommand) {
       val token = element.firstChild ?: return
