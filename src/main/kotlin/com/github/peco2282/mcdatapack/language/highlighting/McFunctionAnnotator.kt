@@ -11,8 +11,8 @@ import com.intellij.psi.tree.IElementType
 
 class McFunctionAnnotator : Annotator {
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-    if (element.javaClass.simpleName.startsWith("McFunction") && element !is McFunctionFile)
-      println("annotate: ${element.javaClass.simpleName} ${element.text}")
+    if (element !is McFunctionFile)
+      println("annotate: ${element.javaClass.simpleName} ${element.node.elementType} ${element.text}")
 
     if (element is McFunctionNamespacedId) {
       holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
