@@ -8,12 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface McFunctionCommand extends PsiElement {
 
   @Nullable
-  McFunctionDamageCommand getDamageCommand();
-
-  @Nullable
-  McFunctionRideCommand getRideCommand();
-
-  @Nullable
   PsiElement getCommandToken();
 
   @Nullable

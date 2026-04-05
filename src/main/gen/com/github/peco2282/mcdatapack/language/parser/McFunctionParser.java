@@ -376,7 +376,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN | DAMAGE_TOKEN
+  // DAMAGE_TOKEN | ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN
   //   | DATA_TOKEN | DATAPACK_TOKEN | DEBUG_TOKEN | DEFAULTGAMEMODE_TOKEN | DIFFICULTY_TOKEN | EFFECT_TOKEN | ENCHANT_TOKEN
   //   | EXPERIENCE_TOKEN | FILL_TOKEN | FILLBIOME_TOKEN | FORCELOAD_TOKEN | FUNCTION_TOKEN | GAMEMODE_TOKEN | GAMERULE_TOKEN
   //   | GIVE_TOKEN | HELP_TOKEN | ITEM_TOKEN | JFR_TOKEN | KICK_TOKEN | KILL_TOKEN | LIST_TOKEN | LOCATE_TOKEN | LOOT_TOKEN
@@ -385,18 +385,18 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   //   | SPAWNPOINT_TOKEN | SPECTATE_TOKEN | SPREADPLAYERS_TOKEN | STOPSOUND_TOKEN | SUMMON_TOKEN | TAG_TOKEN | TEAM_TOKEN
   //   | TEAMMSG_TOKEN | TELEPORT_TOKEN | TELL_TOKEN | TELLRAW_TOKEN | TICK_TOKEN | TIME_TOKEN | TITLE_TOKEN | TM_TOKEN
   //   | TP_TOKEN | TRIGGER_TOKEN | WEATHER_TOKEN | WHITELIST_TOKEN | WORLDBORDER_TOKEN | XP_TOKEN
-  //   | IF_TOKEN | MACRO_TOKEN | MACRO_VAR_TOKEN | COMMAND_TOKEN | damage_command | ride_command
+  //   | IF_TOKEN | MACRO_TOKEN | MACRO_VAR_TOKEN | COMMAND_TOKEN
   public static boolean command(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "command")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, COMMAND, "<command>");
-    result_ = consumeToken(builder_, ADVANCEMENT_TOKEN);
+    result_ = consumeToken(builder_, DAMAGE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, ADVANCEMENT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, ATTRIBUTE_TOKEN);
     if (!result_) result_ = consumeToken(builder_, EXECUTE_TOKEN);
     if (!result_) result_ = consumeToken(builder_, BOSSBAR_TOKEN);
     if (!result_) result_ = consumeToken(builder_, CLEAR_TOKEN);
     if (!result_) result_ = consumeToken(builder_, CLONE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, DAMAGE_TOKEN);
     if (!result_) result_ = consumeToken(builder_, DATA_TOKEN);
     if (!result_) result_ = consumeToken(builder_, DATAPACK_TOKEN);
     if (!result_) result_ = consumeToken(builder_, DEBUG_TOKEN);
@@ -460,8 +460,6 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, MACRO_TOKEN);
     if (!result_) result_ = consumeToken(builder_, MACRO_VAR_TOKEN);
     if (!result_) result_ = consumeToken(builder_, COMMAND_TOKEN);
-    if (!result_) result_ = damage_command(builder_, level_ + 1);
-    if (!result_) result_ = ride_command(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
@@ -653,56 +651,28 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (COORD_TOKEN | numeric_literal) (COORD_TOKEN | numeric_literal)? (COORD_TOKEN | numeric_literal)?
+  // BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN | RUN_TOKEN | DISMOUNT_TOKEN
+  static boolean control_keyword(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "control_keyword")) return false;
+    boolean result_;
+    result_ = consumeToken(builder_, BY_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, MOUNT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, RESULT_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, SUCCESS_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, RUN_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, DISMOUNT_TOKEN);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // COORD_TOKEN | numeric_literal
   public static boolean coordinate(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "coordinate")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, COORDINATE, "<coordinate>");
-    result_ = coordinate_0(builder_, level_ + 1);
-    result_ = result_ && coordinate_1(builder_, level_ + 1);
-    result_ = result_ && coordinate_2(builder_, level_ + 1);
+    result_ = consumeToken(builder_, COORD_TOKEN);
+    if (!result_) result_ = numeric_literal(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
-    return result_;
-  }
-
-  // COORD_TOKEN | numeric_literal
-  private static boolean coordinate_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "coordinate_0")) return false;
-    boolean result_;
-    result_ = consumeToken(builder_, COORD_TOKEN);
-    if (!result_) result_ = numeric_literal(builder_, level_ + 1);
-    return result_;
-  }
-
-  // (COORD_TOKEN | numeric_literal)?
-  private static boolean coordinate_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "coordinate_1")) return false;
-    coordinate_1_0(builder_, level_ + 1);
-    return true;
-  }
-
-  // COORD_TOKEN | numeric_literal
-  private static boolean coordinate_1_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "coordinate_1_0")) return false;
-    boolean result_;
-    result_ = consumeToken(builder_, COORD_TOKEN);
-    if (!result_) result_ = numeric_literal(builder_, level_ + 1);
-    return result_;
-  }
-
-  // (COORD_TOKEN | numeric_literal)?
-  private static boolean coordinate_2(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "coordinate_2")) return false;
-    coordinate_2_0(builder_, level_ + 1);
-    return true;
-  }
-
-  // COORD_TOKEN | numeric_literal
-  private static boolean coordinate_2_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "coordinate_2_0")) return false;
-    boolean result_;
-    result_ = consumeToken(builder_, COORD_TOKEN);
-    if (!result_) result_ = numeric_literal(builder_, level_ + 1);
     return result_;
   }
 
@@ -721,7 +691,21 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DAMAGE_TOKEN selector ARGUMENT_TOKEN namespaced_id? (BY_TOKEN selector | FROM_TOKEN selector)*
+  // BY_TOKEN selector
+  static boolean damage_by_clause(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "damage_by_clause")) return false;
+    if (!nextTokenIs(builder_, BY_TOKEN)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_);
+    result_ = consumeToken(builder_, BY_TOKEN);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && selector(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  /* ********************************************************** */
+  // DAMAGE_TOKEN selector ARGUMENT_TOKEN (namespaced_id | nbt_primitive | argument)? (damage_by_clause | damage_from_clause)*
   public static boolean damage_command(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "damage_command")) return false;
     if (!nextTokenIs(builder_, DAMAGE_TOKEN)) return false;
@@ -737,14 +721,24 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_ || pinned_;
   }
 
-  // namespaced_id?
+  // (namespaced_id | nbt_primitive | argument)?
   private static boolean damage_command_3(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "damage_command_3")) return false;
-    namespaced_id(builder_, level_ + 1);
+    damage_command_3_0(builder_, level_ + 1);
     return true;
   }
 
-  // (BY_TOKEN selector | FROM_TOKEN selector)*
+  // namespaced_id | nbt_primitive | argument
+  private static boolean damage_command_3_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "damage_command_3_0")) return false;
+    boolean result_;
+    result_ = namespaced_id(builder_, level_ + 1);
+    if (!result_) result_ = nbt_primitive(builder_, level_ + 1);
+    if (!result_) result_ = argument(builder_, level_ + 1);
+    return result_;
+  }
+
+  // (damage_by_clause | damage_from_clause)*
   private static boolean damage_command_4(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "damage_command_4")) return false;
     while (true) {
@@ -755,37 +749,27 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // BY_TOKEN selector | FROM_TOKEN selector
+  // damage_by_clause | damage_from_clause
   private static boolean damage_command_4_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "damage_command_4_0")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = damage_command_4_0_0(builder_, level_ + 1);
-    if (!result_) result_ = damage_command_4_0_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
+    result_ = damage_by_clause(builder_, level_ + 1);
+    if (!result_) result_ = damage_from_clause(builder_, level_ + 1);
     return result_;
   }
 
-  // BY_TOKEN selector
-  private static boolean damage_command_4_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "damage_command_4_0_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, BY_TOKEN);
-    result_ = result_ && selector(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
+  /* ********************************************************** */
   // FROM_TOKEN selector
-  private static boolean damage_command_4_0_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "damage_command_4_0_1")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
+  static boolean damage_from_clause(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "damage_from_clause")) return false;
+    if (!nextTokenIs(builder_, FROM_TOKEN)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_);
     result_ = consumeToken(builder_, FROM_TOKEN);
+    pinned_ = result_; // pin = 1
     result_ = result_ && selector(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
   }
 
   /* ********************************************************** */
@@ -1165,7 +1149,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FACING_TOKEN (ENTITY_TOKEN selector (EYES_TOKEN | FEET_TOKEN) | coordinate)
+  // FACING_TOKEN (ENTITY_TOKEN selector (EYES_TOKEN | FEET_TOKEN) | coordinate coordinate coordinate)
   public static boolean execute_facing_clause(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_facing_clause")) return false;
     if (!nextTokenIs(builder_, FACING_TOKEN)) return false;
@@ -1178,13 +1162,13 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_ || pinned_;
   }
 
-  // ENTITY_TOKEN selector (EYES_TOKEN | FEET_TOKEN) | coordinate
+  // ENTITY_TOKEN selector (EYES_TOKEN | FEET_TOKEN) | coordinate coordinate coordinate
   private static boolean execute_facing_clause_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_facing_clause_1")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = execute_facing_clause_1_0(builder_, level_ + 1);
-    if (!result_) result_ = coordinate(builder_, level_ + 1);
+    if (!result_) result_ = execute_facing_clause_1_1(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -1207,6 +1191,18 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     boolean result_;
     result_ = consumeToken(builder_, EYES_TOKEN);
     if (!result_) result_ = consumeToken(builder_, FEET_TOKEN);
+    return result_;
+  }
+
+  // coordinate coordinate coordinate
+  private static boolean execute_facing_clause_1_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "execute_facing_clause_1_1")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = coordinate(builder_, level_ + 1);
+    result_ = result_ && coordinate(builder_, level_ + 1);
+    result_ = result_ && coordinate(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
@@ -1526,7 +1522,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // POSITION_TOKEN (AS_TOKEN selector | coordinate)
+  // POSITION_TOKEN (AS_TOKEN selector | coordinate coordinate coordinate)
   public static boolean execute_position_clause(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_position_clause")) return false;
     if (!nextTokenIs(builder_, POSITION_TOKEN)) return false;
@@ -1539,13 +1535,13 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_ || pinned_;
   }
 
-  // AS_TOKEN selector | coordinate
+  // AS_TOKEN selector | coordinate coordinate coordinate
   private static boolean execute_position_clause_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_position_clause_1")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = execute_position_clause_1_0(builder_, level_ + 1);
-    if (!result_) result_ = coordinate(builder_, level_ + 1);
+    if (!result_) result_ = execute_position_clause_1_1(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -1557,6 +1553,18 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, AS_TOKEN);
     result_ = result_ && selector(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // coordinate coordinate coordinate
+  private static boolean execute_position_clause_1_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "execute_position_clause_1_1")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = coordinate(builder_, level_ + 1);
+    result_ = result_ && coordinate(builder_, level_ + 1);
+    result_ = result_ && coordinate(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -1585,7 +1593,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ROTATED_TOKEN (AS_TOKEN selector | coordinate)
+  // ROTATED_TOKEN (AS_TOKEN selector | coordinate coordinate)
   public static boolean execute_rotated_clause(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_rotated_clause")) return false;
     if (!nextTokenIs(builder_, ROTATED_TOKEN)) return false;
@@ -1598,13 +1606,13 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_ || pinned_;
   }
 
-  // AS_TOKEN selector | coordinate
+  // AS_TOKEN selector | coordinate coordinate
   private static boolean execute_rotated_clause_1(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_rotated_clause_1")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = execute_rotated_clause_1_0(builder_, level_ + 1);
-    if (!result_) result_ = coordinate(builder_, level_ + 1);
+    if (!result_) result_ = execute_rotated_clause_1_1(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -1616,6 +1624,17 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, AS_TOKEN);
     result_ = result_ && selector(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // coordinate coordinate
+  private static boolean execute_rotated_clause_1_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "execute_rotated_clause_1_1")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = coordinate(builder_, level_ + 1);
+    result_ = result_ && coordinate(builder_, level_ + 1);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -1787,7 +1806,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (command | json) (CONTINUATION_TOKEN? (nbt_compound | json | namespaced_id | argument))*
+  // (damage_command | ride_command | command | json) (CONTINUATION_TOKEN? (nbt_compound | json | namespaced_id | argument))*
   public static boolean generic_command(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command")) return false;
     boolean result_;
@@ -1798,11 +1817,13 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // command | json
+  // damage_command | ride_command | command | json
   private static boolean generic_command_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command_0")) return false;
     boolean result_;
-    result_ = command(builder_, level_ + 1);
+    result_ = damage_command(builder_, level_ + 1);
+    if (!result_) result_ = ride_command(builder_, level_ + 1);
+    if (!result_) result_ = command(builder_, level_ + 1);
     if (!result_) result_ = json(builder_, level_ + 1);
     return result_;
   }
@@ -2286,9 +2307,9 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN | SET_TOKEN
+  // control_keyword | ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN | SET_TOKEN
   //   | FROM_TOKEN | ADD_TOKEN | PLAYERS_TOKEN | ACTIONBAR_TOKEN | MATCHES_TOKEN | AS_TOKEN | AT_TOKEN | ANCHORED_TOKEN | FACING_TOKEN | BLOCK_TOKEN
-  //   | ITEMS_TOKEN | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | TEXT_TOKEN | VALUE_TOKEN | EYES_TOKEN | REVOKE_TOKEN | GRANT_TOKEN | DATA_TOKEN
+  //   | ITEMS_TOKEN | STORE_TOKEN | SCORE_TOKEN | TEXT_TOKEN | VALUE_TOKEN | EYES_TOKEN | REVOKE_TOKEN | GRANT_TOKEN | DATA_TOKEN
   //   | GET_TOKEN | MERGE_TOKEN | REMOVE_TOKEN | ENABLE_TOKEN | DISABLE_TOKEN | BASE_TOKEN | MODIFIER_TOKEN
   //   | QUERY_TOKEN | TAKE_TOKEN | OBJECTIVES_TOKEN | SETDISPLAY_TOKEN | EMPTY_TOKEN | JOIN_TOKEN | LEAVE_TOKEN
   //   | RATE_TOKEN | FREEZE_TOKEN | STEP_TOKEN | STOP_TOKEN | UNFREEZE_TOKEN | SUBTITLE_TOKEN | TIMES_TOKEN
@@ -2298,7 +2319,8 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(builder_, level_, "keyword")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, KEYWORD, "<keyword>");
-    result_ = consumeToken(builder_, ONLY_TOKEN);
+    result_ = control_keyword(builder_, level_ + 1);
+    if (!result_) result_ = consumeToken(builder_, ONLY_TOKEN);
     if (!result_) result_ = consumeToken(builder_, ENTITY_TOKEN);
     if (!result_) result_ = consumeToken(builder_, MODIFY_TOKEN);
     if (!result_) result_ = consumeToken(builder_, STORAGE_TOKEN);
@@ -2315,7 +2337,6 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, BLOCK_TOKEN);
     if (!result_) result_ = consumeToken(builder_, ITEMS_TOKEN);
     if (!result_) result_ = consumeToken(builder_, STORE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, RESULT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, SCORE_TOKEN);
     if (!result_) result_ = consumeToken(builder_, TEXT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, VALUE_TOKEN);
@@ -2812,7 +2833,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !(BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN) (COMMAND_TOKEN | keyword | command)
+  // !control_keyword (COMMAND_TOKEN | keyword | command)
   static boolean ns_identifier(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "ns_identifier")) return false;
     boolean result_;
@@ -2823,24 +2844,13 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // !(BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN)
+  // !control_keyword
   private static boolean ns_identifier_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "ns_identifier_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NOT_);
-    result_ = !ns_identifier_0_0(builder_, level_ + 1);
+    result_ = !control_keyword(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
-    return result_;
-  }
-
-  // BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN
-  private static boolean ns_identifier_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "ns_identifier_0_0")) return false;
-    boolean result_;
-    result_ = consumeToken(builder_, BY_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, MOUNT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, RESULT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, SUCCESS_TOKEN);
     return result_;
   }
 
@@ -2866,7 +2876,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // RIDE_TOKEN selector (MOUNT_TOKEN selector | DISMOUNT_TOKEN)
+  // RIDE_TOKEN selector (ride_mount_clause | DISMOUNT_TOKEN)
   public static boolean ride_command(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "ride_command")) return false;
     if (!nextTokenIs(builder_, RIDE_TOKEN)) return false;
@@ -2880,30 +2890,31 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_ || pinned_;
   }
 
-  // MOUNT_TOKEN selector | DISMOUNT_TOKEN
+  // ride_mount_clause | DISMOUNT_TOKEN
   private static boolean ride_command_2(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "ride_command_2")) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = ride_command_2_0(builder_, level_ + 1);
+    result_ = ride_mount_clause(builder_, level_ + 1);
     if (!result_) result_ = consumeToken(builder_, DISMOUNT_TOKEN);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // MOUNT_TOKEN selector
-  private static boolean ride_command_2_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "ride_command_2_0")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, MOUNT_TOKEN);
-    result_ = result_ && selector(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
     return result_;
   }
 
   /* ********************************************************** */
-  // !(RUN_TOKEN | CRLF_TOKEN | COMMENT_TOKEN | BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN) (COMMAND_TOKEN | keyword_not_namespaced | command | ARGUMENT_TOKEN)
+  // MOUNT_TOKEN selector
+  static boolean ride_mount_clause(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "ride_mount_clause")) return false;
+    if (!nextTokenIs(builder_, MOUNT_TOKEN)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_);
+    result_ = consumeToken(builder_, MOUNT_TOKEN);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && selector(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  /* ********************************************************** */
+  // !control_keyword (COMMAND_TOKEN | keyword_not_namespaced | command | ARGUMENT_TOKEN)
   static boolean safe_identifier(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "safe_identifier")) return false;
     boolean result_;
@@ -2914,27 +2925,13 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // !(RUN_TOKEN | CRLF_TOKEN | COMMENT_TOKEN | BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN)
+  // !control_keyword
   private static boolean safe_identifier_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "safe_identifier_0")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_, level_, _NOT_);
-    result_ = !safe_identifier_0_0(builder_, level_ + 1);
+    result_ = !control_keyword(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, false, null);
-    return result_;
-  }
-
-  // RUN_TOKEN | CRLF_TOKEN | COMMENT_TOKEN | BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN
-  private static boolean safe_identifier_0_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "safe_identifier_0_0")) return false;
-    boolean result_;
-    result_ = consumeToken(builder_, RUN_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, CRLF_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, COMMENT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, BY_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, MOUNT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, RESULT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, SUCCESS_TOKEN);
     return result_;
   }
 

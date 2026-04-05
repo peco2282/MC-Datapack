@@ -7,4 +7,13 @@ import com.intellij.psi.PsiElement;
 
 public interface McFunctionCoordinate extends PsiElement {
 
+  @Nullable
+  PsiElement getArgumentToken();
+
+  @Nullable
+  PsiElement getCommandToken();
+
+  @Nullable
+  PsiElement getCoordToken();
+
 }

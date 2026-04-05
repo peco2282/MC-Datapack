@@ -7,8 +7,8 @@ import com.intellij.psi.PsiElement;
 
 public interface McFunctionExecuteFacingClause extends PsiElement {
 
-  @Nullable
-  McFunctionCoordinate getCoordinate();
+  @NotNull
+  List<McFunctionCoordinate> getCoordinateList();
 
   @Nullable
   McFunctionSelector getSelector();

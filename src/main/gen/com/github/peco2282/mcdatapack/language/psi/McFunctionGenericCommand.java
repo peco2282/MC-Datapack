@@ -13,6 +13,9 @@ public interface McFunctionGenericCommand extends PsiElement {
   @Nullable
   McFunctionCommand getCommand();
 
+  @Nullable
+  McFunctionDamageCommand getDamageCommand();
+
   @NotNull
   List<McFunctionJson> getJsonList();
 
@@ -21,5 +24,8 @@ public interface McFunctionGenericCommand extends PsiElement {
 
   @NotNull
   List<McFunctionNbtCompound> getNbtCompoundList();
+
+  @Nullable
+  McFunctionRideCommand getRideCommand();
 
 }

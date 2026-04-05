@@ -28,9 +28,9 @@ public class McFunctionExecutePositionClauseImpl extends ASTWrapperPsiElement im
   }
 
   @Override
-  @Nullable
-  public McFunctionCoordinate getCoordinate() {
-    return findChildByClass(McFunctionCoordinate.class);
+  @NotNull
+  public List<McFunctionCoordinate> getCoordinateList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCoordinate.class);
   }
 
   @Override

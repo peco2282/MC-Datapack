@@ -29,18 +29,6 @@ public class McFunctionCommandImpl extends ASTWrapperPsiElement implements McFun
 
   @Override
   @Nullable
-  public McFunctionDamageCommand getDamageCommand() {
-    return findChildByClass(McFunctionDamageCommand.class);
-  }
-
-  @Override
-  @Nullable
-  public McFunctionRideCommand getRideCommand() {
-    return findChildByClass(McFunctionRideCommand.class);
-  }
-
-  @Override
-  @Nullable
   public PsiElement getCommandToken() {
     return findChildByType(COMMAND_TOKEN);
   }

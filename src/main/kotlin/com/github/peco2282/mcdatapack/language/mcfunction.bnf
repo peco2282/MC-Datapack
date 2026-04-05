@@ -108,7 +108,6 @@
     MATCHES_TOKEN         = "matches"
     AS_TOKEN              = "as"
     AT_TOKEN              = "at"
-    RUN_TOKEN             = "run"
     FACING_TOKEN          = "facing"
     ROTATED_TOKEN         = "rotated"
     POSITION_TOKEN        = "position"
@@ -125,7 +124,6 @@
     SCORE_TOKEN           = "score"
     TEXT_TOKEN            = "text"
     VALUE_TOKEN           = "value"
-    EYES_TOKEN            = "eyes"
     REVOKE_TOKEN          = "revoke"
     GRANT_TOKEN           = "grant"
     GET_TOKEN             = "get"
@@ -191,7 +189,7 @@
     EQUALS                = "="
     COMMA                 = ","
 
-    COORD_TOKEN           = "regexp:[~\^][^ \n\r\t\f#\"'\[\]{},=:\\]*"
+    COORD_TOKEN           = "regexp:[~\^]-?\d*(\.\d+)?"
     COMMAND_TOKEN         = "regexp:[a-zA-Z_][a-zA-Z0-9_]*"
     ARGUMENT_TOKEN        = "regexp:[^ \n\r\t\f#\"'\[\]{},=:\\]+"
   ]
@@ -249,12 +247,15 @@ clear_command ::= CLEAR_TOKEN selector? item_id? argument* {pin=1}
 // -----------------------------------------------------------------------
 // damage コマンド専用ルール: damage <target> <amount> [<damage_type>] [by <entity>] [from <entity>]
 // -----------------------------------------------------------------------
-damage_command ::= DAMAGE_TOKEN selector ARGUMENT_TOKEN namespaced_id? (BY_TOKEN selector | FROM_TOKEN selector)* {pin=1}
+damage_command ::= DAMAGE_TOKEN selector ARGUMENT_TOKEN (namespaced_id | nbt_primitive | argument)? (damage_by_clause | damage_from_clause)* {pin=1}
+private damage_by_clause ::= BY_TOKEN selector {pin=1}
+private damage_from_clause ::= FROM_TOKEN selector {pin=1}
 
 // -----------------------------------------------------------------------
 // ride コマンド専用ルール: ride <target> mount <vehicle> | ride <target> dismount
 // -----------------------------------------------------------------------
-ride_command ::= RIDE_TOKEN selector (MOUNT_TOKEN selector | DISMOUNT_TOKEN) {pin=1}
+ride_command ::= RIDE_TOKEN selector (ride_mount_clause | DISMOUNT_TOKEN) {pin=1}
+private ride_mount_clause ::= MOUNT_TOKEN selector {pin=1}
 
 // -----------------------------------------------------------------------
 // data コマンド専用ルール: data get/merge/modify/remove/storage ...
@@ -314,9 +315,9 @@ execute_unless_clause ::= UNLESS_TOKEN execute_if_condition {pin=1}
 execute_as_clause ::= AS_TOKEN selector {pin=1}
 execute_at_clause ::= AT_TOKEN selector {pin=1}
 execute_store_clause ::= STORE_TOKEN (RESULT_TOKEN | SUCCESS_TOKEN) (execute_store_storage | execute_store_entity | execute_store_block | execute_store_score | ARGUMENT_TOKEN*) {pin=1}
-execute_facing_clause ::= FACING_TOKEN (ENTITY_TOKEN selector (EYES_TOKEN | FEET_TOKEN) | coordinate) {pin=1}
-execute_rotated_clause ::= ROTATED_TOKEN (AS_TOKEN selector | coordinate) {pin=1}
-execute_position_clause ::= POSITION_TOKEN (AS_TOKEN selector | coordinate) {pin=1}
+execute_facing_clause ::= FACING_TOKEN (ENTITY_TOKEN selector (EYES_TOKEN | FEET_TOKEN) | coordinate coordinate coordinate) {pin=1}
+execute_rotated_clause ::= ROTATED_TOKEN (AS_TOKEN selector | coordinate coordinate) {pin=1}
+execute_position_clause ::= POSITION_TOKEN (AS_TOKEN selector | coordinate coordinate coordinate) {pin=1}
 execute_on_clause ::= ON_TOKEN (ARGUMENT_TOKEN | COMMAND_TOKEN | keyword) {pin=1}
 execute_summon_clause ::= SUMMON_TOKEN namespaced_id {pin=1}
 execute_ride_clause ::= RIDE_TOKEN (MOUNT_TOKEN | DISMOUNT_TOKEN) {pin=1}
@@ -348,17 +349,17 @@ private execute_namespaced_id ::= safe_identifier (COLON safe_namespaced_path)?
 private safe_namespaced_path ::= safe_identifier (DOT_TOKEN safe_identifier)*
 
 // command トークンを含まない安全な識別子（execute modifier 内で使用）
-private safe_identifier ::= !(RUN_TOKEN | CRLF_TOKEN | COMMENT_TOKEN | BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN) (COMMAND_TOKEN | keyword_not_namespaced | command | ARGUMENT_TOKEN)
+private safe_identifier ::= !control_keyword (COMMAND_TOKEN | keyword_not_namespaced | command | ARGUMENT_TOKEN)
 
 // -----------------------------------------------------------------------
 // generic_command: 専用ルールに該当しないコマンドのフォールバック
 // item_stack はここでは試行しない（give/clear/item コマンドの専用ルールで処理）
 // 代わりに namespaced_id または argument でパースし、誤ったコンポーネント解析を防ぐ
 // -----------------------------------------------------------------------
-generic_command ::= (command | json) (CONTINUATION_TOKEN? (nbt_compound | json | namespaced_id | argument))*
+generic_command ::= (damage_command | ride_command | command | json) (CONTINUATION_TOKEN? (nbt_compound | json | namespaced_id | argument))*
 
 // 行頭のコマンド名（MACRO_LINE_STARTは macro_line で処理するため除外）
-command ::= ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN | DAMAGE_TOKEN
+command ::= DAMAGE_TOKEN | ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN
   | DATA_TOKEN | DATAPACK_TOKEN | DEBUG_TOKEN | DEFAULTGAMEMODE_TOKEN | DIFFICULTY_TOKEN | EFFECT_TOKEN | ENCHANT_TOKEN
   | EXPERIENCE_TOKEN | FILL_TOKEN | FILLBIOME_TOKEN | FORCELOAD_TOKEN | FUNCTION_TOKEN | GAMEMODE_TOKEN | GAMERULE_TOKEN
   | GIVE_TOKEN | HELP_TOKEN | ITEM_TOKEN | JFR_TOKEN | KICK_TOKEN | KILL_TOKEN | LIST_TOKEN | LOCATE_TOKEN | LOOT_TOKEN
@@ -367,25 +368,27 @@ command ::= ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN 
   | SPAWNPOINT_TOKEN | SPECTATE_TOKEN | SPREADPLAYERS_TOKEN | STOPSOUND_TOKEN | SUMMON_TOKEN | TAG_TOKEN | TEAM_TOKEN
   | TEAMMSG_TOKEN | TELEPORT_TOKEN | TELL_TOKEN | TELLRAW_TOKEN | TICK_TOKEN | TIME_TOKEN | TITLE_TOKEN | TM_TOKEN
   | TP_TOKEN | TRIGGER_TOKEN | WEATHER_TOKEN | WHITELIST_TOKEN | WORLDBORDER_TOKEN | XP_TOKEN
-  | IF_TOKEN | MACRO_TOKEN | MACRO_VAR_TOKEN | COMMAND_TOKEN | damage_command | ride_command
+  | IF_TOKEN | MACRO_TOKEN | MACRO_VAR_TOKEN | COMMAND_TOKEN
 
 // execute の modifier 部分やサブコマンド等
 // RUN_TOKEN は execute_body で専用処理するため keyword から除外
-keyword ::= ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN | SET_TOKEN
+keyword ::= control_keyword | ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE_TOKEN | SET_TOKEN
   | FROM_TOKEN | ADD_TOKEN | PLAYERS_TOKEN | ACTIONBAR_TOKEN | MATCHES_TOKEN | AS_TOKEN | AT_TOKEN | ANCHORED_TOKEN | FACING_TOKEN | BLOCK_TOKEN
-  | ITEMS_TOKEN | STORE_TOKEN | RESULT_TOKEN | SCORE_TOKEN | TEXT_TOKEN | VALUE_TOKEN | EYES_TOKEN | REVOKE_TOKEN | GRANT_TOKEN | DATA_TOKEN
+  | ITEMS_TOKEN | STORE_TOKEN | SCORE_TOKEN | TEXT_TOKEN | VALUE_TOKEN | EYES_TOKEN | REVOKE_TOKEN | GRANT_TOKEN | DATA_TOKEN
   | GET_TOKEN | MERGE_TOKEN | REMOVE_TOKEN | ENABLE_TOKEN | DISABLE_TOKEN | BASE_TOKEN | MODIFIER_TOKEN
   | QUERY_TOKEN | TAKE_TOKEN | OBJECTIVES_TOKEN | SETDISPLAY_TOKEN | EMPTY_TOKEN | JOIN_TOKEN | LEAVE_TOKEN
   | RATE_TOKEN | FREEZE_TOKEN | STEP_TOKEN | STOP_TOKEN | UNFREEZE_TOKEN | SUBTITLE_TOKEN | TIMES_TOKEN
   | CENTER_TOKEN | WARNING_TOKEN | MASTER_TOKEN | MUSIC_TOKEN
   | IF_TOKEN | UNLESS_TOKEN
 
+private control_keyword ::= BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN | RUN_TOKEN | DISMOUNT_TOKEN
+
 // -----------------------------------------------------------------------
 // 座標（Coordinate）: ^, ~ を含む座標系を独立した PSI 型として定義
 // 例: ~ ~ ~  /  ^1 ^2 ^3  /  1 2 3  /  ~-1 ~0 ~1
 // McFunctionArgument に埋もれていた座標を McFunctionCoordinate として識別可能にする
 // -----------------------------------------------------------------------
-coordinate ::= (COORD_TOKEN | numeric_literal) (COORD_TOKEN | numeric_literal)? (COORD_TOKEN | numeric_literal)?
+coordinate ::= (COORD_TOKEN | numeric_literal)
 private numeric_literal ::= ARGUMENT_TOKEN | COMMAND_TOKEN
 private coordinate_component ::= COORD_TOKEN | ARGUMENT_TOKEN | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN
 
@@ -402,7 +405,8 @@ private namespaced_path ::= ns_identifier (DOT_TOKEN ns_identifier)*
 
 // namespaced_id 専用の識別子（数値・レンジ系 ARGUMENT_TOKEN を除外）
 // ARGUMENT_TOKEN は数値や ..10 等も含むため、ここでは COMMAND_TOKEN・keyword・command のみ許可
-private ns_identifier ::= !(BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN) (COMMAND_TOKEN | keyword | command)
+// ただし、BY_TOKEN や MOUNT_TOKEN などの制御用キーワードは除外する
+private ns_identifier ::= !control_keyword (COMMAND_TOKEN | keyword | command)
 
 private keyword_not_namespaced ::= ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | SET_TOKEN
   | FROM_TOKEN | ADD_TOKEN | PLAYERS_TOKEN | ACTIONBAR_TOKEN | MATCHES_TOKEN | ANCHORED_TOKEN | FACING_TOKEN

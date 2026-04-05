@@ -8,7 +8,13 @@ import com.intellij.psi.PsiElement;
 public interface McFunctionDamageCommand extends PsiElement {
 
   @Nullable
+  McFunctionArgument getArgument();
+
+  @Nullable
   McFunctionNamespacedId getNamespacedId();
+
+  @Nullable
+  McFunctionNbtPrimitive getNbtPrimitive();
 
   @NotNull
   List<McFunctionSelector> getSelectorList();

@@ -29,8 +29,20 @@ public class McFunctionDamageCommandImpl extends ASTWrapperPsiElement implements
 
   @Override
   @Nullable
+  public McFunctionArgument getArgument() {
+    return findChildByClass(McFunctionArgument.class);
+  }
+
+  @Override
+  @Nullable
   public McFunctionNamespacedId getNamespacedId() {
     return findChildByClass(McFunctionNamespacedId.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionNbtPrimitive getNbtPrimitive() {
+    return findChildByClass(McFunctionNbtPrimitive.class);
   }
 
   @Override

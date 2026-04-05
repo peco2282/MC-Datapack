@@ -34,7 +34,7 @@ CONTINUATION_TOKEN=\\([ \t\f]*\R)?
 MACRO_TOKEN=\$[a-zA-Z_][a-zA-Z0-9_]*
 MACRO_VAR_TOKEN=\$\([a-zA-Z_][a-zA-Z0-9_]*(\[[0-9]+\])?\)
 MACRO_LINE_START=\$\$
-COORD_TOKEN=[~\^][^ \n\r\t\f#\"'\[\]{},=:\\]*
+COORD_TOKEN=[~\^]-?[0-9]*(\.[0-9]+)?
 COMMAND_TOKEN=[a-zA-Z_][a-zA-Z0-9_]*
 ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\]+
 

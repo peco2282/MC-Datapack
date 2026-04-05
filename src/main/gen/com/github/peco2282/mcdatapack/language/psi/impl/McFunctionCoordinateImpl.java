@@ -27,4 +27,22 @@ public class McFunctionCoordinateImpl extends ASTWrapperPsiElement implements Mc
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getArgumentToken() {
+    return findChildByType(ARGUMENT_TOKEN);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCommandToken() {
+    return findChildByType(COMMAND_TOKEN);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getCoordToken() {
+    return findChildByType(COORD_TOKEN);
+  }
+
 }

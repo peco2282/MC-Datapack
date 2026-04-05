@@ -40,6 +40,12 @@ public class McFunctionGenericCommandImpl extends ASTWrapperPsiElement implement
   }
 
   @Override
+  @Nullable
+  public McFunctionDamageCommand getDamageCommand() {
+    return findChildByClass(McFunctionDamageCommand.class);
+  }
+
+  @Override
   @NotNull
   public List<McFunctionJson> getJsonList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionJson.class);
@@ -55,6 +61,12 @@ public class McFunctionGenericCommandImpl extends ASTWrapperPsiElement implement
   @NotNull
   public List<McFunctionNbtCompound> getNbtCompoundList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionNbtCompound.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionRideCommand getRideCommand() {
+    return findChildByClass(McFunctionRideCommand.class);
   }
 
 }
