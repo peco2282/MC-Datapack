@@ -4,6 +4,7 @@ import com.github.peco2282.mcdatapack.language.highlighting.McFunctionIcons
 import com.github.peco2282.mcdatapack.language.psi.McFunctionCommandLine
 import com.github.peco2282.mcdatapack.language.psi.McFunctionExecuteCommand
 import com.github.peco2282.mcdatapack.language.psi.McFunctionGenericCommand
+import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
 import com.intellij.ide.structureView.*
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.lang.PsiStructureViewFactory
@@ -56,6 +57,10 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
           val text = element.text.trim()
           return text.take(50).let { if (it.length == 50) "$it..." else it }
         }
+        if (element.node.elementType == McFunctionTypes.COMMENT_TOKEN) {
+          val text = element.text.trim()
+          return text.take(50).let { if (it.length == 50) "$it..." else it }
+        }
         return element.text
       }
 
@@ -63,6 +68,7 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
 
       override fun getIcon(unused: Boolean): Icon? {
         if (element is PsiFile) return McFunctionIcons.FILE
+        if (element.node.elementType == McFunctionTypes.COMMENT_TOKEN) return McFunctionIcons.COMMAND
         if (element is McFunctionCommandLine) {
           val generic = element.genericCommand
           if (generic != null) {
@@ -93,17 +99,22 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
 
   override fun getChildren(): Array<TreeElement> {
     if (element is PsiFile) {
-      return PsiTreeUtil.getChildrenOfType(element, McFunctionCommandLine::class.java)
-        ?.map { McFunctionStructureViewElement(it) }
-        ?.toTypedArray() ?: emptyArray()
-    }
-    // execute ... run ... の再帰的な構造を表示する
-    if (element is McFunctionCommandLine) {
-      val executeCommand = element.executeCommand
-      if (executeCommand != null) {
-        val commandLine = executeCommand.commandLine ?: return emptyArray()
-        return arrayOf(McFunctionStructureViewElement(commandLine))
+      val children = mutableListOf<TreeElement>()
+      var child = element.firstChild
+      while (child != null) {
+        when {
+          child is McFunctionCommandLine -> children.add(McFunctionStructureViewElement(child))
+          child.node.elementType == McFunctionTypes.COMMENT_TOKEN -> children.add(McFunctionStructureViewElement(child))
+        }
+        child = child.nextSibling
       }
+      return children.toTypedArray()
+    }
+    // execute ... run ... の多段ネストを再帰的に表示する
+    if (element is McFunctionCommandLine) {
+      val executeCommand = element.executeCommand ?: return emptyArray()
+      val commandLine = executeCommand.commandLine ?: return emptyArray()
+      return arrayOf(McFunctionStructureViewElement(commandLine))
     }
     return emptyArray()
   }

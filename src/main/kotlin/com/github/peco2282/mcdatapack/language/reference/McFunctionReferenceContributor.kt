@@ -1,44 +1,75 @@
 package com.github.peco2282.mcdatapack.language.reference
 
-import com.github.peco2282.mcdatapack.language.psi.McFunctionArgument
-import com.github.peco2282.mcdatapack.language.psi.McFunctionCommand
+import com.github.peco2282.mcdatapack.language.psi.McFunctionNamespacedId
+import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
 import com.intellij.openapi.util.TextRange
+import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.tree.IElementType
 import com.intellij.util.ProcessingContext
+
+private data class NamespacedIdContext(val subDir: String, val extension: String)
+
+private val NAMESPACED_ID_CONTEXTS: Map<IElementType, NamespacedIdContext> = mapOf(
+  McFunctionTypes.FUNCTION_TOKEN to NamespacedIdContext("functions", ".mcfunction"),
+  McFunctionTypes.ADVANCEMENT_TOKEN to NamespacedIdContext("advancements", ".json"),
+  McFunctionTypes.RECIPE_TOKEN to NamespacedIdContext("recipes", ".json"),
+  McFunctionTypes.LOOT_TOKEN to NamespacedIdContext("loot_tables", ".json")
+)
+
+private fun resolveNamespacedIdContext(element: McFunctionNamespacedId): NamespacedIdContext? {
+  var prev = element.prevSibling
+  while (prev != null && prev.node.elementType == TokenType.WHITE_SPACE) {
+    prev = prev.prevSibling
+  }
+  val prevType = prev?.node?.elementType ?: return null
+
+  NAMESPACED_ID_CONTEXTS[prevType]?.let { return it }
+
+  val parentCommand = element.parent
+  if (parentCommand != null) {
+    var child = parentCommand.firstChild
+    while (child != null) {
+      val childType = child.node.elementType
+      if (childType == TokenType.WHITE_SPACE) {
+        child = child.nextSibling
+        continue
+      }
+      NAMESPACED_ID_CONTEXTS[childType]?.let { return it }
+      break
+    }
+  }
+  return null
+}
 
 class McFunctionReferenceContributor : PsiReferenceContributor() {
   override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
     registrar.registerReferenceProvider(
-      com.intellij.patterns.PlatformPatterns.psiElement(McFunctionArgument::class.java),
+      PlatformPatterns.psiElement(McFunctionNamespacedId::class.java),
       object : PsiReferenceProvider() {
         override fun getReferencesByElement(
           element: PsiElement,
           context: ProcessingContext
         ): Array<PsiReference> {
-          val argument = element as McFunctionArgument
-          val text = argument.text
-
-          // function <name> の <name> 部分を抽出して参照を作成
-          // 簡単のため、親が generic_command で、そのコマンドが "function" かつ 2番目の引数以降の場合を想定
-          // 実際には argument 自体の構造や文脈をより厳密にチェックすべき
-          val parentCommand = argument.parent?.firstChild as? McFunctionCommand
-          if (parentCommand?.text == "function") {
-            // 文字列に : が含まれる場合 (namespace:path/to/function) も考慮
-            if (text.contains(":") || text.contains("/")) {
-              return arrayOf(McFunctionFileReference(argument, TextRange(0, text.length)))
-            }
-          }
-          return emptyArray()
+          val namespacedId = element as McFunctionNamespacedId
+          val text = namespacedId.text
+          val ctx = resolveNamespacedIdContext(namespacedId) ?: return emptyArray()
+          if (!text.contains(":") && !text.contains("/")) return emptyArray()
+          return arrayOf(McFunctionFileReference(namespacedId, TextRange(0, text.length), ctx.subDir, ctx.extension))
         }
       }
     )
   }
 }
 
-class McFunctionFileReference(element: PsiElement, textRange: TextRange) :
-  PsiReferenceBase<PsiElement>(element, textRange) {
+class McFunctionFileReference(
+  element: PsiElement,
+  textRange: TextRange,
+  private val subDir: String,
+  private val extension: String
+) : PsiReferenceBase<PsiElement>(element, textRange) {
 
   override fun resolve(): PsiElement? {
     val fullPath = rangeInElement.substring(element.text)
@@ -46,19 +77,16 @@ class McFunctionFileReference(element: PsiElement, textRange: TextRange) :
     val namespace = if (parts.size > 1) parts[0] else "minecraft"
     val path = if (parts.size > 1) parts[1] else parts[0]
 
-    // 実際の Datapack 構造 (data/<namespace>/functions/<path>.mcfunction) を探す
-    // path は "/" を含む可能性がある（例: "foo/bar"）、または含まない（例: "foo"）
-    val fileName = path.substringAfterLast("/") + ".mcfunction"
-    val files = FilenameIndex.getFilesByName(element.project, fileName, GlobalSearchScope.allScope(element.project))
+    val fileName = path.substringAfterLast("/") + extension
+    val files = FilenameIndex.getFilesByName(
+      element.project, fileName, GlobalSearchScope.allScope(element.project)
+    )
 
-    // パスが一致するものを探す (data/<namespace>/functions/<path>.mcfunction)
     val normalizedPath = path.replace("\\", "/")
-    val expectedPathSuffix = "data/$namespace/functions/$normalizedPath.mcfunction"
+    val expectedPathSuffix = "data/$namespace/$subDir/$normalizedPath$extension"
 
     return files.firstOrNull { file ->
-      val virtualFile = file.virtualFile
-      val absolutePath = virtualFile.path.replace("\\", "/")
-      absolutePath.endsWith(expectedPathSuffix)
+      file.virtualFile.path.replace("\\", "/").endsWith(expectedPathSuffix)
     }
   }
 }

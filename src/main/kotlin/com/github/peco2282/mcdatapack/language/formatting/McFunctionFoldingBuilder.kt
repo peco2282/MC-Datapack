@@ -1,5 +1,6 @@
 package com.github.peco2282.mcdatapack.language.formatting
 
+import com.github.peco2282.mcdatapack.language.psi.McFunctionExecuteCommand
 import com.github.peco2282.mcdatapack.language.psi.McFunctionJsonObject
 import com.github.peco2282.mcdatapack.language.psi.McFunctionTypes
 import com.intellij.lang.ASTNode
@@ -20,6 +21,15 @@ class McFunctionFoldingBuilder : FoldingBuilderEx(), DumbAware {
     for (jsonObject in jsonObjects) {
       if (jsonObject.textRange.length > 1) {
         descriptors.add(FoldingDescriptor(jsonObject.node, jsonObject.textRange))
+      }
+    }
+
+    // execute ... run のネスト構造の折りたたみ
+    val executeCommands = PsiTreeUtil.findChildrenOfType(root, McFunctionExecuteCommand::class.java)
+    for (executeCommand in executeCommands) {
+      val commandLine = executeCommand.commandLine
+      if (commandLine != null && executeCommand.textRange.length > 1) {
+        descriptors.add(FoldingDescriptor(executeCommand.node, executeCommand.textRange))
       }
     }
 
@@ -56,6 +66,7 @@ class McFunctionFoldingBuilder : FoldingBuilderEx(), DumbAware {
     val type = node.elementType
     if (type == McFunctionTypes.JSON_OBJECT) return "{...}"
     if (type == McFunctionTypes.COMMENT_TOKEN) return "#..."
+    if (type == McFunctionTypes.EXECUTE_COMMAND) return "execute ... run ..."
     return "..."
   }
 

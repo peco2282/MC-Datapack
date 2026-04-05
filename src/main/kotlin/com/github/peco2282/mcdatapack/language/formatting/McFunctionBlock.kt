@@ -10,7 +10,8 @@ class McFunctionBlock(
   node: ASTNode,
   wrap: Wrap?,
   alignment: Alignment?,
-  private val spacingBuilder: SpacingBuilder
+  private val spacingBuilder: SpacingBuilder,
+  private val indent: Indent = Indent.getNoneIndent()
 ) : AbstractBlock(node, wrap, alignment) {
 
   override fun buildChildren(): List<Block> {
@@ -19,12 +20,18 @@ class McFunctionBlock(
     while (child != null) {
       val elementType = child.elementType
       if (elementType != TokenType.WHITE_SPACE) {
+        val childIndent = when (elementType) {
+          McFunctionTypes.JSON_OBJECT, McFunctionTypes.NBT_COMPOUND -> Indent.getNormalIndent()
+          McFunctionTypes.JSON_ARRAY, McFunctionTypes.NBT_LIST -> Indent.getNormalIndent()
+          else -> Indent.getNoneIndent()
+        }
         blocks.add(
           McFunctionBlock(
             child,
             Wrap.createWrap(WrapType.NONE, false),
             null,
-            spacingBuilder
+            spacingBuilder,
+            childIndent
           )
         )
       }
@@ -37,5 +44,16 @@ class McFunctionBlock(
 
   override fun isLeaf(): Boolean = myNode.firstChildNode == null
 
-  override fun getIndent(): Indent = Indent.getNoneIndent()
+  override fun getIndent(): Indent = indent
+
+  override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
+    val elementType = myNode.elementType
+    return when (elementType) {
+      McFunctionTypes.JSON_OBJECT, McFunctionTypes.NBT_COMPOUND ->
+        ChildAttributes(Indent.getNormalIndent(), null)
+      McFunctionTypes.JSON_ARRAY, McFunctionTypes.NBT_LIST ->
+        ChildAttributes(Indent.getNormalIndent(), null)
+      else -> ChildAttributes(Indent.getNoneIndent(), null)
+    }
+  }
 }

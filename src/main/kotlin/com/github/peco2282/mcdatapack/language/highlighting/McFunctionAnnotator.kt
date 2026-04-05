@@ -68,42 +68,71 @@ class McFunctionAnnotator : Annotator {
     }
   }
 
+  // コマンドトークンとそれに対応するデータパス・拡張子のマッピング
+  private data class NamespacedIdContext(val subDir: String, val extension: String, val label: String)
+
+  private val NAMESPACED_ID_CONTEXTS = mapOf(
+    McFunctionTypes.FUNCTION_TOKEN to NamespacedIdContext("functions", ".mcfunction", "Function"),
+    McFunctionTypes.ADVANCEMENT_TOKEN to NamespacedIdContext("advancements", ".json", "Advancement"),
+    McFunctionTypes.RECIPE_TOKEN to NamespacedIdContext("recipes", ".json", "Recipe"),
+    McFunctionTypes.LOOT_TOKEN to NamespacedIdContext("loot_tables", ".json", "Loot table")
+  )
+
   private fun checkFunctionFileExists(element: McFunctionNamespacedId, holder: AnnotationHolder) {
-    if (!isFunctionNamespacedId(element)) return
+    val ctx = resolveNamespacedIdContext(element) ?: return
 
     val fullText = element.text
     val parts = fullText.split(":")
     val namespace = if (parts.size > 1) parts[0] else "minecraft"
     val path = if (parts.size > 1) parts[1] else parts[0]
 
-    val fileName = path.substringAfterLast("/") + ".mcfunction"
+    val fileName = path.substringAfterLast("/") + ctx.extension
     val files = FilenameIndex.getFilesByName(
       element.project, fileName, GlobalSearchScope.allScope(element.project)
     )
     val normalizedPath = path.replace("\\", "/")
-    val expectedSuffix = "data/$namespace/functions/$normalizedPath.mcfunction"
+    val expectedSuffix = "data/$namespace/${ctx.subDir}/$normalizedPath${ctx.extension}"
     val found = files.any { file ->
       file.virtualFile.path.replace("\\", "/").endsWith(expectedSuffix)
     }
     if (!found) {
-      holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Function '$fullText' が見つかりません")
+      holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "${ctx.label} '$fullText' が見つかりません")
         .range(element.textRange)
         .create()
     }
   }
 
-  private fun isFunctionNamespacedId(element: McFunctionNamespacedId): Boolean {
-    // 前の兄弟ノード（空白を除く）が FUNCTION_TOKEN かどうかを確認
+  private fun resolveNamespacedIdContext(element: McFunctionNamespacedId): NamespacedIdContext? {
+    // 前の兄弟ノード（空白を除く）を取得
     var prev = element.prevSibling
-    while (prev != null) {
-      val type = prev.node.elementType
-      if (type == TokenType.WHITE_SPACE) {
-        prev = prev.prevSibling
-        continue
-      }
-      return type == McFunctionTypes.FUNCTION_TOKEN
+    while (prev != null && prev.node.elementType == TokenType.WHITE_SPACE) {
+      prev = prev.prevSibling
     }
-    return false
+    val prevType = prev?.node?.elementType ?: return null
+
+    // 直前トークンが対応コマンドトークンの場合
+    NAMESPACED_ID_CONTEXTS[prevType]?.let { return it }
+
+    // execute run function <id> などで親をさかのぼって確認
+    // 親コマンドの最初のトークンを確認
+    val parentCommand = element.parent
+    if (parentCommand != null) {
+      var child = parentCommand.firstChild
+      while (child != null) {
+        val childType = child.node.elementType
+        if (childType == TokenType.WHITE_SPACE) {
+          child = child.nextSibling
+          continue
+        }
+        NAMESPACED_ID_CONTEXTS[childType]?.let { return it }
+        break
+      }
+    }
+    return null
+  }
+
+  private fun isFunctionNamespacedId(element: McFunctionNamespacedId): Boolean {
+    return resolveNamespacedIdContext(element) != null
   }
 
   private fun annotateNamespacedId(element: McFunctionNamespacedId, holder: AnnotationHolder) {
