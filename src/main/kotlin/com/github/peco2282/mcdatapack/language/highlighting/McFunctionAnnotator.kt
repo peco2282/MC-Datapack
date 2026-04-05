@@ -11,124 +11,33 @@ import com.intellij.psi.tree.IElementType
 
 class McFunctionAnnotator : Annotator {
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-    if (element !is McFunctionFile)
-      println("annotate: ${element.javaClass.simpleName} ${element.node.elementType} ${element.text}")
-
     if (element is McFunctionNamespacedId) {
-      val colon = element.node.findChildByType(McFunctionTypes.COLON)
-      if (colon != null) {
-        // コロンの前の部分を NAMESPACE でハイライト
-        val ns = element.firstChild
-        if (ns != null && ns.node.startOffset < colon.startOffset) {
-          holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-            .range(TextRange(element.textRange.startOffset, colon.startOffset))
-            .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE)
-            .create()
-        }
-
-        // コロン自体を NAMESPACE_COLON でハイライト
-        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-          .range(colon.textRange)
-          .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE_COLON)
-          .create()
-
-        // コロンの後ろの部分を ARGUMENT でハイライト
-        if (colon.startOffset + 1 < element.textRange.endOffset) {
-          holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-            .range(TextRange(colon.startOffset + 1, element.textRange.endOffset))
-            .textAttributes(McFunctionSyntaxHighlighter.ARGUMENT)
-            .create()
-        }
-      } else {
-        // コロンがない場合も、NamespacedId 全体を NAMESPACE ではなく ARGUMENT として扱う方が自然かもしれない
-        // ただし現状の仕様に合わせて NAMESPACE にしておく
-        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-          .range(element.textRange)
-          .textAttributes(McFunctionSyntaxHighlighter.ARGUMENT)
-          .create()
-      }
+      annotateNamespacedId(element, holder)
     }
+    
     if (element is McFunctionCommand) {
-      val token = element.firstChild ?: return
-      val tokenType = token.node.elementType
-
-      // 1. オレンジ(MAJOR_COMMAND)の判定
-      // generic_command 内の COMMAND_TOKEN は通常オレンジだが、
-      // summon や particle などの引数として現れる場合は白にしたい。
-      // 現状 BNF では generic_command ::= command ... で、command に COMMAND_TOKEN が含まれている。
-      // しかし、引数側の argument にも COMMAND_TOKEN が含まれている。
-      // もし element が command (McFunctionCommand) であれば、それは常に先頭のはず。
-      // ただし、「第2動詞」をオレンジから紫に下げたいという要望がある。
-
-      val attributes = when {
-        tokenType in McFunctionSyntaxHighlighter.MAJOR_COMMAND_TOKENS || tokenType == McFunctionTypes.COMMAND_TOKEN -> {
-          // run の直後ならオレンジのまま、それ以外ならサブコマンド色に格下げしたい単語がある
-          if (isSubVerb(tokenType)) {
-            if (isAfterRun(element)) {
-              McFunctionSyntaxHighlighter.MAJOR_COMMAND
-            } else {
-              McFunctionSyntaxHighlighter.SUB_COMMAND
-            }
-          } else {
-            McFunctionSyntaxHighlighter.MAJOR_COMMAND
-          }
-        }
-
-        else -> McFunctionSyntaxHighlighter.ARGUMENT
-      }
-
-      holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .range(token.textRange)
-        .textAttributes(attributes)
-        .create()
+      annotateCommand(element, holder)
     }
 
     if (element is McFunctionKeyword) {
-      val token = element.firstChild ?: return
-      val tokenType = token.node.elementType
+      annotateKeyword(element, holder)
+    }
 
-      val attributes = when (tokenType) {
-        in McFunctionSyntaxHighlighter.SUB_COMMAND_TOKENS ->
-          McFunctionSyntaxHighlighter.SUB_COMMAND
-
-        in McFunctionSyntaxHighlighter.FLOW_KEYWORD_TOKENS ->
-          McFunctionSyntaxHighlighter.FLOW_KEYWORD
-
-        else -> return // デフォルト（白）
+    val type = element.node.elementType
+    if (type in McFunctionSyntaxHighlighter.FLOW_KEYWORD_TOKENS || type in McFunctionSyntaxHighlighter.SUB_COMMAND_TOKENS) {
+      val attributes = when {
+        type in McFunctionSyntaxHighlighter.FLOW_KEYWORD_TOKENS -> McFunctionSyntaxHighlighter.FLOW_KEYWORD
+        type in McFunctionSyntaxHighlighter.SUB_COMMAND_TOKENS -> McFunctionSyntaxHighlighter.SUB_COMMAND
+        else -> null
       }
-
-      holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .range(token.textRange)
-        .textAttributes(attributes)
-        .create()
+      if (attributes != null) {
+        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+          .range(element.textRange)
+          .textAttributes(attributes)
+          .create()
+      }
     }
 
-    if (element is McFunctionItemStack) {
-      // netherite_sword[...] の netherite_sword 部分をハイライト
-      // NamespacedId 自体のハイライト (NAMESPACE) は NamespacedId のハンドラに任せる
-    }
-
-    if (element is McFunctionComponent) {
-      // attribute_modifiers={...} の attribute_modifiers 部分をハイライト
-      // NamespacedId 自体のハイライト (NAMESPACE) は NamespacedId のハンドラに任せる
-    }
-
-    // McFunctionItemId: give/clear コマンドのアイテム識別子（例: minecraft:stone）
-    // item_id は namespaced_id と同じ構造だが、独立した PSI 型として色分け可能
-     if (element is McFunctionItemId) {
-       // NamespacedId 自体のハイライト (NAMESPACE) は NamespacedId のハンドラに任せる
-       return
-     }
-
-    // McFunctionSelectorArgKey: セレクタ引数のキー部分（例: @e[tag=foo] の tag）
-    // selector_arg_key は独立した PSI 型として補完・色分けを制御可能
-     if (element is McFunctionSelectorArgKey) {
-       // NamespacedId 自体のハイライト (NAMESPACE) は NamespacedId のハンドラに任せる
-       return
-     }
-
-    // McFunctionCoordinate: ^ や ~ を含む座標系（例: ~ ~ ~, ^1 ^2 ^3）
-    // McFunctionArgument に埋もれていた座標を独立した PSI 型として識別
     if (element is McFunctionCoordinate) {
       holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
         .range(element.textRange)
@@ -137,24 +46,6 @@ class McFunctionAnnotator : Annotator {
       return
     }
 
-    // 専用コマンドルール（give/clear/data/item）はそれ自体へのアノテーションをスキップし、
-    // 子要素（command/keyword/item_stack 等）の処理に委ねる
-     if (element is McFunctionGiveCommand || element is McFunctionClearCommand
-       || element is McFunctionDataCommand || element is McFunctionItemCommand) {
-       return
-     }
-
-    if (element is McFunctionJson || element is McFunctionJsonObject || element is McFunctionJsonArray) {
-      return
-    }
-
-    if (element is McFunctionArgument) {
-      // McFunctionArgument 自体へのアノテーションはスキップし、
-      // その中のトークン (PsiElement) 単位で処理させる。
-      return
-    }
-
-    val type = element.node.elementType
     if (type == McFunctionTypes.ARGUMENT_TOKEN || type == McFunctionTypes.COMMAND_TOKEN || type == McFunctionTypes.STRING_TOKEN) {
       annotateJsonValue(element, holder)
 
@@ -172,6 +63,80 @@ class McFunctionAnnotator : Annotator {
           .create()
       }
     }
+  }
+
+  private fun annotateNamespacedId(element: McFunctionNamespacedId, holder: AnnotationHolder) {
+    val colon = element.node.findChildByType(McFunctionTypes.COLON)
+    if (colon != null) {
+      // コロンの前の部分を NAMESPACE でハイライト
+      val ns = element.firstChild
+      if (ns != null && ns.node.startOffset < colon.startOffset) {
+        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+          .range(TextRange(element.textRange.startOffset, colon.startOffset))
+          .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE)
+          .create()
+      }
+
+      // コロン自体を NAMESPACE_COLON でハイライト
+      holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .range(colon.textRange)
+        .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE_COLON)
+        .create()
+
+      // コロンの後ろの部分を ARGUMENT でハイライト
+      if (colon.startOffset + 1 < element.textRange.endOffset) {
+        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+          .range(TextRange(colon.startOffset + 1, element.textRange.endOffset))
+          .textAttributes(McFunctionSyntaxHighlighter.ARGUMENT)
+          .create()
+      }
+    } else {
+      holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .range(element.textRange)
+        .textAttributes(McFunctionSyntaxHighlighter.ARGUMENT)
+        .create()
+    }
+  }
+
+  private fun annotateCommand(element: McFunctionCommand, holder: AnnotationHolder) {
+    val token = element.firstChild ?: return
+    val tokenType = token.node.elementType
+
+    val attributes = when {
+      tokenType in McFunctionSyntaxHighlighter.MAJOR_COMMAND_TOKENS || tokenType == McFunctionTypes.COMMAND_TOKEN -> {
+        if (isSubVerb(tokenType) && !isAfterRun(element)) {
+          McFunctionSyntaxHighlighter.SUB_COMMAND
+        } else {
+          McFunctionSyntaxHighlighter.MAJOR_COMMAND
+        }
+      }
+      else -> McFunctionSyntaxHighlighter.ARGUMENT
+    }
+
+    holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+      .range(token.textRange)
+      .textAttributes(attributes)
+      .create()
+  }
+
+  private fun annotateKeyword(element: McFunctionKeyword, holder: AnnotationHolder) {
+    val token = element.firstChild ?: return
+    val tokenType = token.node.elementType
+
+    val attributes = when (tokenType) {
+      in McFunctionSyntaxHighlighter.SUB_COMMAND_TOKENS ->
+        McFunctionSyntaxHighlighter.SUB_COMMAND
+
+      in McFunctionSyntaxHighlighter.FLOW_KEYWORD_TOKENS ->
+        McFunctionSyntaxHighlighter.FLOW_KEYWORD
+
+      else -> return
+    }
+
+    holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+      .range(token.textRange)
+      .textAttributes(attributes)
+      .create()
   }
 
   private fun isItemNameBeforeJson(element: PsiElement): Boolean {
@@ -314,30 +279,14 @@ class McFunctionAnnotator : Annotator {
 
   private fun isAfterRun(element: PsiElement): Boolean {
     // execute ... run <command> の構造を確認する
-    // generic_command ::= command ...
-    // element(McFunctionCommand) の親が generic_command で、その親が command_line、
-    // さらにその親が execute_command (McFunctionCommandLine) であれば、その直前に RUN_TOKEN があるかチェック
-    // 
-    // 現在の PSI 木を確認すると、execute_command という要素名はなく McFunctionCommandLine として生成されている可能性がある
-    // BNF: command_line ::= execute_command | generic_command
-    // private execute_command ::= EXECUTE_TOKEN ... (WHITE_SPACE RUN_TOKEN WHITE_SPACE command_line)?
+    // element(McFunctionCommand) -> McFunctionGenericCommand -> McFunctionCommandLine -> McFunctionExecuteCommand
+    
+    val genericCommand = element.parent as? McFunctionGenericCommand ?: return false
+    val commandLine = genericCommand.parent as? McFunctionCommandLine ?: return false
+    val executeCommand = commandLine.parent as? McFunctionExecuteCommand ?: return false
 
-    val genericCommand = element.parent // McFunctionCommand -> McFunctionCommandImpl (generic_command)
-    val commandLine = genericCommand?.parent as? McFunctionCommandLine ?: return false
-    val parentCommandLine = commandLine.parent as? McFunctionCommandLine ?: return false
-
-    // 親の commandLine の子要素を調べて、RUN_TOKEN の後にこの commandLine が来ているか確認
-    var runFound = false
-    var child = parentCommandLine.firstChild
-    while (child != null) {
-      if (child.node.elementType == McFunctionTypes.RUN_TOKEN) {
-        runFound = true
-      }
-      if (runFound && child == commandLine) {
-        return true
-      }
-      child = child.nextSibling
-    }
-    return false
+    // executeCommand の commandLine が current commandLine かつ RUN_TOKEN が存在するか
+    return executeCommand.commandLine == commandLine && 
+           executeCommand.node.findChildByType(McFunctionTypes.RUN_TOKEN) != null
   }
 }
