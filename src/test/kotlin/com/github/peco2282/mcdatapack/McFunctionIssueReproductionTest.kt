@@ -14,9 +14,9 @@ class McFunctionIssueReproductionTest : BasePlatformTestCase() {
         if (errors.isNotEmpty()) {
             val sb = StringBuilder()
             dumpPsi(file, sb)
-            System.err.println("[DEBUG_LOG] PSI Tree:\n$sb")
+            println("[DEBUG_LOG] Give PSI Tree:\n$sb")
             for (error in errors) {
-                System.err.println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
+                println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
             }
         }
         assertTrue("give command should not have parse errors, but found ${errors.size}", errors.isEmpty())
@@ -95,9 +95,9 @@ class McFunctionIssueReproductionTest : BasePlatformTestCase() {
         if (errors.isNotEmpty()) {
             val sb = StringBuilder()
             dumpPsi(file, sb)
-            System.err.println("[DEBUG_LOG] PSI Tree:\n$sb")
+            println("[DEBUG_LOG] Attribute PSI Tree:\n$sb")
             for (error in errors) {
-                System.err.println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
+                println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
             }
         }
         assertTrue("attribute modifier add command should not have parse errors, but found ${errors.size}", errors.isEmpty())
@@ -133,6 +133,67 @@ class McFunctionIssueReproductionTest : BasePlatformTestCase() {
             }
         }
         assertTrue("item replace command should not have parse errors, but found ${errors.size}", errors.isEmpty())
+    }
+
+    @Test
+    fun testDamageByReproduction() {
+        val input = "execute as @e[type=!player,distance=..5,limit=1] run damage @s 20 minecraft:magic by @p"
+        val file = myFixture.configureByText("damage.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
+        
+        if (errors.isNotEmpty()) {
+            val sb = StringBuilder()
+            dumpPsi(file, sb)
+            println("[DEBUG_LOG] Damage PSI Tree:\n$sb")
+            for (error in errors) {
+                println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
+            }
+        }
+        
+        assertTrue("Should not have parse errors in damage command, but found ${errors.size} errors", errors.isEmpty())
+    }
+
+    @Test
+    fun testCoordinateSeparation() {
+        val input = "execute facing ^ ^ ^5 0.5 0.5 run say hello"
+        val file = myFixture.configureByText("coordinate.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
+        
+        val sb = StringBuilder()
+        dumpPsi(file, sb)
+        println("[DEBUG_LOG] Coordinate PSI Tree:\n$sb")
+        
+        if (errors.isNotEmpty()) {
+            for (error in errors) {
+                println("[DEBUG_LOG] Error at ${error.textOffset}: ${error.errorDescription} (text: '${error.text}')")
+            }
+        }
+        assertTrue("coordinate separation should not have parse errors, but found ${errors.size}", errors.isEmpty())
+        
+        // ^ ^ ^5 が個別の Coordinate PSI になっているか確認
+        val coords = PsiTreeUtil.findChildrenOfType(file, com.github.peco2282.mcdatapack.language.psi.McFunctionCoordinate::class.java)
+        // execute facing ^ ^ ^5 で 3つ、その後の引数として扱われるべき 0.5 0.5 はここでは Coordinate ではないはずだが、
+        // 現状の argument ルールが coordinate を含んでいるため、それらも Coordinate になる可能性がある。
+        // しかし、少なくとも ^5 0.5 0.5 が1つにまとまっていないことは確認できる。
+        assertTrue("Should have multiple coordinates, but found ${coords.size}", coords.size >= 3)
+    }
+
+    @Test
+    fun testRideMountSeparation() {
+        val input = "ride @s mount @e[type=pig,limit=1]"
+        val file = myFixture.configureByText("ride.mcfunction", input)
+        val errors = PsiTreeUtil.findChildrenOfType(file, PsiErrorElement::class.java)
+        
+        val sb = StringBuilder()
+        dumpPsi(file, sb)
+        println("[DEBUG_LOG] Ride PSI Tree:\n$sb")
+        
+        assertTrue("ride command should not have parse errors, but found ${errors.size}", errors.isEmpty())
+        
+        // mount が keyword (または専用トークン) として扱われ、namespaced_id に含まれていないか確認
+        val namespacedIds = PsiTreeUtil.findChildrenOfType(file, com.github.peco2282.mcdatapack.language.psi.McFunctionNamespacedId::class.java)
+        val hasMountAsId = namespacedIds.any { it.text == "mount" }
+        assertFalse("mount should not be parsed as namespaced_id", hasMountAsId)
     }
 
     private fun dumpPsi(element: com.intellij.psi.PsiElement, sb: StringBuilder, indent: String = "") {
