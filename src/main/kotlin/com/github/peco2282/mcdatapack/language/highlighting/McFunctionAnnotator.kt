@@ -7,12 +7,15 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
+import com.intellij.psi.search.FilenameIndex
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.tree.IElementType
 
 class McFunctionAnnotator : Annotator {
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
     if (element is McFunctionNamespacedId) {
       annotateNamespacedId(element, holder)
+      checkFunctionFileExists(element, holder)
     }
     
     if (element is McFunctionCommand) {
@@ -63,6 +66,44 @@ class McFunctionAnnotator : Annotator {
           .create()
       }
     }
+  }
+
+  private fun checkFunctionFileExists(element: McFunctionNamespacedId, holder: AnnotationHolder) {
+    if (!isFunctionNamespacedId(element)) return
+
+    val fullText = element.text
+    val parts = fullText.split(":")
+    val namespace = if (parts.size > 1) parts[0] else "minecraft"
+    val path = if (parts.size > 1) parts[1] else parts[0]
+
+    val fileName = path.substringAfterLast("/") + ".mcfunction"
+    val files = FilenameIndex.getFilesByName(
+      element.project, fileName, GlobalSearchScope.allScope(element.project)
+    )
+    val normalizedPath = path.replace("\\", "/")
+    val expectedSuffix = "data/$namespace/functions/$normalizedPath.mcfunction"
+    val found = files.any { file ->
+      file.virtualFile.path.replace("\\", "/").endsWith(expectedSuffix)
+    }
+    if (!found) {
+      holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Function '$fullText' が見つかりません")
+        .range(element.textRange)
+        .create()
+    }
+  }
+
+  private fun isFunctionNamespacedId(element: McFunctionNamespacedId): Boolean {
+    // 前の兄弟ノード（空白を除く）が FUNCTION_TOKEN かどうかを確認
+    var prev = element.prevSibling
+    while (prev != null) {
+      val type = prev.node.elementType
+      if (type == TokenType.WHITE_SPACE) {
+        prev = prev.prevSibling
+        continue
+      }
+      return type == McFunctionTypes.FUNCTION_TOKEN
+    }
+    return false
   }
 
   private fun annotateNamespacedId(element: McFunctionNamespacedId, holder: AnnotationHolder) {

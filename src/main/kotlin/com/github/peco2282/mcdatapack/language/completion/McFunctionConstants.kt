@@ -165,6 +165,273 @@ object McFunctionConstants {
         "minecraft.custom:minecraft.damage_taken", "minecraft.custom:minecraft.walk_one_cm"
     )
 
+    val COMMAND_DOCS: Map<String, Pair<String, String>> = mapOf(
+        "advancement" to Pair(
+            "advancement (grant|revoke) <targets> ...",
+            "プレイヤーの進捗を付与または剥奪します。"
+        ),
+        "attribute" to Pair(
+            "attribute <target> <attribute> (get|base|modifier) ...",
+            "エンティティの属性値を取得・変更します。"
+        ),
+        "execute" to Pair(
+            "execute [as|at|if|unless|store|run|...] ...",
+            "コマンドの実行コンテキスト（実行者・位置・条件など）を変更してサブコマンドを実行します。"
+        ),
+        "bossbar" to Pair(
+            "bossbar (add|get|list|remove|set) ...",
+            "ボスバーを作成・管理します。"
+        ),
+        "clear" to Pair(
+            "clear [<targets>] [<item>] [<maxCount>]",
+            "プレイヤーのインベントリからアイテムを削除します。"
+        ),
+        "clone" to Pair(
+            "clone <begin> <end> <destination> [masked|replace|filtered] ...",
+            "指定した範囲のブロックを別の場所にコピーします。"
+        ),
+        "damage" to Pair(
+            "damage <target> <amount> [<damageType>] [at <location>|by <entity> [from <cause>]]",
+            "エンティティにダメージを与えます。"
+        ),
+        "data" to Pair(
+            "data (get|merge|modify|remove) (block|entity|storage) ...",
+            "ブロック・エンティティ・ストレージのNBTデータを操作します。"
+        ),
+        "datapack" to Pair(
+            "datapack (disable|enable|list) ...",
+            "データパックの有効化・無効化・一覧表示を行います。"
+        ),
+        "debug" to Pair(
+            "debug (start|stop|function) ...",
+            "デバッグセッションを開始・停止します。"
+        ),
+        "defaultgamemode" to Pair(
+            "defaultgamemode (survival|creative|adventure|spectator)",
+            "新規プレイヤーのデフォルトゲームモードを設定します。"
+        ),
+        "difficulty" to Pair(
+            "difficulty [peaceful|easy|normal|hard]",
+            "ゲームの難易度を設定します。"
+        ),
+        "effect" to Pair(
+            "effect (give|clear) <targets> [<effect> [<seconds> [<amplifier> [<hideParticles>]]]]",
+            "エンティティにポーション効果を付与または削除します。"
+        ),
+        "enchant" to Pair(
+            "enchant <targets> <enchantment> [<level>]",
+            "プレイヤーが持っているアイテムにエンチャントを付与します。"
+        ),
+        "experience" to Pair(
+            "experience (add|set|query) <targets> <amount> (points|levels)",
+            "プレイヤーの経験値を操作します。"
+        ),
+        "fill" to Pair(
+            "fill <from> <to> <block> [destroy|hollow|keep|outline|replace]",
+            "指定した範囲をブロックで埋めます。"
+        ),
+        "fillbiome" to Pair(
+            "fillbiome <from> <to> <biome> [replace <filter>]",
+            "指定した範囲のバイオームを変更します。"
+        ),
+        "forceload" to Pair(
+            "forceload (add|remove|query) ...",
+            "チャンクを強制的にロードし続けます。"
+        ),
+        "function" to Pair(
+            "function <name> [with (block|entity|storage) ...]",
+            "指定したファンクションファイルを実行します。"
+        ),
+        "gamemode" to Pair(
+            "gamemode (survival|creative|adventure|spectator) [<target>]",
+            "プレイヤーのゲームモードを変更します。"
+        ),
+        "gamerule" to Pair(
+            "gamerule <rule> [<value>]",
+            "ゲームルールの値を取得または設定します。"
+        ),
+        "give" to Pair(
+            "give <targets> <item> [<count>]",
+            "プレイヤーにアイテムを与えます。"
+        ),
+        "help" to Pair(
+            "help [<command>]",
+            "コマンドのヘルプを表示します。"
+        ),
+        "item" to Pair(
+            "item (modify|replace) (block|entity) ...",
+            "コンテナやエンティティのアイテムスロットを操作します。"
+        ),
+        "jfr" to Pair(
+            "jfr (start|stop)",
+            "JFR（Java Flight Recorder）プロファイリングを開始・停止します。"
+        ),
+        "kick" to Pair(
+            "kick <targets> [<reason>]",
+            "プレイヤーをサーバーからキックします。"
+        ),
+        "kill" to Pair(
+            "kill [<targets>]",
+            "エンティティを削除（キル）します。"
+        ),
+        "list" to Pair(
+            "list [uuids]",
+            "オンラインのプレイヤー一覧を表示します。"
+        ),
+        "locate" to Pair(
+            "locate (biome|poi|structure) <name>",
+            "最寄りのバイオーム・構造物・POIの座標を表示します。"
+        ),
+        "loot" to Pair(
+            "loot (spawn|replace|give|insert) ... (fish|loot|kill|mine) ...",
+            "ルートテーブルからアイテムをドロップ・配布します。"
+        ),
+        "me" to Pair(
+            "me <action>",
+            "アクションメッセージをチャットに送信します。"
+        ),
+        "msg" to Pair(
+            "msg <targets> <message>",
+            "プレイヤーにプライベートメッセージを送信します。"
+        ),
+        "particle" to Pair(
+            "particle <name> [<pos>] [<delta>] <speed> <count> [force|normal] [<viewers>]",
+            "パーティクルエフェクトを表示します。"
+        ),
+        "perf" to Pair(
+            "perf (start|stop)",
+            "パフォーマンス計測を開始・停止します。"
+        ),
+        "place" to Pair(
+            "place (feature|jigsaw|structure|template) ...",
+            "構造物やテンプレートを指定座標に配置します。"
+        ),
+        "playsound" to Pair(
+            "playsound <sound> <source> <targets> [<pos>] [<volume>] [<pitch>] [<minVolume>]",
+            "プレイヤーにサウンドを再生します。"
+        ),
+        "recipe" to Pair(
+            "recipe (give|take) <targets> (<recipe>|*)",
+            "プレイヤーにレシピを付与または剥奪します。"
+        ),
+        "return" to Pair(
+            "return (fail|run|<value>)",
+            "ファンクションの実行を終了し、戻り値を返します。"
+        ),
+        "ride" to Pair(
+            "ride <target> (mount <vehicle>|dismount)",
+            "エンティティを別のエンティティに乗せます。"
+        ),
+        "say" to Pair(
+            "say <message>",
+            "チャットにメッセージを送信します。"
+        ),
+        "schedule" to Pair(
+            "schedule (function <name> <time> [append|replace]|clear <name>)",
+            "ファンクションの実行を指定時間後にスケジュールします。"
+        ),
+        "scoreboard" to Pair(
+            "scoreboard (objectives|players) ...",
+            "スコアボードの目標・プレイヤースコアを管理します。"
+        ),
+        "setblock" to Pair(
+            "setblock <pos> <block> [destroy|keep|replace]",
+            "指定座標のブロックを変更します。"
+        ),
+        "setidletimeout" to Pair(
+            "setidletimeout <minutes>",
+            "アイドルプレイヤーのタイムアウト時間を設定します。"
+        ),
+        "setworldspawn" to Pair(
+            "setworldspawn [<pos>] [<angle>]",
+            "ワールドのスポーン地点を設定します。"
+        ),
+        "spawnpoint" to Pair(
+            "spawnpoint [<targets>] [<pos>] [<angle>]",
+            "プレイヤーのスポーン地点を設定します。"
+        ),
+        "spectate" to Pair(
+            "spectate [<target>] [<player>]",
+            "スペクテイターモードで指定エンティティを観戦します。"
+        ),
+        "spreadplayers" to Pair(
+            "spreadplayers <center> <spreadDistance> <maxRange> [under <maxHeight>] <respectTeams> <targets>",
+            "プレイヤーを指定範囲にランダムに分散させます。"
+        ),
+        "stopsound" to Pair(
+            "stopsound <targets> [<source>] [<sound>]",
+            "再生中のサウンドを停止します。"
+        ),
+        "summon" to Pair(
+            "summon <entity> [<pos>] [<nbt>]",
+            "エンティティをスポーンさせます。"
+        ),
+        "tag" to Pair(
+            "tag <targets> (add|list|remove) [<name>]",
+            "エンティティにタグを追加・削除・一覧表示します。"
+        ),
+        "team" to Pair(
+            "team (add|empty|join|leave|list|modify|remove) ...",
+            "チームを管理します。"
+        ),
+        "teammsg" to Pair(
+            "teammsg <message>",
+            "チームメンバーにメッセージを送信します。"
+        ),
+        "teleport" to Pair(
+            "teleport <destination>|<targets> <destination>|<targets> <pos> [<rotation>|facing ...]",
+            "エンティティをテレポートさせます。"
+        ),
+        "tell" to Pair(
+            "tell <targets> <message>",
+            "プレイヤーにプライベートメッセージを送信します。"
+        ),
+        "tellraw" to Pair(
+            "tellraw <targets> <message>",
+            "JSONテキストコンポーネントでメッセージを送信します。"
+        ),
+        "tick" to Pair(
+            "tick (query|rate <rate>|freeze|unfreeze|step [<time>]|sprint [<time>])",
+            "ゲームのティックレートを管理します。"
+        ),
+        "time" to Pair(
+            "time (add|query|set) ...",
+            "ワールドの時間を操作します。"
+        ),
+        "title" to Pair(
+            "title <targets> (clear|reset|title|subtitle|actionbar|times) ...",
+            "プレイヤーにタイトル・サブタイトル・アクションバーを表示します。"
+        ),
+        "tm" to Pair(
+            "tm <message>",
+            "チームメンバーにメッセージを送信します（teammsgの短縮形）。"
+        ),
+        "tp" to Pair(
+            "tp <destination>|<targets> <destination>|<targets> <pos> [<rotation>|facing ...]",
+            "エンティティをテレポートさせます（teleportの短縮形）。"
+        ),
+        "trigger" to Pair(
+            "trigger <objective> [add|set <value>]",
+            "トリガースコアボード目標の値を変更します。"
+        ),
+        "weather" to Pair(
+            "weather (clear|rain|thunder) [<duration>]",
+            "天気を変更します。"
+        ),
+        "whitelist" to Pair(
+            "whitelist (add|list|off|on|reload|remove) ...",
+            "ホワイトリストを管理します。"
+        ),
+        "worldborder" to Pair(
+            "worldborder (add|center|damage|get|set|warning) ...",
+            "ワールドボーダーを管理します。"
+        ),
+        "xp" to Pair(
+            "xp (add|set|query) <targets> <amount> (points|levels)",
+            "プレイヤーの経験値を操作します（experienceの短縮形）。"
+        )
+    )
+
     val KEYWORDS = listOf(
         "run", "only", "entity", "modify", "storage", "set", "from", "add", "players",
         "actionbar", "matches", "as", "at", "anchored", "facing", "block", "items",

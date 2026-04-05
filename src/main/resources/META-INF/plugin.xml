@@ -33,6 +33,8 @@
                                       implementationClass="com.github.peco2282.mcdatapack.language.structure.McFunctionStructureViewFactory"/>
         <psi.referenceContributor language="McFunction"
                                   implementation="com.github.peco2282.mcdatapack.language.reference.McFunctionReferenceContributor"/>
+        <lang.documentationProvider language="McFunction"
+                                    implementationClass="com.github.peco2282.mcdatapack.language.documentation.McFunctionDocumentationProvider"/>
         <lang.formatter language="McFunction"
                         implementationClass="com.github.peco2282.mcdatapack.language.formatting.McFunctionFormattingModelBuilder"/>
         <langCodeStyleSettingsProvider
