@@ -45,6 +45,9 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
     val NAMESPACE = TextAttributesKey.createTextAttributesKey(
       "MC_NAMESPACE", DefaultLanguageHighlighterColors.CLASS_NAME
     )
+    val NAMESPACE_COLON = TextAttributesKey.createTextAttributesKey(
+      "MC_NAMESPACE_COLON", DefaultLanguageHighlighterColors.OPERATION_SIGN
+    )
 
     // Values / Literals (水色 / 緑 / 白)
     val STRING = TextAttributesKey.createTextAttributesKey(
@@ -83,9 +86,9 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
     )
 
     val MAJOR_COMMAND_TOKENS = TokenSet.create(
+      McFunctionTypes.COMMAND_TOKEN,
       McFunctionTypes.ADVANCEMENT_TOKEN,
       McFunctionTypes.ATTRIBUTE_TOKEN,
-      McFunctionTypes.EXECUTE_TOKEN,
       McFunctionTypes.BOSSBAR_TOKEN,
       McFunctionTypes.CLEAR_TOKEN,
       McFunctionTypes.CLONE_TOKEN,
@@ -120,7 +123,6 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
       McFunctionTypes.PLACE_TOKEN,
       McFunctionTypes.PLAYSOUND_TOKEN,
       McFunctionTypes.RECIPE_TOKEN,
-      McFunctionTypes.RETURN_TOKEN,
       McFunctionTypes.RIDE_TOKEN,
       McFunctionTypes.SAY_TOKEN,
       McFunctionTypes.SCHEDULE_TOKEN,
@@ -152,15 +154,13 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
     )
 
     val FLOW_KEYWORD_TOKENS = TokenSet.create(
+      McFunctionTypes.EXECUTE_TOKEN,
+      McFunctionTypes.RUN_TOKEN,
       McFunctionTypes.IF_TOKEN,
       McFunctionTypes.UNLESS_TOKEN,
-      McFunctionTypes.RUN_TOKEN,
-      McFunctionTypes.STORAGE_TOKEN,
-      McFunctionTypes.FROM_TOKEN,
-      McFunctionTypes.MATCHES_TOKEN,
+      McFunctionTypes.RETURN_TOKEN,
       McFunctionTypes.STORE_TOKEN,
-      McFunctionTypes.REVOKE_TOKEN,
-      McFunctionTypes.GRANT_TOKEN
+      McFunctionTypes.MATCHES_TOKEN
     )
 
     val SELECTOR_TOKENS = TokenSet.create(
@@ -181,15 +181,24 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
       McFunctionTypes.ACTIONBAR_TOKEN,
       McFunctionTypes.AS_TOKEN,
       McFunctionTypes.AT_TOKEN,
+      McFunctionTypes.ON_TOKEN,
+      McFunctionTypes.IN_TOKEN,
+      McFunctionTypes.BY_TOKEN,
+      McFunctionTypes.MOUNT_TOKEN,
+      McFunctionTypes.DISMOUNT_TOKEN,
+      McFunctionTypes.ALIGN_TOKEN,
       McFunctionTypes.ANCHORED_TOKEN,
       McFunctionTypes.FACING_TOKEN,
+      McFunctionTypes.POSITION_TOKEN,
+      McFunctionTypes.ROTATED_TOKEN,
+      McFunctionTypes.EYES_TOKEN,
+      McFunctionTypes.FEET_TOKEN,
       McFunctionTypes.BLOCK_TOKEN,
       McFunctionTypes.ITEMS_TOKEN,
       McFunctionTypes.RESULT_TOKEN,
       McFunctionTypes.SCORE_TOKEN,
       McFunctionTypes.TEXT_TOKEN,
       McFunctionTypes.VALUE_TOKEN,
-      McFunctionTypes.EYES_TOKEN,
       McFunctionTypes.GET_TOKEN,
       McFunctionTypes.MERGE_TOKEN,
       McFunctionTypes.REMOVE_TOKEN,
@@ -214,24 +223,34 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
       McFunctionTypes.CENTER_TOKEN,
       McFunctionTypes.WARNING_TOKEN,
       McFunctionTypes.MASTER_TOKEN,
-      McFunctionTypes.MUSIC_TOKEN
+      McFunctionTypes.MUSIC_TOKEN,
+      McFunctionTypes.FROM_TOKEN,
+      McFunctionTypes.STORAGE_TOKEN,
+      McFunctionTypes.REVOKE_TOKEN,
+      McFunctionTypes.GRANT_TOKEN
     )
 
     val STRUCTURE_TOKENS = TokenSet.create(
-      McFunctionTypes.CONTINUATION_TOKEN,
-      McFunctionTypes.DOT_TOKEN,
-      McFunctionTypes.GTE_TOKEN,
-      McFunctionTypes.LTE_TOKEN,
-      McFunctionTypes.GT_TOKEN,
-      McFunctionTypes.LT_TOKEN,
-      McFunctionTypes.DOTDOT_TOKEN,
       McFunctionTypes.LBRACK,
       McFunctionTypes.RBRACK,
       McFunctionTypes.LBRACE,
       McFunctionTypes.RBRACE,
       McFunctionTypes.COLON,
       McFunctionTypes.EQUALS,
-      McFunctionTypes.COMMA
+      McFunctionTypes.COMMA,
+      McFunctionTypes.DOT_TOKEN,
+      McFunctionTypes.DOTDOT_TOKEN,
+      McFunctionTypes.GTE_TOKEN,
+      McFunctionTypes.LTE_TOKEN,
+      McFunctionTypes.GT_TOKEN,
+      McFunctionTypes.LT_TOKEN,
+      McFunctionTypes.CONTINUATION_TOKEN
+    )
+
+    val MACRO_TOKENS = TokenSet.create(
+      McFunctionTypes.MACRO_LINE_START,
+      McFunctionTypes.MACRO_VAR_TOKEN,
+      McFunctionTypes.MACRO_TOKEN
     )
   }
 
@@ -241,14 +260,20 @@ class McFunctionSyntaxHighlighter : SyntaxHighlighterBase() {
     return when (tokenType) {
       McFunctionTypes.COMMENT_TOKEN -> arrayOf(COMMENT)
       in MAJOR_COMMAND_TOKENS -> arrayOf(MAJOR_COMMAND)
-      in SUB_COMMAND_TOKENS -> arrayOf(SUB_COMMAND)
       in FLOW_KEYWORD_TOKENS -> arrayOf(FLOW_KEYWORD)
+      in SUB_COMMAND_TOKENS -> arrayOf(SUB_COMMAND)
       in SELECTOR_TOKENS -> arrayOf(SELECTOR)
       in STRUCTURE_TOKENS -> arrayOf(STRUCTURE)
-      McFunctionTypes.MACRO_TOKEN -> arrayOf(MACRO)
+      in MACRO_TOKENS -> arrayOf(MACRO)
       McFunctionTypes.STRING_TOKEN -> arrayOf(STRING)
       McFunctionTypes.COORD_TOKEN -> arrayOf(COORDINATE)
-      McFunctionTypes.ARGUMENT_TOKEN, McFunctionTypes.COMMAND_TOKEN -> arrayOf(ARGUMENT)
+      McFunctionTypes.ARGUMENT_TOKEN -> arrayOf(ARGUMENT)
+      McFunctionTypes.COLON -> arrayOf(NAMESPACE_COLON)
+      McFunctionTypes.LBRACK, McFunctionTypes.RBRACK,
+      McFunctionTypes.LBRACE, McFunctionTypes.RBRACE,
+      McFunctionTypes.COMMA, McFunctionTypes.EQUALS,
+      McFunctionTypes.DOT_TOKEN, McFunctionTypes.DOTDOT_TOKEN,
+      McFunctionTypes.CONTINUATION_TOKEN -> arrayOf(STRUCTURE)
       else -> emptyArray()
     }
   }
