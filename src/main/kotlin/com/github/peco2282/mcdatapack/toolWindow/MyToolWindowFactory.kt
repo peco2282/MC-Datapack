@@ -2,6 +2,7 @@ package com.github.peco2282.mcdatapack.toolWindow
 
 import com.github.peco2282.mcdatapack.language.completion.McFunctionConstants
 import com.github.peco2282.mcdatapack.language.highlighting.McFunctionIcons
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -82,9 +83,11 @@ class MyToolWindowFactory : ToolWindowFactory {
 
     private fun refreshFiles(listModel: DefaultListModel<VirtualFile>) {
       listModel.clear()
-      val files = FilenameIndex.getAllFilesByExt(
-        project, "mcfunction", GlobalSearchScope.projectScope(project)
-      ).sortedBy { it.path }
+      val files = ReadAction.compute<Collection<VirtualFile>, Throwable> {
+        FilenameIndex.getAllFilesByExt(
+          project, "mcfunction", GlobalSearchScope.projectScope(project)
+        ).sortedBy { it.path }
+      }
       files.forEach { listModel.addElement(it) }
     }
   }
@@ -201,9 +204,11 @@ class MyToolWindowFactory : ToolWindowFactory {
     }
 
     private fun buildTree(root: DefaultMutableTreeNode, treeModel: DefaultTreeModel) {
-      val files = FilenameIndex.getAllFilesByExt(
-        project, "mcfunction", GlobalSearchScope.projectScope(project)
-      ).sortedBy { it.path }
+      val files = ReadAction.compute<Collection<VirtualFile>, Throwable> {
+        FilenameIndex.getAllFilesByExt(
+          project, "mcfunction", GlobalSearchScope.projectScope(project)
+        )
+      }.sortedBy { it.path }
 
       // namespace -> functions path でグループ化
       val namespaceMap = mutableMapOf<String, MutableMap<String, VirtualFile>>()
