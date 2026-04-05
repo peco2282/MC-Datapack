@@ -517,26 +517,6 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !(CRLF_TOKEN | COMMENT_TOKEN)
-  static boolean command_line_recover(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "command_line_recover")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_, level_, _NOT_);
-    result_ = !command_line_recover_0(builder_, level_ + 1);
-    exit_section_(builder_, level_, marker_, result_, false, null);
-    return result_;
-  }
-
-  // CRLF_TOKEN | COMMENT_TOKEN
-  private static boolean command_line_recover_0(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "command_line_recover_0")) return false;
-    boolean result_;
-    result_ = consumeToken(builder_, CRLF_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, COMMENT_TOKEN);
-    return result_;
-  }
-
-  /* ********************************************************** */
   // component_key (EQUALS | COLON) component_value
   //             | ARGUMENT_TOKEN component_key
   public static boolean component(PsiBuilder builder_, int level_) {
@@ -679,20 +659,6 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, COORD_TOKEN);
     exit_section_(builder_, marker_, COORDINATE, result_);
-    return result_;
-  }
-
-  /* ********************************************************** */
-  // COORD_TOKEN | ARGUMENT_TOKEN | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN
-  static boolean coordinate_component(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "coordinate_component")) return false;
-    boolean result_;
-    result_ = consumeToken(builder_, COORD_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, ARGUMENT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, GTE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, LTE_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, GT_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, LT_TOKEN);
     return result_;
   }
 
@@ -1428,25 +1394,6 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // execute_namespaced_id component_list?
-  static boolean execute_item_stack(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "execute_item_stack")) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_);
-    result_ = execute_namespaced_id(builder_, level_ + 1);
-    result_ = result_ && execute_item_stack_1(builder_, level_ + 1);
-    exit_section_(builder_, marker_, null, result_);
-    return result_;
-  }
-
-  // component_list?
-  private static boolean execute_item_stack_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "execute_item_stack_1")) return false;
-    component_list(builder_, level_ + 1);
-    return true;
-  }
-
-  /* ********************************************************** */
   // execute_as_clause
   //   | execute_at_clause
   //   | execute_store_clause
@@ -1913,18 +1860,6 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
       if (!empty_element_parsed_guard_(builder_, "give_command_3", pos_)) break;
     }
     return true;
-  }
-
-  /* ********************************************************** */
-  // COMMAND_TOKEN | ARGUMENT_TOKEN | keyword | command
-  static boolean identifier(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "identifier")) return false;
-    boolean result_;
-    result_ = consumeToken(builder_, COMMAND_TOKEN);
-    if (!result_) result_ = consumeToken(builder_, ARGUMENT_TOKEN);
-    if (!result_) result_ = keyword(builder_, level_ + 1);
-    if (!result_) result_ = command(builder_, level_ + 1);
-    return result_;
   }
 
   /* ********************************************************** */

@@ -327,7 +327,6 @@ execute_align_clause ::= ALIGN_TOKEN (ARGUMENT_TOKEN | COMMAND_TOKEN | keyword) 
 
 private execute_if_condition ::= (BLOCK_TOKEN coordinate namespaced_id | ENTITY_TOKEN selector | SCORE_TOKEN selector namespaced_id (MATCHES_TOKEN ARGUMENT_TOKEN | (GT_TOKEN | LT_TOKEN | GTE_TOKEN | LTE_TOKEN | EQUALS) selector namespaced_id) | STORAGE_TOKEN namespaced_id execute_namespaced_id | DATA_TOKEN (BLOCK_TOKEN coordinate | ENTITY_TOKEN selector | STORAGE_TOKEN namespaced_id) execute_namespaced_id?)
 
-private execute_store_clause ::= STORE_TOKEN (RESULT_TOKEN | SUCCESS_TOKEN) (execute_store_storage | execute_store_entity | execute_store_block | execute_store_score | ARGUMENT_TOKEN*) {pin=1}
 private execute_store_storage ::= STORAGE_TOKEN execute_namespaced_id execute_namespaced_id (COMMAND_TOKEN | keyword_not_namespaced) ARGUMENT_TOKEN
 private execute_store_entity ::= ENTITY_TOKEN selector execute_namespaced_id (COMMAND_TOKEN | keyword_not_namespaced) ARGUMENT_TOKEN
 private execute_store_block ::= BLOCK_TOKEN coordinate execute_namespaced_id (COMMAND_TOKEN | keyword_not_namespaced) ARGUMENT_TOKEN
@@ -341,8 +340,6 @@ private execute_argument ::= namespaced_id | selector | coordinate | nbt_compoun
   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
   | COLON | EQUALS | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
 
-// execute 内専用の item_stack（command トークンを identifier として使わない）
-private execute_item_stack ::= execute_namespaced_id component_list?
 
 // execute 内専用の namespaced_id（command トークンを除外した safe_identifier を使用）
 execute_namespaced_id ::= safe_identifier (COLON safe_namespaced_path)? {extends=namespaced_id}
@@ -401,7 +398,6 @@ private control_keyword ::= BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKE
 coordinate ::= COORD_TOKEN
 coordinate_or_numeric ::= COORD_TOKEN | numeric_literal
 private numeric_literal ::= ARGUMENT_TOKEN | COMMAND_TOKEN
-private coordinate_component ::= COORD_TOKEN | ARGUMENT_TOKEN | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN
 
 // -----------------------------------------------------------------------
 // Namespaced ID: minecraft:stone  または  stone
@@ -428,8 +424,6 @@ private keyword_not_namespaced ::= ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | SE
   | CENTER_TOKEN | WARNING_TOKEN | MASTER_TOKEN | MUSIC_TOKEN
   | FEET_TOKEN
 
-// 汎用識別子（nbt_key や nbt_primitive など数値も許容する文脈で使用）
-private identifier ::= COMMAND_TOKEN | ARGUMENT_TOKEN | keyword | command
 
 // -----------------------------------------------------------------------
 // PSI 型エイリアス: 役割に応じた型分離
@@ -521,5 +515,3 @@ argument ::= selector | coordinate | json | COORD_TOKEN | ARGUMENT_TOKEN | COMMA
   | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN | DOTDOT_TOKEN | DOT_TOKEN
   | COLON | EQUALS | LBRACK | RBRACK | LBRACE | RBRACE | COMMA
   | CONTINUATION_TOKEN
-
-private command_line_recover ::= !(CRLF_TOKEN | COMMENT_TOKEN)
