@@ -465,7 +465,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (macro_line | execute_command | attribute_command | give_command | clear_command | data_command | item_command | generic_command) (CRLF_TOKEN | COMMENT_TOKEN | <<eof>>)?
+  // (macro_line | execute_command | attribute_command | give_command | clear_command | data_command | item_command | return_command | particle_command | generic_command) (CRLF_TOKEN | COMMENT_TOKEN | <<eof>>)?
   public static boolean command_line(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "command_line")) return false;
     boolean result_;
@@ -476,7 +476,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // macro_line | execute_command | attribute_command | give_command | clear_command | data_command | item_command | generic_command
+  // macro_line | execute_command | attribute_command | give_command | clear_command | data_command | item_command | return_command | particle_command | generic_command
   private static boolean command_line_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "command_line_0")) return false;
     boolean result_;
@@ -487,6 +487,8 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = clear_command(builder_, level_ + 1);
     if (!result_) result_ = data_command(builder_, level_ + 1);
     if (!result_) result_ = item_command(builder_, level_ + 1);
+    if (!result_) result_ = return_command(builder_, level_ + 1);
+    if (!result_) result_ = particle_command(builder_, level_ + 1);
     if (!result_) result_ = generic_command(builder_, level_ + 1);
     return result_;
   }
@@ -665,14 +667,14 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // COORD_TOKEN | numeric_literal
+  // COORD_TOKEN
   public static boolean coordinate(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "coordinate")) return false;
+    if (!nextTokenIs(builder_, COORD_TOKEN)) return false;
     boolean result_;
-    Marker marker_ = enter_section_(builder_, level_, _NONE_, COORDINATE, "<coordinate>");
+    Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, COORD_TOKEN);
-    if (!result_) result_ = numeric_literal(builder_, level_ + 1);
-    exit_section_(builder_, level_, marker_, result_, false, null);
+    exit_section_(builder_, marker_, COORDINATE, result_);
     return result_;
   }
 
@@ -687,6 +689,18 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, LTE_TOKEN);
     if (!result_) result_ = consumeToken(builder_, GT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, LT_TOKEN);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // COORD_TOKEN | numeric_literal
+  public static boolean coordinate_or_numeric(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "coordinate_or_numeric")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, COORDINATE_OR_NUMERIC, "<coordinate or numeric>");
+    result_ = consumeToken(builder_, COORD_TOKEN);
+    if (!result_) result_ = numeric_literal(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 
@@ -1806,7 +1820,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (damage_command | ride_command | command | json) (CONTINUATION_TOKEN? (nbt_compound | json | namespaced_id | argument))*
+  // (damage_command | ride_command | return_command | particle_command | command | json) (CONTINUATION_TOKEN? (nbt_compound | json | namespaced_id | argument))*
   public static boolean generic_command(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command")) return false;
     boolean result_;
@@ -1817,12 +1831,14 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // damage_command | ride_command | command | json
+  // damage_command | ride_command | return_command | particle_command | command | json
   private static boolean generic_command_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "generic_command_0")) return false;
     boolean result_;
     result_ = damage_command(builder_, level_ + 1);
     if (!result_) result_ = ride_command(builder_, level_ + 1);
+    if (!result_) result_ = return_command(builder_, level_ + 1);
+    if (!result_) result_ = particle_command(builder_, level_ + 1);
     if (!result_) result_ = command(builder_, level_ + 1);
     if (!result_) result_ = json(builder_, level_ + 1);
     return result_;
@@ -2872,6 +2888,62 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     boolean result_;
     result_ = consumeToken(builder_, ARGUMENT_TOKEN);
     if (!result_) result_ = consumeToken(builder_, COMMAND_TOKEN);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // PARTICLE_TOKEN namespaced_id coordinate_or_numeric coordinate_or_numeric coordinate_or_numeric argument argument argument argument argument*
+  public static boolean particle_command(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "particle_command")) return false;
+    if (!nextTokenIs(builder_, PARTICLE_TOKEN)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, PARTICLE_COMMAND, null);
+    result_ = consumeToken(builder_, PARTICLE_TOKEN);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && report_error_(builder_, namespaced_id(builder_, level_ + 1));
+    result_ = pinned_ && report_error_(builder_, coordinate_or_numeric(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && report_error_(builder_, coordinate_or_numeric(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && report_error_(builder_, coordinate_or_numeric(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && report_error_(builder_, argument(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && report_error_(builder_, argument(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && report_error_(builder_, argument(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && report_error_(builder_, argument(builder_, level_ + 1)) && result_;
+    result_ = pinned_ && particle_command_9(builder_, level_ + 1) && result_;
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  // argument*
+  private static boolean particle_command_9(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "particle_command_9")) return false;
+    while (true) {
+      int pos_ = current_position_(builder_);
+      if (!argument(builder_, level_ + 1)) break;
+      if (!empty_element_parsed_guard_(builder_, "particle_command_9", pos_)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // RETURN_TOKEN (numeric_literal | argument)
+  public static boolean return_command(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "return_command")) return false;
+    if (!nextTokenIs(builder_, RETURN_TOKEN)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, RETURN_COMMAND, null);
+    result_ = consumeToken(builder_, RETURN_TOKEN);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && return_command_1(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  // numeric_literal | argument
+  private static boolean return_command_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "return_command_1")) return false;
+    boolean result_;
+    result_ = numeric_literal(builder_, level_ + 1);
+    if (!result_) result_ = argument(builder_, level_ + 1);
     return result_;
   }
 

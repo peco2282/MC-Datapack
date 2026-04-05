@@ -17,6 +17,7 @@ public interface McFunctionTypes {
   IElementType COMPONENT_LIST = new McFunctionElementType("COMPONENT_LIST");
   IElementType COMPONENT_VALUE = new McFunctionElementType("COMPONENT_VALUE");
   IElementType COORDINATE = new McFunctionElementType("COORDINATE");
+  IElementType COORDINATE_OR_NUMERIC = new McFunctionElementType("COORDINATE_OR_NUMERIC");
   IElementType DAMAGE_COMMAND = new McFunctionElementType("DAMAGE_COMMAND");
   IElementType DATA_COMMAND = new McFunctionElementType("DATA_COMMAND");
   IElementType EXECUTE_ALIGN_CLAUSE = new McFunctionElementType("EXECUTE_ALIGN_CLAUSE");
@@ -56,6 +57,8 @@ public interface McFunctionTypes {
   IElementType NBT_PRIMITIVE = new McFunctionElementType("NBT_PRIMITIVE");
   IElementType NBT_PROPERTY = new McFunctionElementType("NBT_PROPERTY");
   IElementType NBT_VALUE = new McFunctionElementType("NBT_VALUE");
+  IElementType PARTICLE_COMMAND = new McFunctionElementType("PARTICLE_COMMAND");
+  IElementType RETURN_COMMAND = new McFunctionElementType("RETURN_COMMAND");
   IElementType RIDE_COMMAND = new McFunctionElementType("RIDE_COMMAND");
   IElementType SELECTOR = new McFunctionElementType("SELECTOR");
   IElementType SELECTOR_ARGUMENT = new McFunctionElementType("SELECTOR_ARGUMENT");
@@ -259,6 +262,9 @@ public interface McFunctionTypes {
       else if (type == COORDINATE) {
         return new McFunctionCoordinateImpl(node);
       }
+      else if (type == COORDINATE_OR_NUMERIC) {
+        return new McFunctionCoordinateOrNumericImpl(node);
+      }
       else if (type == DAMAGE_COMMAND) {
         return new McFunctionDamageCommandImpl(node);
       }
@@ -375,6 +381,12 @@ public interface McFunctionTypes {
       }
       else if (type == NBT_VALUE) {
         return new McFunctionNbtValueImpl(node);
+      }
+      else if (type == PARTICLE_COMMAND) {
+        return new McFunctionParticleCommandImpl(node);
+      }
+      else if (type == RETURN_COMMAND) {
+        return new McFunctionReturnCommandImpl(node);
       }
       else if (type == RIDE_COMMAND) {
         return new McFunctionRideCommandImpl(node);

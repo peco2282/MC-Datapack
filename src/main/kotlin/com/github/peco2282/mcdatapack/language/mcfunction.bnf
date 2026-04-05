@@ -197,7 +197,7 @@
 
 mcFunctionFile ::= (command_line | CRLF_TOKEN | COMMENT_TOKEN | CONTINUATION_TOKEN)*
 
-command_line ::= (macro_line | execute_command | attribute_command | give_command | clear_command | data_command | item_command | generic_command) (CRLF_TOKEN | COMMENT_TOKEN | <<eof>>)?
+command_line ::= (macro_line | execute_command | attribute_command | give_command | clear_command | data_command | item_command | return_command | particle_command | generic_command) (CRLF_TOKEN | COMMENT_TOKEN | <<eof>>)?
 
 // マクロ行: $$ で始まる行。行内の $(変数名) を macro_variable として識別
 macro_line ::= MACRO_LINE_START macro_line_content* {pin=1}
@@ -356,7 +356,17 @@ private safe_identifier ::= !control_keyword (COMMAND_TOKEN | keyword_not_namesp
 // item_stack はここでは試行しない（give/clear/item コマンドの専用ルールで処理）
 // 代わりに namespaced_id または argument でパースし、誤ったコンポーネント解析を防ぐ
 // -----------------------------------------------------------------------
-generic_command ::= (damage_command | ride_command | command | json) (CONTINUATION_TOKEN? (nbt_compound | json | namespaced_id | argument))*
+generic_command ::= (damage_command | ride_command | return_command | particle_command | command | json) (CONTINUATION_TOKEN? (nbt_compound | json | namespaced_id | argument))*
+
+// -----------------------------------------------------------------------
+// return コマンド専用ルール: return <value>
+// -----------------------------------------------------------------------
+return_command ::= RETURN_TOKEN (numeric_literal | argument) {pin=1}
+
+// -----------------------------------------------------------------------
+// particle コマンド専用ルール: particle <name> <pos> <delta> <speed> <count>
+// -----------------------------------------------------------------------
+particle_command ::= PARTICLE_TOKEN namespaced_id coordinate_or_numeric coordinate_or_numeric coordinate_or_numeric argument argument argument argument argument* {pin=1}
 
 // 行頭のコマンド名（MACRO_LINE_STARTは macro_line で処理するため除外）
 command ::= DAMAGE_TOKEN | ADVANCEMENT_TOKEN | ATTRIBUTE_TOKEN | EXECUTE_TOKEN | BOSSBAR_TOKEN | CLEAR_TOKEN | CLONE_TOKEN
@@ -388,7 +398,8 @@ private control_keyword ::= BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKE
 // 例: ~ ~ ~  /  ^1 ^2 ^3  /  1 2 3  /  ~-1 ~0 ~1
 // McFunctionArgument に埋もれていた座標を McFunctionCoordinate として識別可能にする
 // -----------------------------------------------------------------------
-coordinate ::= (COORD_TOKEN | numeric_literal)
+coordinate ::= COORD_TOKEN
+coordinate_or_numeric ::= COORD_TOKEN | numeric_literal
 private numeric_literal ::= ARGUMENT_TOKEN | COMMAND_TOKEN
 private coordinate_component ::= COORD_TOKEN | ARGUMENT_TOKEN | GTE_TOKEN | LTE_TOKEN | GT_TOKEN | LT_TOKEN
 

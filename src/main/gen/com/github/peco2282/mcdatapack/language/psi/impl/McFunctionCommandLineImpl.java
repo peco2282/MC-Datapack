@@ -77,6 +77,18 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
 
   @Override
   @Nullable
+  public McFunctionParticleCommand getParticleCommand() {
+    return findChildByClass(McFunctionParticleCommand.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionReturnCommand getReturnCommand() {
+    return findChildByClass(McFunctionReturnCommand.class);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getCommentToken() {
     return findChildByType(COMMENT_TOKEN);
   }

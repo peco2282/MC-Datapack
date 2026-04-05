@@ -32,6 +32,12 @@ public interface McFunctionCommandLine extends PsiElement {
   McFunctionMacroLine getMacroLine();
 
   @Nullable
+  McFunctionParticleCommand getParticleCommand();
+
+  @Nullable
+  McFunctionReturnCommand getReturnCommand();
+
+  @Nullable
   PsiElement getCommentToken();
 
   @Nullable

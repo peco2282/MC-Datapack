@@ -26,6 +26,12 @@ public interface McFunctionGenericCommand extends PsiElement {
   List<McFunctionNbtCompound> getNbtCompoundList();
 
   @Nullable
+  McFunctionParticleCommand getParticleCommand();
+
+  @Nullable
+  McFunctionReturnCommand getReturnCommand();
+
+  @Nullable
   McFunctionRideCommand getRideCommand();
 
 }

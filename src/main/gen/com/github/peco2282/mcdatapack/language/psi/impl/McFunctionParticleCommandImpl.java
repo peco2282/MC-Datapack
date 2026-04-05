@@ -11,14 +11,14 @@ import static com.github.peco2282.mcdatapack.language.psi.McFunctionTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.peco2282.mcdatapack.language.psi.*;
 
-public class McFunctionCoordinateImpl extends ASTWrapperPsiElement implements McFunctionCoordinate {
+public class McFunctionParticleCommandImpl extends ASTWrapperPsiElement implements McFunctionParticleCommand {
 
-  public McFunctionCoordinateImpl(@NotNull ASTNode node) {
+  public McFunctionParticleCommandImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull McFunctionVisitor visitor) {
-    visitor.visitCoordinate(this);
+    visitor.visitParticleCommand(this);
   }
 
   @Override
@@ -29,8 +29,20 @@ public class McFunctionCoordinateImpl extends ASTWrapperPsiElement implements Mc
 
   @Override
   @NotNull
-  public PsiElement getCoordToken() {
-    return findNotNullChildByType(COORD_TOKEN);
+  public List<McFunctionArgument> getArgumentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionArgument.class);
+  }
+
+  @Override
+  @NotNull
+  public List<McFunctionCoordinateOrNumeric> getCoordinateOrNumericList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, McFunctionCoordinateOrNumeric.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionNamespacedId getNamespacedId() {
+    return findChildByClass(McFunctionNamespacedId.class);
   }
 
 }

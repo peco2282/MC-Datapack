@@ -65,6 +65,18 @@ public class McFunctionGenericCommandImpl extends ASTWrapperPsiElement implement
 
   @Override
   @Nullable
+  public McFunctionParticleCommand getParticleCommand() {
+    return findChildByClass(McFunctionParticleCommand.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionReturnCommand getReturnCommand() {
+    return findChildByClass(McFunctionReturnCommand.class);
+  }
+
+  @Override
+  @Nullable
   public McFunctionRideCommand getRideCommand() {
     return findChildByClass(McFunctionRideCommand.class);
   }

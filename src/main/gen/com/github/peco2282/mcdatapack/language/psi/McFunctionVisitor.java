@@ -43,6 +43,10 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCoordinateOrNumeric(@NotNull McFunctionCoordinateOrNumeric o) {
+    visitPsiElement(o);
+  }
+
   public void visitDamageCommand(@NotNull McFunctionDamageCommand o) {
     visitPsiElement(o);
   }
@@ -196,6 +200,14 @@ public class McFunctionVisitor extends PsiElementVisitor {
   }
 
   public void visitNbtValue(@NotNull McFunctionNbtValue o) {
+    visitPsiElement(o);
+  }
+
+  public void visitParticleCommand(@NotNull McFunctionParticleCommand o) {
+    visitPsiElement(o);
+  }
+
+  public void visitReturnCommand(@NotNull McFunctionReturnCommand o) {
     visitPsiElement(o);
   }
 

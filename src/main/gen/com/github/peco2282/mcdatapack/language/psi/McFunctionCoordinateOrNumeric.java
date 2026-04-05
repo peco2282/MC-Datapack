@@ -5,9 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface McFunctionCoordinate extends PsiElement {
+public interface McFunctionCoordinateOrNumeric extends PsiElement {
 
-  @NotNull
+  @Nullable
+  PsiElement getArgumentToken();
+
+  @Nullable
+  PsiElement getCommandToken();
+
+  @Nullable
   PsiElement getCoordToken();
 
 }
