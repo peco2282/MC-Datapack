@@ -111,7 +111,7 @@ object McFunctionConstants {
         "ride", "say", "schedule", "scoreboard", "setblock", "setidletimeout", "setworldspawn",
         "spawnpoint", "spectate", "spreadplayers", "stopsound", "summon", "tag", "team",
         "teammsg", "teleport", "tell", "tellraw", "tick", "time", "title", "tm",
-        "tp", "trigger", "weather", "whitelist", "worldborder", "xp", "if", "rotate"
+        "tp", "trigger", "weather", "whitelist", "worldborder", "xp"
     )
 
     val GAME_RULES = listOf(
@@ -132,7 +132,7 @@ object McFunctionConstants {
     )
 
     val ON_SUBCOMMANDS = listOf(
-        "attacker", "controller", "leasher", "origin", "owner", "passengers", "target", "vehicle", "enchantment"
+        "attacker", "controller", "leasher", "origin", "owner", "passengers", "target", "vehicle"
     )
 
     val SELECTORS = listOf("@a", "@e", "@p", "@r", "@s")
@@ -141,8 +141,28 @@ object McFunctionConstants {
         "advancements", "distance", "dx", "dy", "dz", "gamemode", "level", "limit", "name", "nbt", "predicate", "scores", "sort", "tag", "team", "type", "x", "x_rotation", "y", "y_rotation", "z", "horizontal_radius", "vertical_radius"
     )
 
+    val EFFECT_IDS = listOf(
+        "minecraft:absorption", "minecraft:bad_omen", "minecraft:blindness", "minecraft:conduit_power",
+        "minecraft:darkness", "minecraft:dolphins_grace", "minecraft:fire_resistance", "minecraft:glowing",
+        "minecraft:haste", "minecraft:health_boost", "minecraft:hero_of_the_village", "minecraft:hunger",
+        "minecraft:instant_damage", "minecraft:instant_health", "minecraft:invisibility", "minecraft:jump_boost",
+        "minecraft:levitation", "minecraft:luck", "minecraft:mining_fatigue", "minecraft:nausea",
+        "minecraft:night_vision", "minecraft:ominous_trial_omen", "minecraft:poison", "minecraft:raid_omen",
+        "minecraft:regeneration", "minecraft:resistance", "minecraft:saturation", "minecraft:slow_falling",
+        "minecraft:slowness", "minecraft:speed", "minecraft:strength", "minecraft:trial_omen",
+        "minecraft:unluck", "minecraft:water_breathing", "minecraft:weakness", "minecraft:wind_charged",
+        "minecraft:wither"
+    )
+
     val CRITERIA = listOf(
-        "dummy", "trigger", "deathCount", "playerKillCount", "totalKillCount", "health", "food", "air", "armor", "level", "xp"
+        "dummy", "trigger", "deathCount", "playerKillCount", "totalKillCount", "health", "food", "air", "armor", "level", "xp",
+        "minecraft.mined:minecraft.stone", "minecraft.crafted:minecraft.stone",
+        "minecraft.used:minecraft.stone", "minecraft.broken:minecraft.stone",
+        "minecraft.picked_up:minecraft.stone", "minecraft.dropped:minecraft.stone",
+        "minecraft.killed:minecraft.zombie", "minecraft.killed_by:minecraft.zombie",
+        "minecraft.custom:minecraft.jump", "minecraft.custom:minecraft.play_one_minute",
+        "minecraft.custom:minecraft.deaths", "minecraft.custom:minecraft.damage_dealt",
+        "minecraft.custom:minecraft.damage_taken", "minecraft.custom:minecraft.walk_one_cm"
     )
 
     val KEYWORDS = listOf(

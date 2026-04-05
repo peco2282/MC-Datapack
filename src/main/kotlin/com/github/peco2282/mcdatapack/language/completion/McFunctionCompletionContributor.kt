@@ -130,14 +130,17 @@ class McFunctionCompletionContributor : CompletionContributor() {
             "fill" -> {
                 addIds(McFunctionConstants.BLOCK_IDS, result)
             }
-            "give", "tp", "teleport", "kill", "damage", "effect", "enchant", "gamemode", "clear" -> {
+            "give", "tp", "teleport", "kill", "damage", "enchant", "clear" -> {
               // ターゲットセレクター
               McFunctionConstants.SELECTORS.forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
               }
-              // give @p <item> や clear @p <item> のようなケースを考慮
-              // すでにセレクターが入力されている場合、その後にアイテム ID などを補完する必要がある。
-              // ここでは prevText がコマンド自体の場合のみセレクターを出す
+            }
+            "effect" -> {
+              // effect give/clear <selector> ...
+              listOf("give", "clear").forEach {
+                result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+              }
             }
             "@a", "@e", "@p", "@r", "@s" -> {
                 // セレクターの次に来る引数を、前のコマンドに基づいて判断する
@@ -148,11 +151,10 @@ class McFunctionCompletionContributor : CompletionContributor() {
                         addIds(McFunctionConstants.ITEM_IDS, result)
                     }
                     "effect" -> {
-                        // effect give @p ...
+                        // effect give @p <effect_id> または effect clear @p <effect_id>
                         val p3 = getPreviousVisibleElement(p2!!)
-                        if (p3?.text?.lowercase() == "give") {
-                            // 本来は effect ID だが、現状は ITEM_IDS や ENTITY_IDS に含まれていない可能性がある
-                            // 必要なら McFunctionConstants に EFFECT_IDS を追加する
+                        if (p3?.text?.lowercase() == "give" || p3?.text?.lowercase() == "clear") {
+                            addIds(McFunctionConstants.EFFECT_IDS, result)
                         }
                     }
                     "tp", "teleport" -> {
@@ -223,6 +225,10 @@ class McFunctionCompletionContributor : CompletionContributor() {
               }
             }
             "gamemode" -> {
+              // gamemode コマンド直後はセレクター、サブコマンドとしての gamemode= は別ブランチで処理
+              McFunctionConstants.SELECTORS.forEach {
+                result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
+              }
               listOf("survival", "creative", "adventure", "spectator").forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
               }
@@ -234,17 +240,21 @@ class McFunctionCompletionContributor : CompletionContributor() {
             }
             "block", "entity", "storage" -> {
               // 文脈により座標、セレクター、または名前空間ID
-              if (prevText == "entity") {
-                McFunctionConstants.SELECTORS.forEach {
-                  result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
+              when (prevText) {
+                "entity" -> {
+                  McFunctionConstants.SELECTORS.forEach {
+                    result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
+                  }
+                  // もしくは直接エンティティID
+                  addIds(McFunctionConstants.ENTITY_IDS, result)
                 }
-                // もしくは直接エンティティID
-                addIds(McFunctionConstants.ENTITY_IDS, result)
-              } else if (prevText == "storage") {
+                "storage" -> {
                   addStorageNames(parameters, result)
-              } else if (prevText == "block") {
+                }
+                else -> {
                   // data get block <pos>
                   // 本来は座標だが、ここではIDも出せるようにするか？
+                }
               }
             }
             "function" -> {
@@ -440,32 +450,39 @@ class McFunctionCompletionContributor : CompletionContributor() {
 
   private fun getPreviousVisibleElement(position: PsiElement): PsiElement? {
     var prev = position.prevSibling
-    if (prev == null) {
-      var parent = position.parent
-      while (parent != null && prev == null) {
-        prev = parent.prevSibling
-        parent = parent.parent
-      }
+    var current = position
+    while (prev == null && current.parent != null && current.parent !is com.intellij.psi.PsiFile) {
+      current = current.parent
+      prev = current.prevSibling
     }
-    
+
     while (prev != null && (prev.node.elementType == com.intellij.psi.TokenType.WHITE_SPACE || prev.node.elementType == McFunctionTypes.CONTINUATION_TOKEN)) {
-      prev = prev.prevSibling
+      if (prev.prevSibling != null) {
+        prev = prev.prevSibling
+      } else {
+        var p = prev.parent
+        prev = null
+        while (p != null && p !is com.intellij.psi.PsiFile && prev == null) {
+          prev = p.prevSibling
+          p = p.parent
+        }
+      }
     }
     return prev
   }
 
   private fun isAfterRun(element: PsiElement): Boolean {
-    // 簡易的な判定: 前のトークンが "run" か、または execute コマンドの文脈で run の後にいるか
     val prev = getPreviousVisibleElement(element) ?: return false
     if (prev.text.lowercase() == "run") return true
-    
-    // PSI構造による厳密な判定
+
+    // PSI構造による判定: execute コマンドの文脈で run トークンが存在するか
     var parent = element.parent
     while (parent != null) {
       if (parent.toString().contains("McFunctionExecuteCommand")) {
-        // execute ... run の構造を簡易的に文字列判定
-        if (parent.text.lowercase().contains(" run ")) {
-            return true
+        val parentText = parent.text.lowercase()
+        // " run " または行末の " run" を検出
+        if (Regex("\\brun\\b").containsMatchIn(parentText)) {
+          return true
         }
       }
       parent = parent.parent
@@ -570,13 +587,3 @@ class McFunctionCompletionContributor : CompletionContributor() {
     context.dummyIdentifier = CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED
   }
 }
-
-private val EXECUTE_SUBCOMMANDS = listOf(
-  "run", "only", "entity", "modify", "storage", "set", "from", "add", "players",
-  "actionbar", "matches", "as", "at", "anchored", "facing", "block", "items",
-  "store", "result", "score", "text", "value", "eyes", "revoke", "grant",
-  "get", "merge", "remove", "enable", "disable", "base", "modifier", "query",
-  "take", "objectives", "setdisplay", "empty", "join", "leave", "rate",
-  "freeze", "step", "stop", "unfreeze", "subtitle", "times", "center",
-  "warning", "master", "music", "if", "unless"
-)
