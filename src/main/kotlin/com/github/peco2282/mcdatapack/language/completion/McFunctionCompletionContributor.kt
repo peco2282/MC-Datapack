@@ -344,7 +344,57 @@ class McFunctionCompletionContributor : CompletionContributor() {
       }
     )
 
-    // 5. 動的リソース (scoreboard objectives, tags, storage) の補完
+    // 5. NBTデータの補完 (summon/data merge/give コマンドの {} 内)
+    extend(
+      CompletionType.BASIC,
+      PlatformPatterns.psiElement().withLanguage(McFunctionLanguage.INSTANCE),
+      object : CompletionProvider<CompletionParameters>() {
+        override fun addCompletions(
+          parameters: CompletionParameters,
+          context: ProcessingContext,
+          result: CompletionResultSet
+        ) {
+          val position = parameters.position
+          val fileText = position.containingFile?.text ?: return
+          val offset = position.textOffset
+          if (offset <= 0) return
+
+          // カーソル位置より前のテキストで {} の中にいるか確認
+          val prefix = fileText.substring(0, offset)
+          val depth = prefix.count { it == '{' } - prefix.count { it == '}' }
+          if (depth <= 0) return
+
+          // 直前のコマンドを確認
+          var lineStart = offset - 1
+          while (lineStart >= 0 && prefix[lineStart] != '\n' && prefix[lineStart] != '\r') lineStart--
+          lineStart++
+          val linePrefix = prefix.substring(lineStart).trimStart()
+
+          val nbtKeys: List<String> = when {
+            linePrefix.startsWith("summon ") -> McFunctionNbtConstants.ENTITY_NBT_KEYS
+            linePrefix.startsWith("give ") -> McFunctionNbtConstants.ITEM_NBT_KEYS
+            linePrefix.contains("data merge entity") || linePrefix.contains("data merge block") || linePrefix.contains("data merge storage") -> McFunctionNbtConstants.GENERIC_NBT_KEYS
+            linePrefix.startsWith("data ") -> McFunctionNbtConstants.GENERIC_NBT_KEYS
+            else -> return
+          }
+
+          for (key in nbtKeys) {
+            val typeHint = McFunctionNbtConstants.NBT_KEY_TYPES[key]
+            val element = if (typeHint != null) {
+              LookupElementBuilder.create(key)
+                .withTypeText(typeHint)
+                .withIcon(McFunctionIcons.NBT)
+            } else {
+              LookupElementBuilder.create(key)
+                .withIcon(McFunctionIcons.NBT)
+            }
+            result.addElement(element)
+          }
+        }
+      }
+    )
+
+    // 6. 動的リソース (scoreboard objectives, tags, storage) の補完
     extend(
       CompletionType.BASIC,
       PlatformPatterns.psiElement().withLanguage(McFunctionLanguage.INSTANCE),

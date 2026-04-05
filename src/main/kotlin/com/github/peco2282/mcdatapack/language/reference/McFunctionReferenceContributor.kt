@@ -19,6 +19,37 @@ private val NAMESPACED_ID_CONTEXTS: Map<IElementType, NamespacedIdContext> = map
   McFunctionTypes.LOOT_TOKEN to NamespacedIdContext("loot_tables", ".json")
 )
 
+// テキストベースで前のコマンドコンテキストを確認し、追加のリソースタイプを解決する
+private val TEXT_BASED_CONTEXTS: Map<String, NamespacedIdContext> = mapOf(
+  "predicate" to NamespacedIdContext("predicates", ".json"),
+  "item_modifier" to NamespacedIdContext("item_modifiers", ".json"),
+  "dimension" to NamespacedIdContext("dimension", ".json"),
+  "structure" to NamespacedIdContext("structures", ".nbt")
+)
+
+// execute in <dimension> のような構造でdimensionを検出するためのパターン
+private val DIMENSION_COMMAND_PATTERNS = listOf(
+  Regex("execute\\s+in\\s+$"),
+  Regex("\\bin\\s+$")
+)
+
+// execute if predicate <id> のような構造でpredicateを検出するためのパターン
+private val PREDICATE_COMMAND_PATTERNS = listOf(
+  Regex("\\bpredicate\\s+$")
+)
+
+// item modify ... <item_modifier> のような構造でitem_modifierを検出するためのパターン
+private val ITEM_MODIFIER_COMMAND_PATTERNS = listOf(
+  Regex("\\bitem\\s+modify\\s+\\S+\\s+\\S+\\s+\\S+\\s+$"),
+  Regex("\\bmodify\\s+\\S+\\s+\\S+\\s+\\S+\\s+$")
+)
+
+// place structure <id> のような構造でstructureを検出するためのパターン
+private val STRUCTURE_COMMAND_PATTERNS = listOf(
+  Regex("\\bplace\\s+structure\\s+$"),
+  Regex("\\bstructure\\s+$")
+)
+
 private fun resolveNamespacedIdContext(element: McFunctionNamespacedId): NamespacedIdContext? {
   var prev = element.prevSibling
   while (prev != null && prev.node.elementType == TokenType.WHITE_SPACE) {
@@ -41,6 +72,54 @@ private fun resolveNamespacedIdContext(element: McFunctionNamespacedId): Namespa
       break
     }
   }
+
+  // テキストベースで前のコマンドコンテキストを確認
+  return resolveTextBasedContext(element)
+}
+
+private fun resolveTextBasedContext(element: McFunctionNamespacedId): NamespacedIdContext? {
+  // 行全体のテキストを取得して、要素の前の部分を確認
+  val containingFile = element.containingFile ?: return null
+  val elementOffset = element.textOffset
+  val fileText = containingFile.text ?: return null
+
+  // 行の先頭を探す
+  var lineStart = elementOffset - 1
+  while (lineStart >= 0 && fileText[lineStart] != '\n' && fileText[lineStart] != '\r') {
+    lineStart--
+  }
+  lineStart++
+
+  val textBeforeElement = fileText.substring(lineStart, elementOffset)
+
+  // predicate パターンの確認
+  for (pattern in PREDICATE_COMMAND_PATTERNS) {
+    if (pattern.containsMatchIn(textBeforeElement)) {
+      return TEXT_BASED_CONTEXTS["predicate"]
+    }
+  }
+
+  // dimension パターンの確認
+  for (pattern in DIMENSION_COMMAND_PATTERNS) {
+    if (pattern.containsMatchIn(textBeforeElement)) {
+      return TEXT_BASED_CONTEXTS["dimension"]
+    }
+  }
+
+  // item_modifier パターンの確認
+  for (pattern in ITEM_MODIFIER_COMMAND_PATTERNS) {
+    if (pattern.containsMatchIn(textBeforeElement)) {
+      return TEXT_BASED_CONTEXTS["item_modifier"]
+    }
+  }
+
+  // structure パターンの確認
+  for (pattern in STRUCTURE_COMMAND_PATTERNS) {
+    if (pattern.containsMatchIn(textBeforeElement)) {
+      return TEXT_BASED_CONTEXTS["structure"]
+    }
+  }
+
   return null
 }
 

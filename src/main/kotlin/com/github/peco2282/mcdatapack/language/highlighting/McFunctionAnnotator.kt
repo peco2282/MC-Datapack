@@ -22,6 +22,10 @@ class McFunctionAnnotator : Annotator {
       annotateCommand(element, holder)
     }
 
+    if (element is McFunctionCommandLine) {
+      validateCommandArguments(element, holder)
+    }
+
     if (element is McFunctionKeyword) {
       annotateKeyword(element, holder)
     }
@@ -78,6 +82,18 @@ class McFunctionAnnotator : Annotator {
     McFunctionTypes.LOOT_TOKEN to NamespacedIdContext("loot_tables", ".json", "Loot table")
   )
 
+  private val TEXT_BASED_CONTEXTS = mapOf(
+    "predicate" to NamespacedIdContext("predicates", ".json", "Predicate"),
+    "item_modifier" to NamespacedIdContext("item_modifiers", ".json", "Item modifier"),
+    "dimension" to NamespacedIdContext("dimension", ".json", "Dimension"),
+    "structure" to NamespacedIdContext("structures", ".nbt", "Structure")
+  )
+
+  private val PREDICATE_PATTERNS = listOf(Regex("\\bpredicate\\s+$"))
+  private val DIMENSION_PATTERNS = listOf(Regex("execute\\s+in\\s+$"), Regex("\\bin\\s+$"))
+  private val ITEM_MODIFIER_PATTERNS = listOf(Regex("\\bitem\\s+modify\\s+\\S+\\s+\\S+\\s+\\S+\\s+$"))
+  private val STRUCTURE_PATTERNS = listOf(Regex("\\bplace\\s+structure\\s+$"))
+
   private fun checkFunctionFileExists(element: McFunctionNamespacedId, holder: AnnotationHolder) {
     val ctx = resolveNamespacedIdContext(element) ?: return
 
@@ -128,6 +144,23 @@ class McFunctionAnnotator : Annotator {
         break
       }
     }
+
+    // テキストベースで前のコマンドコンテキストを確認
+    return resolveTextBasedContext(element)
+  }
+
+  private fun resolveTextBasedContext(element: McFunctionNamespacedId): NamespacedIdContext? {
+    val containingFile = element.containingFile ?: return null
+    val elementOffset = element.textOffset
+    val fileText = containingFile.text ?: return null
+    var lineStart = elementOffset - 1
+    while (lineStart >= 0 && fileText[lineStart] != '\n' && fileText[lineStart] != '\r') lineStart--
+    lineStart++
+    val textBefore = fileText.substring(lineStart, elementOffset)
+    for (pattern in PREDICATE_PATTERNS) { if (pattern.containsMatchIn(textBefore)) return TEXT_BASED_CONTEXTS["predicate"] }
+    for (pattern in DIMENSION_PATTERNS) { if (pattern.containsMatchIn(textBefore)) return TEXT_BASED_CONTEXTS["dimension"] }
+    for (pattern in ITEM_MODIFIER_PATTERNS) { if (pattern.containsMatchIn(textBefore)) return TEXT_BASED_CONTEXTS["item_modifier"] }
+    for (pattern in STRUCTURE_PATTERNS) { if (pattern.containsMatchIn(textBefore)) return TEXT_BASED_CONTEXTS["structure"] }
     return null
   }
 
@@ -331,6 +364,204 @@ class McFunctionAnnotator : Annotator {
     holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
       .range(element.textRange)
       .textAttributes(attributes)
+      .create()
+  }
+
+  private fun validateCommandArguments(element: McFunctionCommandLine, holder: AnnotationHolder) {
+    val text = element.text.trim()
+    if (text.startsWith("#")) return
+
+    // トークンに分割（文字列リテラルを考慮した簡易分割）
+    val tokens = splitCommandTokens(text)
+    if (tokens.isEmpty()) return
+
+    val cmd = tokens[0].lowercase()
+
+    when (cmd) {
+      "give" -> {
+        // give <targets> <item> [<count>]
+        // count は整数でなければならない
+        if (tokens.size >= 4) {
+          val countToken = tokens[3]
+          if (!countToken.matches(Regex("-?\\d+"))) {
+            annotateArgumentError(element, text, countToken, "give コマンドの count は整数でなければなりません: '$countToken'", holder)
+          } else {
+            val count = countToken.toIntOrNull()
+            if (count != null && count < 1) {
+              annotateArgumentError(element, text, countToken, "give コマンドの count は1以上でなければなりません: '$countToken'", holder)
+            }
+          }
+        }
+      }
+      "effect" -> {
+        // effect give <targets> <effect> [<seconds> [<amplifier> [<hideParticles>]]]
+        if (tokens.size >= 2 && tokens[1].lowercase() == "give") {
+          if (tokens.size >= 5) {
+            val secondsToken = tokens[4]
+            if (!secondsToken.matches(Regex("\\d+"))) {
+              annotateArgumentError(element, text, secondsToken, "effect give の seconds は0以上の整数でなければなりません: '$secondsToken'", holder)
+            }
+          }
+          if (tokens.size >= 6) {
+            val amplifierToken = tokens[5]
+            if (!amplifierToken.matches(Regex("\\d+"))) {
+              annotateArgumentError(element, text, amplifierToken, "effect give の amplifier は0以上の整数でなければなりません: '$amplifierToken'", holder)
+            } else {
+              val amplifier = amplifierToken.toIntOrNull()
+              if (amplifier != null && amplifier > 255) {
+                annotateArgumentError(element, text, amplifierToken, "effect give の amplifier は255以下でなければなりません: '$amplifierToken'", holder)
+              }
+            }
+          }
+          if (tokens.size >= 7) {
+            val hideParticlesToken = tokens[6]
+            if (hideParticlesToken != "true" && hideParticlesToken != "false") {
+              annotateArgumentError(element, text, hideParticlesToken, "effect give の hideParticles は true または false でなければなりません: '$hideParticlesToken'", holder)
+            }
+          }
+        }
+      }
+      "enchant" -> {
+        // enchant <targets> <enchantment> [<level>]
+        if (tokens.size >= 4) {
+          val levelToken = tokens[3]
+          if (!levelToken.matches(Regex("\\d+"))) {
+            annotateArgumentError(element, text, levelToken, "enchant コマンドの level は0以上の整数でなければなりません: '$levelToken'", holder)
+          } else {
+            val level = levelToken.toIntOrNull()
+            if (level != null && level > 255) {
+              annotateArgumentError(element, text, levelToken, "enchant コマンドの level は255以下でなければなりません: '$levelToken'", holder)
+            }
+          }
+        }
+      }
+      "experience", "xp" -> {
+        // experience add|set|query <targets> <amount> (points|levels)
+        if (tokens.size >= 2 && (tokens[1].lowercase() == "add" || tokens[1].lowercase() == "set")) {
+          if (tokens.size >= 4) {
+            val amountToken = tokens[3]
+            if (!amountToken.matches(Regex("-?\\d+"))) {
+              annotateArgumentError(element, text, amountToken, "${cmd} の amount は整数でなければなりません: '$amountToken'", holder)
+            }
+          }
+          if (tokens.size >= 5) {
+            val unitToken = tokens[4].lowercase()
+            if (unitToken != "points" && unitToken != "levels") {
+              annotateArgumentError(element, text, tokens[4], "${cmd} の単位は 'points' または 'levels' でなければなりません: '${tokens[4]}'", holder)
+            }
+          }
+        }
+      }
+      "time" -> {
+        // time add|set <value>
+        if (tokens.size >= 2 && (tokens[1].lowercase() == "add" || tokens[1].lowercase() == "set")) {
+          if (tokens.size >= 3) {
+            val valueToken = tokens[2]
+            // 数値または数値+単位(d/s/t)
+            if (!valueToken.matches(Regex("-?\\d+[dst]?")) && !valueToken.matches(Regex("(noon|midnight|day|night)"))) {
+              annotateArgumentError(element, text, valueToken, "time の value は整数（またはd/s/t単位付き）でなければなりません: '$valueToken'", holder)
+            }
+          }
+        }
+      }
+      "difficulty" -> {
+        // difficulty [peaceful|easy|normal|hard]
+        if (tokens.size >= 2) {
+          val diffToken = tokens[1].lowercase()
+          val validDiffs = setOf("peaceful", "easy", "normal", "hard", "p", "e", "n", "h", "0", "1", "2", "3")
+          if (!validDiffs.contains(diffToken)) {
+            annotateArgumentError(element, text, tokens[1], "difficulty の値は peaceful/easy/normal/hard でなければなりません: '${tokens[1]}'", holder)
+          }
+        }
+      }
+      "gamemode" -> {
+        // gamemode <mode> [<target>]
+        if (tokens.size >= 2) {
+          val modeToken = tokens[1].lowercase()
+          val validModes = setOf("survival", "creative", "adventure", "spectator", "s", "c", "a", "sp", "0", "1", "2", "3")
+          if (!validModes.contains(modeToken)) {
+            annotateArgumentError(element, text, tokens[1], "gamemode の値は survival/creative/adventure/spectator でなければなりません: '${tokens[1]}'", holder)
+          }
+        }
+      }
+      "weather" -> {
+        // weather clear|rain|thunder [<duration>]
+        if (tokens.size >= 2) {
+          val weatherToken = tokens[1].lowercase()
+          val validWeathers = setOf("clear", "rain", "thunder")
+          if (!validWeathers.contains(weatherToken)) {
+            annotateArgumentError(element, text, tokens[1], "weather の値は clear/rain/thunder でなければなりません: '${tokens[1]}'", holder)
+          }
+        }
+        if (tokens.size >= 3) {
+          val durationToken = tokens[2]
+          if (!durationToken.matches(Regex("\\d+"))) {
+            annotateArgumentError(element, text, durationToken, "weather の duration は0以上の整数でなければなりません: '$durationToken'", holder)
+          }
+        }
+      }
+    }
+  }
+
+  // コマンドテキストをトークンに分割（文字列リテラルや{}[]を考慮）
+  private fun splitCommandTokens(text: String): List<String> {
+    val tokens = mutableListOf<String>()
+    val current = StringBuilder()
+    var depth = 0
+    var inString = false
+    var stringChar = ' '
+
+    for (ch in text) {
+      when {
+        inString -> {
+          current.append(ch)
+          if (ch == stringChar) inString = false
+        }
+        ch == '"' || ch == '\'' -> {
+          inString = true
+          stringChar = ch
+          current.append(ch)
+        }
+        ch == '{' || ch == '[' -> {
+          depth++
+          current.append(ch)
+        }
+        ch == '}' || ch == ']' -> {
+          depth--
+          current.append(ch)
+        }
+        ch == ' ' || ch == '\t' -> {
+          if (depth == 0) {
+            if (current.isNotEmpty()) {
+              tokens.add(current.toString())
+              current.clear()
+            }
+          } else {
+            current.append(ch)
+          }
+        }
+        else -> current.append(ch)
+      }
+    }
+    if (current.isNotEmpty()) tokens.add(current.toString())
+    return tokens
+  }
+
+  // 特定のトークンに対してエラーアノテーションを付与する
+  private fun annotateArgumentError(
+    element: McFunctionCommandLine,
+    fullText: String,
+    token: String,
+    message: String,
+    holder: AnnotationHolder
+  ) {
+    val tokenIndex = fullText.indexOf(token)
+    if (tokenIndex < 0) return
+    val startOffset = element.textRange.startOffset + tokenIndex
+    val endOffset = startOffset + token.length
+    if (endOffset > element.textRange.endOffset) return
+    holder.newAnnotation(HighlightSeverity.ERROR, message)
+      .range(TextRange(startOffset, endOffset))
       .create()
   }
 
