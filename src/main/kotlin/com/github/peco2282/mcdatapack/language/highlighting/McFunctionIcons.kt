@@ -12,4 +12,6 @@ object McFunctionIcons {
   val EFFECT: Icon = IconLoader.getIcon("/icons/effect.svg", McFunctionIcons::class.java)
   val SCOREBOARD: Icon = IconLoader.getIcon("/icons/scoreboard.svg", McFunctionIcons::class.java)
   val SELECTOR: Icon = IconLoader.getIcon("/icons/selector.svg", McFunctionIcons::class.java)
+  val TAG: Icon = IconLoader.getIcon("/icons/tag.svg", McFunctionIcons::class.java)
+  val NBT: Icon = IconLoader.getIcon("/icons/nbt.svg", McFunctionIcons::class.java)
 }
