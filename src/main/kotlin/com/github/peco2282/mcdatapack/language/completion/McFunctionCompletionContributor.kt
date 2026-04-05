@@ -55,11 +55,7 @@ class McFunctionCompletionContributor : CompletionContributor() {
           }
 
           if (isInsideSelectorType(position)) {
-              McFunctionConstants.ENTITY_IDS.forEach {
-                  val id = it.removePrefix("minecraft:")
-                  result.addElement(LookupElementBuilder.create(id).withIcon(McFunctionIcons.COMMAND))
-                  result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
-              }
+              addIds(McFunctionConstants.ENTITY_IDS, result)
               // アイテムやブロックのタグも type= 内で使える場合があるが、ここでは主にエンティティ
               addEntityTags(parameters, result)
               return
@@ -126,35 +122,55 @@ class McFunctionCompletionContributor : CompletionContributor() {
                 }
             }
             "summon" -> {
-                McFunctionConstants.ENTITY_IDS.forEach {
-                    val id = it.removePrefix("minecraft:")
-                    result.addElement(LookupElementBuilder.create(id).withIcon(McFunctionIcons.COMMAND))
-                    result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
-                }
+                addIds(McFunctionConstants.ENTITY_IDS, result)
             }
             "setblock" -> {
-                McFunctionConstants.BLOCK_IDS.forEach {
-                    val id = it.removePrefix("minecraft:")
-                    result.addElement(LookupElementBuilder.create(id).withIcon(McFunctionIcons.COMMAND))
-                    result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
-                }
+                addIds(McFunctionConstants.BLOCK_IDS, result)
+            }
+            "fill" -> {
+                addIds(McFunctionConstants.BLOCK_IDS, result)
             }
             "give", "tp", "teleport", "kill", "damage", "effect", "enchant", "gamemode", "clear" -> {
               // ターゲットセレクター
               McFunctionConstants.SELECTORS.forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
               }
-              if (prevText == "give" || prevText == "clear") {
-                  // give @p <item>
-                  // clear @p <item>
-                  // セレクターの後であればアイテムIDを補完
-                  // ここでは単純に次の位置であれば出すようにする
-                  McFunctionConstants.ITEM_IDS.forEach {
-                      val id = it.removePrefix("minecraft:")
-                      result.addElement(LookupElementBuilder.create(id).withIcon(McFunctionIcons.COMMAND))
-                      result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
-                  }
-              }
+              // give @p <item> や clear @p <item> のようなケースを考慮
+              // すでにセレクターが入力されている場合、その後にアイテム ID などを補完する必要がある。
+              // ここでは prevText がコマンド自体の場合のみセレクターを出す
+            }
+            "@a", "@e", "@p", "@r", "@s" -> {
+                // セレクターの次に来る引数を、前のコマンドに基づいて判断する
+                val p2 = getPreviousVisibleElement(prevVisible)
+                val cmdText = p2?.text?.lowercase()
+                when (cmdText) {
+                    "give", "clear" -> {
+                        addIds(McFunctionConstants.ITEM_IDS, result)
+                    }
+                    "effect" -> {
+                        // effect give @p ...
+                        val p3 = getPreviousVisibleElement(p2!!)
+                        if (p3?.text?.lowercase() == "give") {
+                            // 本来は effect ID だが、現状は ITEM_IDS や ENTITY_IDS に含まれていない可能性がある
+                            // 必要なら McFunctionConstants に EFFECT_IDS を追加する
+                        }
+                    }
+                    "tp", "teleport" -> {
+                        // 座標または別のセレクター
+                        McFunctionConstants.SELECTORS.forEach {
+                            result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
+                        }
+                    }
+                }
+            }
+            "in" -> {
+                // execute in <dimension>
+                // 現状 dimension ID のリストはないが、namespaced_id として補完されるべき
+                // とりあえず既知のディメンションがあれば追加する
+                listOf("minecraft:overworld", "minecraft:the_nether", "minecraft:the_end").forEach {
+                    result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+                    result.addElement(LookupElementBuilder.create(it.removePrefix("minecraft:")).withIcon(McFunctionIcons.COMMAND))
+                }
             }
             "item" -> {
                 // item replace entity <selector> ...
@@ -184,6 +200,18 @@ class McFunctionCompletionContributor : CompletionContributor() {
                     }
                 }
             }
+            "place" -> {
+                // place feature/template/structure ...
+                listOf("feature", "template", "structure").forEach {
+                    result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+                }
+            }
+            "locate" -> {
+                // locate biome/poi/structure ...
+                listOf("biome", "poi", "structure").forEach {
+                    result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+                }
+            }
             "weather" -> {
               listOf("clear", "rain", "thunder").forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
@@ -191,6 +219,11 @@ class McFunctionCompletionContributor : CompletionContributor() {
             }
             "difficulty" -> {
               listOf("peaceful", "easy", "normal", "hard").forEach {
+                result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+              }
+            }
+            "gamemode" -> {
+              listOf("survival", "creative", "adventure", "spectator").forEach {
                 result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
               }
             }
@@ -205,8 +238,13 @@ class McFunctionCompletionContributor : CompletionContributor() {
                 McFunctionConstants.SELECTORS.forEach {
                   result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.SELECTOR))
                 }
+                // もしくは直接エンティティID
+                addIds(McFunctionConstants.ENTITY_IDS, result)
               } else if (prevText == "storage") {
                   addStorageNames(parameters, result)
+              } else if (prevText == "block") {
+                  // data get block <pos>
+                  // 本来は座標だが、ここではIDも出せるようにするか？
               }
             }
             "function" -> {
@@ -390,6 +428,14 @@ class McFunctionCompletionContributor : CompletionContributor() {
       storages.forEach {
           result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.NBT))
       }
+  }
+
+  private fun addIds(ids: List<String>, result: CompletionResultSet) {
+    ids.forEach {
+      val id = it.removePrefix("minecraft:")
+      result.addElement(LookupElementBuilder.create(id).withIcon(McFunctionIcons.COMMAND))
+      result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+    }
   }
 
   private fun getPreviousVisibleElement(position: PsiElement): PsiElement? {
