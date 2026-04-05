@@ -469,7 +469,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (macro_line | execute_command | attribute_command | give_command | clear_command | data_command | item_command | return_command | particle_command | generic_command) (CRLF_TOKEN | COMMENT_TOKEN | <<eof>>)?
+  // (macro_line | execute_command | attribute_command | give_command | clear_command | damage_command | ride_command | data_command | item_command | return_command | particle_command | generic_command) (CRLF_TOKEN | COMMENT_TOKEN | <<eof>>)?
   public static boolean command_line(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "command_line")) return false;
     boolean result_;
@@ -480,7 +480,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // macro_line | execute_command | attribute_command | give_command | clear_command | data_command | item_command | return_command | particle_command | generic_command
+  // macro_line | execute_command | attribute_command | give_command | clear_command | damage_command | ride_command | data_command | item_command | return_command | particle_command | generic_command
   private static boolean command_line_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "command_line_0")) return false;
     boolean result_;
@@ -489,6 +489,8 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = attribute_command(builder_, level_ + 1);
     if (!result_) result_ = give_command(builder_, level_ + 1);
     if (!result_) result_ = clear_command(builder_, level_ + 1);
+    if (!result_) result_ = damage_command(builder_, level_ + 1);
+    if (!result_) result_ = ride_command(builder_, level_ + 1);
     if (!result_) result_ = data_command(builder_, level_ + 1);
     if (!result_) result_ = item_command(builder_, level_ + 1);
     if (!result_) result_ = return_command(builder_, level_ + 1);
@@ -1071,7 +1073,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // execute_modifier_clause* (RUN_TOKEN command_line)?
+  // (!CRLF_TOKEN !<<eof>> execute_modifier_clause)* (RUN_TOKEN command_line)?
   static boolean execute_body(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_body")) return false;
     boolean result_;
@@ -1082,15 +1084,47 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // execute_modifier_clause*
+  // (!CRLF_TOKEN !<<eof>> execute_modifier_clause)*
   private static boolean execute_body_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "execute_body_0")) return false;
     while (true) {
       int pos_ = current_position_(builder_);
-      if (!execute_modifier_clause(builder_, level_ + 1)) break;
+      if (!execute_body_0_0(builder_, level_ + 1)) break;
       if (!empty_element_parsed_guard_(builder_, "execute_body_0", pos_)) break;
     }
     return true;
+  }
+
+  // !CRLF_TOKEN !<<eof>> execute_modifier_clause
+  private static boolean execute_body_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "execute_body_0_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = execute_body_0_0_0(builder_, level_ + 1);
+    result_ = result_ && execute_body_0_0_1(builder_, level_ + 1);
+    result_ = result_ && execute_modifier_clause(builder_, level_ + 1);
+    exit_section_(builder_, marker_, null, result_);
+    return result_;
+  }
+
+  // !CRLF_TOKEN
+  private static boolean execute_body_0_0_0(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "execute_body_0_0_0")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !consumeToken(builder_, CRLF_TOKEN);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
+  }
+
+  // !<<eof>>
+  private static boolean execute_body_0_0_1(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "execute_body_0_0_1")) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_, level_, _NOT_);
+    result_ = !eof(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, false, null);
+    return result_;
   }
 
   // (RUN_TOKEN command_line)?

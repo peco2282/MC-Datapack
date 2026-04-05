@@ -200,7 +200,7 @@
 
 mcFunctionFile ::= (command_line | CRLF_TOKEN | COMMENT_TOKEN | CONTINUATION_TOKEN)*
 
-command_line ::= (macro_line | execute_command | attribute_command | give_command | clear_command | data_command | item_command | return_command | particle_command | generic_command) (CRLF_TOKEN | COMMENT_TOKEN | <<eof>>)?
+command_line ::= (macro_line | execute_command | attribute_command | give_command | clear_command | damage_command | ride_command | data_command | item_command | return_command | particle_command | generic_command) (CRLF_TOKEN | COMMENT_TOKEN | <<eof>>)?
 
 // マクロ行: $$ で始まる行。行内の $(変数名) を macro_variable として識別
 macro_line ::= MACRO_LINE_START macro_line_content* {pin=1}
@@ -294,7 +294,7 @@ item_target ::= (BLOCK_TOKEN coordinate | ENTITY_TOKEN selector | STORAGE_TOKEN 
 // -----------------------------------------------------------------------
 execute_command ::= EXECUTE_TOKEN execute_body? {pin=1}
 // WHITE_SPACE はフレームワークが自動スキップするため明示的消費不要
-private execute_body ::= execute_modifier_clause* (RUN_TOKEN command_line)?
+private execute_body ::= (!CRLF_TOKEN !<<eof>> execute_modifier_clause)* (RUN_TOKEN command_line)?
 execute_modifier_clause ::= execute_as_clause
   | execute_at_clause
   | execute_store_clause

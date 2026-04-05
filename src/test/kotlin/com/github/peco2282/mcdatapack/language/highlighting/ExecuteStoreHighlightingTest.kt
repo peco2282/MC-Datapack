@@ -39,6 +39,39 @@ class ExecuteStoreHighlightingTest : BasePlatformTestCase() {
     }
 
     @Test
+    fun testMultipleCommandsNotMergedIntoOne() {
+        // #5以降のコマンドが1つのコマンドとして認識されないことを確認
+        val input = """
+            execute as @e[type=!player,distance=..5,limit=1] run damage @s 20 minecraft:magic by @p
+            execute as @e[type=armor_stand,distance=..3,limit=1] run ride @s mount @p
+            data remove storage my_namespace:main temp_val
+            return 1
+            execute as @e[type=minecraft:zombie]
+        """.trimIndent()
+        myFixture.configureByText("test.mcfunction", input)
+
+        val errors = myFixture.doHighlighting(HighlightSeverity.ERROR)
+        System.out.println("[DEBUG_LOG] Error count: ${errors.size}")
+        errors.forEach {
+            System.out.println("[DEBUG_LOG] Error: '${myFixture.file.text.substring(it.startOffset, it.endOffset)}' at ${it.startOffset}-${it.endOffset}: ${it.description}")
+        }
+
+        // 各コマンドが独立してパースされ、エラーがないことを確認
+        // (不完全なexecuteはエラーになりうるが、後続コマンドを飲み込まないことが重要)
+        val psiFile = myFixture.file
+        val children = psiFile.children
+        System.out.println("[DEBUG_LOG] PSI children count: ${children.size}")
+        children.forEach {
+            System.out.println("[DEBUG_LOG] PSI child: ${it.node.elementType} = '${it.text.take(60)}'")
+        }
+
+        // 少なくとも5つのcommand_lineノードが存在するはず
+        val commandLines = children.filter { it.node.elementType.toString() == "COMMAND_LINE" }
+        System.out.println("[DEBUG_LOG] command_line count: ${commandLines.size}")
+        assertTrue("Should have at least 5 command lines, got ${commandLines.size}", commandLines.size >= 5)
+    }
+
+    @Test
     fun testExecuteIfDataStorageHighlighting() {
         val input = """
             execute if data storage my_namespace:main Fire run data get entity @s Fire

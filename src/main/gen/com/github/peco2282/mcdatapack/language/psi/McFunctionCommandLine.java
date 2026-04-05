@@ -14,6 +14,9 @@ public interface McFunctionCommandLine extends PsiElement {
   McFunctionClearCommand getClearCommand();
 
   @Nullable
+  McFunctionDamageCommand getDamageCommand();
+
+  @Nullable
   McFunctionDataCommand getDataCommand();
 
   @Nullable
@@ -36,6 +39,9 @@ public interface McFunctionCommandLine extends PsiElement {
 
   @Nullable
   McFunctionReturnCommand getReturnCommand();
+
+  @Nullable
+  McFunctionRideCommand getRideCommand();
 
   @Nullable
   PsiElement getCommentToken();

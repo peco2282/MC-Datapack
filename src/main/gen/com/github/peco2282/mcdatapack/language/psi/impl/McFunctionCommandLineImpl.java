@@ -41,6 +41,12 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
 
   @Override
   @Nullable
+  public McFunctionDamageCommand getDamageCommand() {
+    return findChildByClass(McFunctionDamageCommand.class);
+  }
+
+  @Override
+  @Nullable
   public McFunctionDataCommand getDataCommand() {
     return findChildByClass(McFunctionDataCommand.class);
   }
@@ -85,6 +91,12 @@ public class McFunctionCommandLineImpl extends ASTWrapperPsiElement implements M
   @Nullable
   public McFunctionReturnCommand getReturnCommand() {
     return findChildByClass(McFunctionReturnCommand.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionRideCommand getRideCommand() {
+    return findChildByClass(McFunctionRideCommand.class);
   }
 
   @Override
