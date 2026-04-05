@@ -47,6 +47,8 @@
         <notificationGroup id="MC-Datapack" displayType="BALLOON" isLogByDefault="true"/>
         <liveTemplateContext contextId="McFunction" implementation="com.github.peco2282.mcdatapack.language.template.McFunctionTemplateContextType"/>
         <codeInsight.inlayProvider language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.inlay.McFunctionInlayHintsProvider"/>
+        <spellchecker.support language="McFunction"
+                              implementationClass="com.github.peco2282.mcdatapack.language.highlighting.McFunctionSpellcheckingStrategy"/>
         <directoryProjectGenerator implementation="com.github.peco2282.mcdatapack.project.McDatapackProjectGenerator"/>
         <moduleBuilder builderClass="com.github.peco2282.mcdatapack.project.McDatapackModuleBuilder"/>
     </extensions>

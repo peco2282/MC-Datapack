@@ -69,20 +69,20 @@ class McFunctionColorSettingsPage : ColorSettingsPage {
 }
 
 private val DESCRIPTORS = arrayOf(
-  AttributesDescriptor("Major Commands (execute, advancement, data, etc.)", McFunctionSyntaxHighlighter.MAJOR_COMMAND),
-  AttributesDescriptor("Sub Commands (set, modify, players, etc.)", McFunctionSyntaxHighlighter.SUB_COMMAND),
-  AttributesDescriptor("Flow Keywords (if, run, unless, etc.)", McFunctionSyntaxHighlighter.FLOW_KEYWORD),
-  AttributesDescriptor("Selectors (@s, @a, etc.)", McFunctionSyntaxHighlighter.SELECTOR),
-  AttributesDescriptor("Namespace", McFunctionSyntaxHighlighter.NAMESPACE),
-  AttributesDescriptor("Namespace Colon (:)", McFunctionSyntaxHighlighter.NAMESPACE_COLON),
-  AttributesDescriptor("Macros (\$variable)", McFunctionSyntaxHighlighter.MACRO),
-  AttributesDescriptor("JSON Property Key", McFunctionSyntaxHighlighter.JSON_KEY),
-  AttributesDescriptor("JSON String Value", McFunctionSyntaxHighlighter.JSON_STRING),
-  AttributesDescriptor("JSON Number Value", McFunctionSyntaxHighlighter.JSON_NUMBER),
-  AttributesDescriptor("JSON Boolean/Byte Value", McFunctionSyntaxHighlighter.JSON_BOOLEAN),
+  AttributesDescriptor("Commands//Major Commands (execute, advancement, data, etc.)", McFunctionSyntaxHighlighter.MAJOR_COMMAND),
+  AttributesDescriptor("Commands//Sub Commands (set, modify, players, etc.)", McFunctionSyntaxHighlighter.SUB_COMMAND),
+  AttributesDescriptor("Commands//Flow Keywords (if, run, unless, etc.)", McFunctionSyntaxHighlighter.FLOW_KEYWORD),
+  AttributesDescriptor("Selectors//Selector (@s, @a, etc.)", McFunctionSyntaxHighlighter.SELECTOR),
+  AttributesDescriptor("Resource Location//Namespace", McFunctionSyntaxHighlighter.NAMESPACE),
+  AttributesDescriptor("Resource Location//Namespace Colon (:)", McFunctionSyntaxHighlighter.NAMESPACE_COLON),
+  AttributesDescriptor("Macro//Macro Variable (\$variable)", McFunctionSyntaxHighlighter.MACRO),
+  AttributesDescriptor("NBT / JSON//Property Key", McFunctionSyntaxHighlighter.JSON_KEY),
+  AttributesDescriptor("NBT / JSON//String Value", McFunctionSyntaxHighlighter.JSON_STRING),
+  AttributesDescriptor("NBT / JSON//Number Value", McFunctionSyntaxHighlighter.JSON_NUMBER),
+  AttributesDescriptor("NBT / JSON//Boolean / Byte Value", McFunctionSyntaxHighlighter.JSON_BOOLEAN),
+  AttributesDescriptor("Literals//String", McFunctionSyntaxHighlighter.STRING),
+  AttributesDescriptor("Literals//Values / Arguments", McFunctionSyntaxHighlighter.ARGUMENT),
+  AttributesDescriptor("Literals//Coordinates (~, ^)", McFunctionSyntaxHighlighter.COORDINATE),
   AttributesDescriptor("Structural Symbols (\\, [, ], {, }, ,, =, ., ..)", McFunctionSyntaxHighlighter.STRUCTURE),
-  AttributesDescriptor("String", McFunctionSyntaxHighlighter.STRING),
-  AttributesDescriptor("Values / Literals", McFunctionSyntaxHighlighter.ARGUMENT),
-  AttributesDescriptor("Comment", McFunctionSyntaxHighlighter.COMMENT),
-  AttributesDescriptor("Coordinates (~, ^)", McFunctionSyntaxHighlighter.COORDINATE)
+  AttributesDescriptor("Comment", McFunctionSyntaxHighlighter.COMMENT)
 )

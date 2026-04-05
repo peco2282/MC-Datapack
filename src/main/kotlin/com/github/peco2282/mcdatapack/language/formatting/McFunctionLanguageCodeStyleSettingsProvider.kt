@@ -12,8 +12,21 @@ class McFunctionLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
   override fun getLanguage(): Language = McFunctionLanguage.INSTANCE
 
   override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
-    if (settingsType == SettingsType.INDENT_SETTINGS) {
-      consumer.showAllStandardOptions()
+    when (settingsType) {
+      SettingsType.INDENT_SETTINGS -> consumer.showAllStandardOptions()
+      SettingsType.SPACING_SETTINGS -> {
+        consumer.showStandardOptions(
+          "SPACE_AFTER_COMMA",
+          "SPACE_BEFORE_COMMA"
+        )
+        consumer.renameStandardOption("SPACE_AFTER_COMMA", "Space after comma in selector arguments")
+        consumer.renameStandardOption("SPACE_BEFORE_COMMA", "Space before comma in selector arguments")
+      }
+      SettingsType.BLANK_LINES_SETTINGS -> {
+        consumer.showStandardOptions("KEEP_BLANK_LINES_IN_CODE")
+        consumer.renameStandardOption("KEEP_BLANK_LINES_IN_CODE", "Keep blank lines between commands")
+      }
+      else -> {}
     }
   }
 
