@@ -89,4 +89,19 @@ class McFunctionFileReference(
       file.virtualFile.path.replace("\\", "/").endsWith(expectedPathSuffix)
     }
   }
+
+  override fun handleElementRename(newElementName: String): PsiElement {
+    val currentText = rangeInElement.substring(element.text)
+    val parts = currentText.split(":")
+    val namespace = if (parts.size > 1) parts[0] else "minecraft"
+    val path = if (parts.size > 1) parts[1] else parts[0]
+    val newBaseName = newElementName.removeSuffix(extension)
+    val newPath = if (path.contains("/")) {
+      path.substringBeforeLast("/") + "/" + newBaseName
+    } else {
+      newBaseName
+    }
+    val newId = "$namespace:$newPath"
+    return ElementManipulators.handleContentChange(element, rangeInElement, newId)
+  }
 }

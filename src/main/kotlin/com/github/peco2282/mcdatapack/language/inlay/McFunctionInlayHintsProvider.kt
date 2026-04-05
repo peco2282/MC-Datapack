@@ -8,11 +8,11 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import javax.swing.JPanel
+import com.intellij.ui.dsl.builder.panel
+import javax.swing.JComponent
 
 @Suppress("UnstableApiUsage")
 class McFunctionInlayHintsProvider : InlayHintsProvider<McFunctionInlayHintsProvider.Settings> {
-
   data class Settings(var showCommandHints: Boolean = true, var showCoordinateHints: Boolean = true)
 
   override val key: SettingsKey<Settings> = SettingsKey("mcfunction.inlay.hints")
@@ -22,7 +22,28 @@ class McFunctionInlayHintsProvider : InlayHintsProvider<McFunctionInlayHintsProv
   override fun createSettings(): Settings = Settings()
 
   override fun createConfigurable(settings: Settings): ImmediateConfigurable = object : ImmediateConfigurable {
-    override fun createComponent(listener: ChangeListener) = JPanel()
+    override fun createComponent(listener: ChangeListener): JComponent = panel {
+      row {
+        checkBox("Show command hints")
+          .also { cb ->
+            cb.component.isSelected = settings.showCommandHints
+            cb.component.addActionListener {
+              settings.showCommandHints = cb.component.isSelected
+              listener.settingsChanged()
+            }
+          }
+      }
+      row {
+        checkBox("Show coordinate hints")
+          .also { cb ->
+            cb.component.isSelected = settings.showCoordinateHints
+            cb.component.addActionListener {
+              settings.showCoordinateHints = cb.component.isSelected
+              listener.settingsChanged()
+            }
+          }
+      }
+    }
   }
 
   override fun getCollectorFor(
@@ -39,7 +60,6 @@ class McFunctionInlayHintsProvider : InlayHintsProvider<McFunctionInlayHintsProv
     private val editor: Editor,
     private val settings: Settings
   ) : FactoryInlayHintsCollector(editor) {
-
     override fun collect(element: PsiElement, editor: Editor, sink: InlayHintsSink): Boolean {
       if (settings.showCommandHints) {
         collectCommandHints(element, sink, factory)
@@ -52,10 +72,8 @@ class McFunctionInlayHintsProvider : InlayHintsProvider<McFunctionInlayHintsProv
 
     private fun collectCommandHints(element: PsiElement, sink: InlayHintsSink, factory: PresentationFactory) {
       if (element !is McFunctionCommand) return
-
       val firstChild = element.firstChild ?: return
       val tokenType = firstChild.node.elementType
-
       val hint: String? = when (tokenType) {
         McFunctionTypes.EXECUTE_TOKEN -> buildExecuteHint(element)
         McFunctionTypes.GIVE_TOKEN -> "<selector> <item> [count]"
@@ -69,7 +87,6 @@ class McFunctionInlayHintsProvider : InlayHintsProvider<McFunctionInlayHintsProv
         McFunctionTypes.TELEPORT_TOKEN -> "<selector> <pos>|<destination>"
         else -> null
       }
-
       if (hint != null) {
         val presentation = factory.smallText(hint)
         val offset = element.textRange.endOffset
@@ -92,18 +109,15 @@ class McFunctionInlayHintsProvider : InlayHintsProvider<McFunctionInlayHintsProv
 
     private fun collectCoordinateHints(element: PsiElement, sink: InlayHintsSink, factory: PresentationFactory) {
       if (element !is McFunctionCoordinate) return
-
       val parent = element.parent ?: return
       val siblings = PsiTreeUtil.getChildrenOfType(parent, McFunctionCoordinate::class.java) ?: return
       val index = siblings.indexOf(element)
-
       val label: String = when (index) {
         0 -> "x"
         1 -> "y"
         2 -> "z"
         else -> return
       }
-
       val presentation: InlayPresentation = factory.smallText("$label:")
       sink.addInlineElement(element.textRange.startOffset, false, presentation, false)
     }
