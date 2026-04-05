@@ -27,7 +27,6 @@ WHITE_SPACE=\s+
 
 COMMENT_TOKEN=#.*
 CRLF_TOKEN=\R
-WHITE_SPACE=[ \t\f]+
 SPACE_TOKEN=[ \t\f]+
 STRING_TOKEN=\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*'
 CONTINUATION_TOKEN=\\([ \t\f]*\R)?
@@ -200,7 +199,6 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\]+
 
   {COMMENT_TOKEN}            { return COMMENT_TOKEN; }
   {CRLF_TOKEN}               { return CRLF_TOKEN; }
-  {WHITE_SPACE}              { return WHITE_SPACE; }
   {SPACE_TOKEN}              { return SPACE_TOKEN; }
   {STRING_TOKEN}             { return STRING_TOKEN; }
   {CONTINUATION_TOKEN}       { return CONTINUATION_TOKEN; }
