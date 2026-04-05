@@ -40,8 +40,11 @@
         <langCodeStyleSettingsProvider
                 implementation="com.github.peco2282.mcdatapack.language.formatting.McFunctionLanguageCodeStyleSettingsProvider"/>
 
-        <toolWindow factoryClass="com.github.peco2282.mcdatapack.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <toolWindow factoryClass="com.github.peco2282.mcdatapack.toolWindow.MyToolWindowFactory" id="MC-Datapack" anchor="right"/>
         <postStartupActivity implementation="com.github.peco2282.mcdatapack.startup.MyProjectActivity"/>
+        <notificationGroup id="MC-Datapack" displayType="BALLOON" isLogByDefault="true"/>
+        <liveTemplateContext contextId="McFunction" implementation="com.github.peco2282.mcdatapack.language.template.McFunctionTemplateContextType"/>
+        <codeInsight.inlayProvider language="McFunction" implementationClass="com.github.peco2282.mcdatapack.language.inlay.McFunctionInlayHintsProvider"/>
         <directoryProjectGenerator implementation="com.github.peco2282.mcdatapack.project.McDatapackProjectGenerator"/>
         <moduleBuilder builderClass="com.github.peco2282.mcdatapack.project.McDatapackModuleBuilder"/>
     </extensions>

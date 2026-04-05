@@ -1,45 +1,93 @@
 package com.github.peco2282.mcdatapack.toolWindow
 
-import com.github.peco2282.mcdatapack.MyBundle
-import com.github.peco2282.mcdatapack.services.MyProjectService
-import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.thisLogger
+import com.github.peco2282.mcdatapack.language.highlighting.McFunctionIcons
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.intellij.psi.search.FilenameIndex
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
-import javax.swing.JButton
-
+import java.awt.BorderLayout
+import java.awt.Component
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import javax.swing.*
 
 class MyToolWindowFactory : ToolWindowFactory {
 
-  init {
-    thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
-  }
-
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-    val myToolWindow = MyToolWindow(toolWindow)
-    val content = ContentFactory.getInstance().createContent(myToolWindow.getContent(), null, false)
+    val panel = McFunctionToolWindowPanel(project)
+    val content = ContentFactory.getInstance().createContent(panel.getContent(), "Functions", false)
     toolWindow.contentManager.addContent(content)
   }
 
   override fun shouldBeAvailable(project: Project) = true
 
-  class MyToolWindow(toolWindow: ToolWindow) {
+  class McFunctionToolWindowPanel(private val project: Project) {
 
-    private val service = toolWindow.project.service<MyProjectService>()
+    fun getContent(): JComponent {
+      val panel = JBPanel<JBPanel<*>>(BorderLayout())
 
-    fun getContent() = JBPanel<JBPanel<*>>().apply {
-      val label = JBLabel(MyBundle.message("randomLabel", "?"))
+      val titleLabel = JBLabel("  .mcfunction Files")
+      titleLabel.border = BorderFactory.createEmptyBorder(4, 4, 4, 4)
+      panel.add(titleLabel, BorderLayout.NORTH)
 
-      add(label)
-      add(JButton(MyBundle.message("shuffle")).apply {
-        addActionListener {
-          label.text = MyBundle.message("randomLabel", service.getRandomNumber())
+      val listModel = DefaultListModel<VirtualFile>()
+      val fileList = JList(listModel)
+      fileList.cellRenderer = McFunctionListCellRenderer()
+
+      refreshFiles(listModel)
+
+      fileList.addMouseListener(object : MouseAdapter() {
+        override fun mouseClicked(e: MouseEvent) {
+          if (e.clickCount == 2) {
+            val selected = fileList.selectedValue ?: return
+            FileEditorManager.getInstance(project).openFile(selected, true)
+          }
         }
       })
+
+      val scrollPane = JBScrollPane(fileList)
+      panel.add(scrollPane, BorderLayout.CENTER)
+
+      val refreshButton = JButton("Refresh")
+      refreshButton.addActionListener {
+        refreshFiles(listModel)
+      }
+      panel.add(refreshButton, BorderLayout.SOUTH)
+
+      return panel
+    }
+
+    private fun refreshFiles(listModel: DefaultListModel<VirtualFile>) {
+      listModel.clear()
+      val files = FilenameIndex.getAllFilesByExt(
+        project, "mcfunction", GlobalSearchScope.projectScope(project)
+      ).sortedBy { it.path }
+      files.forEach { listModel.addElement(it) }
+    }
+  }
+
+  private class McFunctionListCellRenderer : DefaultListCellRenderer() {
+    override fun getListCellRendererComponent(
+      list: JList<*>?,
+      value: Any?,
+      index: Int,
+      isSelected: Boolean,
+      cellHasFocus: Boolean
+    ): Component {
+      val component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus)
+      if (value is VirtualFile && component is JLabel) {
+        component.text = value.name
+        component.toolTipText = value.path
+        component.icon = McFunctionIcons.FILE
+      }
+      return component
     }
   }
 }

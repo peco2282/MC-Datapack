@@ -1,0 +1,119 @@
+<templateSet group="McFunction">
+  <template name="exe" value="execute as $SELECTOR$ at @s run $COMMAND$" description="execute as &lt;selector&gt; at @s run" toReformat="false" toShortenFQNames="false">
+    <variable name="SELECTOR" expression="" defaultValue="&quot;@a&quot;" alwaysStopAt="true"/>
+    <variable name="COMMAND" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="exeif" value="execute if entity $SELECTOR$ run $COMMAND$" description="execute if entity &lt;selector&gt; run" toReformat="false" toShortenFQNames="false">
+    <variable name="SELECTOR" expression="" defaultValue="&quot;@a&quot;" alwaysStopAt="true"/>
+    <variable name="COMMAND" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="exeifb" value="execute if block $X$ $Y$ $Z$ $BLOCK$ run $COMMAND$" description="execute if block &lt;pos&gt; &lt;block&gt; run" toReformat="false" toShortenFQNames="false">
+    <variable name="X" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true"/>
+    <variable name="Y" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true"/>
+    <variable name="Z" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true"/>
+    <variable name="BLOCK" expression="" defaultValue="&quot;minecraft:stone&quot;" alwaysStopAt="true"/>
+    <variable name="COMMAND" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="exeifs" value="execute if score $TARGET$ $OBJ$ matches $RANGE$ run $COMMAND$" description="execute if score matches" toReformat="false" toShortenFQNames="false">
+    <variable name="TARGET" expression="" defaultValue="&quot;@s&quot;" alwaysStopAt="true"/>
+    <variable name="OBJ" expression="" defaultValue="&quot;obj&quot;" alwaysStopAt="true"/>
+    <variable name="RANGE" expression="" defaultValue="&quot;1..&quot;" alwaysStopAt="true"/>
+    <variable name="COMMAND" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="fn" value="function $NAMESPACE$:$PATH$" description="function &lt;namespace&gt;:&lt;path&gt;" toReformat="false" toShortenFQNames="false">
+    <variable name="NAMESPACE" expression="" defaultValue="&quot;namespace&quot;" alwaysStopAt="true"/>
+    <variable name="PATH" expression="" defaultValue="&quot;path&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="say" value="say $MESSAGE$" description="say &lt;message&gt;" toReformat="false" toShortenFQNames="false">
+    <variable name="MESSAGE" expression="" defaultValue="&quot;Hello, World!&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="tell" value="tellraw $SELECTOR$ {&quot;text&quot;:&quot;$MESSAGE$&quot;}" description="tellraw &lt;selector&gt; &lt;message&gt;" toReformat="false" toShortenFQNames="false">
+    <variable name="SELECTOR" expression="" defaultValue="&quot;@a&quot;" alwaysStopAt="true"/>
+    <variable name="MESSAGE" expression="" defaultValue="&quot;Hello!&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="sbadd" value="scoreboard objectives add $OBJ$ $CRITERIA$" description="scoreboard objectives add" toReformat="false" toShortenFQNames="false">
+    <variable name="OBJ" expression="" defaultValue="&quot;myobj&quot;" alwaysStopAt="true"/>
+    <variable name="CRITERIA" expression="" defaultValue="&quot;dummy&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="sbset" value="scoreboard players set $TARGET$ $OBJ$ $VALUE$" description="scoreboard players set" toReformat="false" toShortenFQNames="false">
+    <variable name="TARGET" expression="" defaultValue="&quot;@s&quot;" alwaysStopAt="true"/>
+    <variable name="OBJ" expression="" defaultValue="&quot;myobj&quot;" alwaysStopAt="true"/>
+    <variable name="VALUE" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="sbadd1" value="scoreboard players add $TARGET$ $OBJ$ $AMOUNT$" description="scoreboard players add" toReformat="false" toShortenFQNames="false">
+    <variable name="TARGET" expression="" defaultValue="&quot;@s&quot;" alwaysStopAt="true"/>
+    <variable name="OBJ" expression="" defaultValue="&quot;myobj&quot;" alwaysStopAt="true"/>
+    <variable name="AMOUNT" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="give" value="give $SELECTOR$ $ITEM$ $COUNT$" description="give &lt;selector&gt; &lt;item&gt; [count]" toReformat="false" toShortenFQNames="false">
+    <variable name="SELECTOR" expression="" defaultValue="&quot;@s&quot;" alwaysStopAt="true"/>
+    <variable name="ITEM" expression="" defaultValue="&quot;minecraft:stone&quot;" alwaysStopAt="true"/>
+    <variable name="COUNT" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="summon" value="summon $ENTITY$ $X$ $Y$ $Z$" description="summon &lt;entity&gt; &lt;pos&gt;" toReformat="false" toShortenFQNames="false">
+    <variable name="ENTITY" expression="" defaultValue="&quot;minecraft:zombie&quot;" alwaysStopAt="true"/>
+    <variable name="X" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true"/>
+    <variable name="Y" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true"/>
+    <variable name="Z" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="tp" value="tp $TARGET$ $X$ $Y$ $Z$" description="tp &lt;target&gt; &lt;pos&gt;" toReformat="false" toShortenFQNames="false">
+    <variable name="TARGET" expression="" defaultValue="&quot;@s&quot;" alwaysStopAt="true"/>
+    <variable name="X" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true"/>
+    <variable name="Y" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true"/>
+    <variable name="Z" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="tag" value="tag $SELECTOR$ add $TAG$" description="tag &lt;selector&gt; add &lt;tag&gt;" toReformat="false" toShortenFQNames="false">
+    <variable name="SELECTOR" expression="" defaultValue="&quot;@s&quot;" alwaysStopAt="true"/>
+    <variable name="TAG" expression="" defaultValue="&quot;myTag&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+  <template name="data" value="data modify entity $SELECTOR$ $PATH$ set value $VALUE$" description="data modify entity" toReformat="false" toShortenFQNames="false">
+    <variable name="SELECTOR" expression="" defaultValue="&quot;@s&quot;" alwaysStopAt="true"/>
+    <variable name="PATH" expression="" defaultValue="&quot;CustomName&quot;" alwaysStopAt="true"/>
+    <variable name="VALUE" expression="" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="McFunction" value="true"/>
+    </context>
+  </template>
+</templateSet>
