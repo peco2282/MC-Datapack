@@ -303,15 +303,58 @@ class McFunctionCompletionContributor : CompletionContributor() {
 
           when (key) {
             "gamemode" -> listOf("creative", "survival", "adventure", "spectator").forEach {
-              result.addElement(LookupElementBuilder.create(it))
-            }
-            "sort" -> listOf("nearest", "furthest", "random", "arbitrary").forEach {
-              result.addElement(LookupElementBuilder.create(it))
-            }
-            "type" -> McFunctionConstants.ENTITY_IDS.forEach {
               result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
             }
-            "limit" -> result.addElement(LookupElementBuilder.create("1"))
+            "sort" -> listOf("nearest", "furthest", "random", "arbitrary").forEach {
+              result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+            }
+            "type" -> {
+              McFunctionConstants.ENTITY_IDS.forEach {
+                result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+                result.addElement(LookupElementBuilder.create("!" + it).withIcon(McFunctionIcons.COMMAND))
+              }
+            }
+            "limit" -> listOf("1", "2", "5", "10").forEach {
+              result.addElement(LookupElementBuilder.create(it))
+            }
+            "team" -> {
+              addTeamNames(parameters, result)
+              result.addElement(LookupElementBuilder.create("!").withTypeText("チームなし"))
+            }
+            "tag" -> {
+              addEntityTags(parameters, result)
+              result.addElement(LookupElementBuilder.create("!").withTypeText("タグなし"))
+            }
+            "name" -> {
+              // プレイヤー名は動的なので、否定形のヒントのみ
+              result.addElement(LookupElementBuilder.create("!").withTypeText("名前の否定"))
+            }
+            "predicate" -> {
+              addPredicateNames(parameters, result)
+            }
+            "scores" -> {
+              result.addElement(LookupElementBuilder.create("{}").withTypeText("スコア条件"))
+              addScoreboardObjectivesForSelector(parameters, result)
+            }
+            "advancements" -> {
+              result.addElement(LookupElementBuilder.create("{}").withTypeText("進捗条件"))
+            }
+            "nbt" -> {
+              result.addElement(LookupElementBuilder.create("{}").withTypeText("NBT条件"))
+              result.addElement(LookupElementBuilder.create("!{}").withTypeText("NBT否定条件"))
+            }
+            "distance" -> listOf("..10", "5..10", "5..").forEach {
+              result.addElement(LookupElementBuilder.create(it).withTypeText("距離範囲"))
+            }
+            "level" -> listOf("0..30", "..30", "30..").forEach {
+              result.addElement(LookupElementBuilder.create(it).withTypeText("レベル範囲"))
+            }
+            "x_rotation" -> listOf("-90..90", "-90..0", "0..90").forEach {
+              result.addElement(LookupElementBuilder.create(it).withTypeText("X回転範囲"))
+            }
+            "y_rotation" -> listOf("-180..180", "-90..90", "0..180").forEach {
+              result.addElement(LookupElementBuilder.create(it).withTypeText("Y回転範囲"))
+            }
           }
         }
       }
@@ -468,6 +511,54 @@ class McFunctionCompletionContributor : CompletionContributor() {
     }
     tags.forEach {
       result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.TAG))
+    }
+  }
+
+  private fun addTeamNames(parameters: CompletionParameters, result: CompletionResultSet) {
+    val project = parameters.originalFile.project
+    val files = FilenameIndex.getAllFilesByExt(project, "mcfunction", GlobalSearchScope.allScope(project))
+    val teams = mutableSetOf<String>()
+    for (file in files) {
+      val psiFile = PsiManager.getInstance(project).findFile(file) ?: continue
+      val text = psiFile.text
+      val regex = Regex("team\\s+add\\s+([a-zA-Z0-9_.-]+)")
+      regex.findAll(text).forEach { teams.add(it.groupValues[1]) }
+    }
+    teams.forEach {
+      result.addElement(LookupElementBuilder.create(it).withIcon(McFunctionIcons.COMMAND))
+    }
+  }
+
+  private fun addPredicateNames(parameters: CompletionParameters, result: CompletionResultSet) {
+    val project = parameters.originalFile.project
+    val files = FilenameIndex.getAllFilesByExt(project, "json", GlobalSearchScope.allScope(project))
+    for (file in files) {
+      val path = file.path.replace("\\", "/")
+      if (!path.contains("/predicates/")) continue
+      val dataIndex = path.indexOf("/data/")
+      if (dataIndex == -1) continue
+      val relativePath = path.substring(dataIndex + 6)
+      val parts = relativePath.split("/")
+      if (parts.size >= 3 && parts[1] == "predicates") {
+        val namespace = parts[0]
+        val predPath = parts.drop(2).joinToString("/").removeSuffix(".json")
+        result.addElement(LookupElementBuilder.create("$namespace:$predPath").withIcon(McFunctionIcons.FUNCTION))
+      }
+    }
+  }
+
+  private fun addScoreboardObjectivesForSelector(parameters: CompletionParameters, result: CompletionResultSet) {
+    val project = parameters.originalFile.project
+    val files = FilenameIndex.getAllFilesByExt(project, "mcfunction", GlobalSearchScope.allScope(project))
+    val objectives = mutableSetOf<String>()
+    for (file in files) {
+      val psiFile = PsiManager.getInstance(project).findFile(file) ?: continue
+      val text = psiFile.text
+      val regex = Regex("scoreboard\\s+objectives\\s+add\\s+([a-zA-Z0-9_.-]+)")
+      regex.findAll(text).forEach { objectives.add(it.groupValues[1]) }
+    }
+    objectives.forEach {
+      result.addElement(LookupElementBuilder.create("{$it=}").withTypeText("スコア条件"))
     }
   }
 
