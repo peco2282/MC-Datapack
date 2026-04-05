@@ -70,30 +70,30 @@ class McFunctionStructureViewElement(private val element: PsiElement) : Structur
         if (element is PsiFile) return McFunctionIcons.FILE
         if (element.node.elementType == McFunctionTypes.COMMENT_TOKEN) return McFunctionIcons.COMMAND
         if (element is McFunctionCommandLine) {
+          if (element.executeCommand != null) return McFunctionIcons.EXECUTE
+          if (element.attributeCommand != null) return McFunctionIcons.ATTRIBUTE
+          if (element.clearCommand != null) return McFunctionIcons.CLEAR
+          if (element.damageCommand != null) return McFunctionIcons.DAMAGE
+          if (element.dataCommand != null) return McFunctionIcons.DATA
+          if (element.giveCommand != null) return McFunctionIcons.GIVE
+          if (element.itemCommand != null) return McFunctionIcons.ITEM
+          if (element.particleCommand != null) return McFunctionIcons.PARTICLE
+          if (element.returnCommand != null) return McFunctionIcons.RETURN
+          if (element.rideCommand != null) return McFunctionIcons.RIDE
           val generic = element.genericCommand
           if (generic != null) {
-            val commandText = generic.command?.text?.lowercase() ?: ""
+            // COMMAND_TOKEN (unknown command) or known command token
+            val commandText = generic.command?.commandToken?.text?.lowercase()
+              ?: generic.firstChild?.text?.lowercase()
+              ?: ""
             return getIconForCommand(commandText)
-          }
-          if (element.executeCommand != null) {
-            return McFunctionIcons.EXECUTE
           }
           return McFunctionIcons.COMMAND
         }
         return null
       }
 
-      private fun getIconForCommand(text: String): Icon {
-        return when {
-          text == "execute" -> McFunctionIcons.EXECUTE
-          text == "function" -> McFunctionIcons.FUNCTION
-          text == "give" -> McFunctionIcons.GIVE
-          text.contains("effect") -> McFunctionIcons.EFFECT
-          text.contains("scoreboard") -> McFunctionIcons.SCOREBOARD
-          text.startsWith("@") -> McFunctionIcons.SELECTOR
-          else -> McFunctionIcons.COMMAND
-        }
-      }
+      private fun getIconForCommand(text: String): Icon = McFunctionIcons.forCommand(text)
     }
   }
 

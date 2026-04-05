@@ -671,18 +671,7 @@ class McFunctionCompletionContributor : CompletionContributor() {
     }
   }
 
-  private fun getIconForCommand(command: String): Icon {
-    val text = command.lowercase()
-    return when {
-      text == "execute" -> McFunctionIcons.EXECUTE
-      text == "function" -> McFunctionIcons.FUNCTION
-      text == "give" -> McFunctionIcons.GIVE
-      text.contains("effect") -> McFunctionIcons.EFFECT
-      text.contains("scoreboard") -> McFunctionIcons.SCOREBOARD
-      text.startsWith("@") -> McFunctionIcons.SELECTOR
-      else -> McFunctionIcons.COMMAND
-    }
-  }
+  private fun getIconForCommand(command: String): Icon = McFunctionIcons.forCommand(command.lowercase())
 
   private fun isCommandPosition(position: com.intellij.psi.PsiElement): Boolean {
     // 1. 行の最初（前にあるのが改行やスペースのみ）
