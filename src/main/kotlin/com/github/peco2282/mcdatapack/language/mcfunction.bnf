@@ -25,6 +25,7 @@
     ATTRIBUTE_TOKEN       = "attribute"
     EXECUTE_TOKEN         = "execute"
     BOSSBAR_TOKEN         = "bossbar"
+    CHANCE_TOKEN          = "chance"
     CLEAR_TOKEN           = "clear"
     CLONE_TOKEN           = "clone"
     DAMAGE_TOKEN          = "damage"
@@ -95,6 +96,8 @@
     // Subcommands & Keywords
     IF_TOKEN              = "if"
     UNLESS_TOKEN          = "unless"
+    WHILE_TOKEN           = "while"
+    UNTIL_TOKEN           = "until"
     RUN_TOKEN             = "run"
     ONLY_TOKEN            = "only"
     ENTITY_TOKEN          = "entity"
@@ -297,6 +300,8 @@ execute_modifier_clause ::= execute_as_clause
   | execute_store_clause
   | execute_if_clause
   | execute_unless_clause
+  | execute_while_clause
+  | execute_until_clause
   | execute_facing_clause
   | execute_rotated_clause
   | execute_position_clause
@@ -312,6 +317,8 @@ execute_generic_modifier ::= (keyword_not_namespaced | json | execute_argument)
 
 execute_if_clause ::= IF_TOKEN execute_if_condition {pin=1}
 execute_unless_clause ::= UNLESS_TOKEN execute_if_condition {pin=1}
+execute_while_clause ::= WHILE_TOKEN execute_if_condition {pin=1}
+execute_until_clause ::= UNTIL_TOKEN execute_if_condition {pin=1}
 execute_as_clause ::= AS_TOKEN selector {pin=1}
 execute_at_clause ::= AT_TOKEN selector {pin=1}
 execute_store_clause ::= STORE_TOKEN (RESULT_TOKEN | SUCCESS_TOKEN) (execute_store_storage | execute_store_entity | execute_store_block | execute_store_score | ARGUMENT_TOKEN*) {pin=1}
@@ -386,7 +393,7 @@ keyword ::= control_keyword | ONLY_TOKEN | ENTITY_TOKEN | MODIFY_TOKEN | STORAGE
   | QUERY_TOKEN | TAKE_TOKEN | OBJECTIVES_TOKEN | SETDISPLAY_TOKEN | EMPTY_TOKEN | JOIN_TOKEN | LEAVE_TOKEN
   | RATE_TOKEN | FREEZE_TOKEN | STEP_TOKEN | STOP_TOKEN | UNFREEZE_TOKEN | SUBTITLE_TOKEN | TIMES_TOKEN
   | CENTER_TOKEN | WARNING_TOKEN | MASTER_TOKEN | MUSIC_TOKEN
-  | IF_TOKEN | UNLESS_TOKEN
+  | IF_TOKEN | UNLESS_TOKEN | WHILE_TOKEN | UNTIL_TOKEN
 
 private control_keyword ::= BY_TOKEN | MOUNT_TOKEN | RESULT_TOKEN | SUCCESS_TOKEN | RUN_TOKEN | DISMOUNT_TOKEN
 

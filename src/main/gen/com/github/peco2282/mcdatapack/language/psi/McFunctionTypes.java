@@ -39,6 +39,8 @@ public interface McFunctionTypes {
   IElementType EXECUTE_STORE_CLAUSE = new McFunctionElementType("EXECUTE_STORE_CLAUSE");
   IElementType EXECUTE_SUMMON_CLAUSE = new McFunctionElementType("EXECUTE_SUMMON_CLAUSE");
   IElementType EXECUTE_UNLESS_CLAUSE = new McFunctionElementType("EXECUTE_UNLESS_CLAUSE");
+  IElementType EXECUTE_UNTIL_CLAUSE = new McFunctionElementType("EXECUTE_UNTIL_CLAUSE");
+  IElementType EXECUTE_WHILE_CLAUSE = new McFunctionElementType("EXECUTE_WHILE_CLAUSE");
   IElementType GENERIC_COMMAND = new McFunctionElementType("GENERIC_COMMAND");
   IElementType GIVE_COMMAND = new McFunctionElementType("GIVE_COMMAND");
   IElementType ITEM_COMMAND = new McFunctionElementType("ITEM_COMMAND");
@@ -82,6 +84,7 @@ public interface McFunctionTypes {
   IElementType BOSSBAR_TOKEN = new McFunctionTokenType("bossbar");
   IElementType BY_TOKEN = new McFunctionTokenType("by");
   IElementType CENTER_TOKEN = new McFunctionTokenType("center");
+  IElementType CHANCE_TOKEN = new McFunctionTokenType("chance");
   IElementType CLEAR_TOKEN = new McFunctionTokenType("clear");
   IElementType CLONE_TOKEN = new McFunctionTokenType("clone");
   IElementType COLON = new McFunctionTokenType(":");
@@ -224,11 +227,13 @@ public interface McFunctionTypes {
   IElementType TRIGGER_TOKEN = new McFunctionTokenType("trigger");
   IElementType UNFREEZE_TOKEN = new McFunctionTokenType("unfreeze");
   IElementType UNLESS_TOKEN = new McFunctionTokenType("unless");
+  IElementType UNTIL_TOKEN = new McFunctionTokenType("until");
   IElementType VALUE_TOKEN = new McFunctionTokenType("value");
   IElementType WARNING_TOKEN = new McFunctionTokenType("warning");
   IElementType WEAPON_MAINHAND_TOKEN = new McFunctionTokenType("weapon.mainhand");
   IElementType WEAPON_OFFHAND_TOKEN = new McFunctionTokenType("weapon.offhand");
   IElementType WEATHER_TOKEN = new McFunctionTokenType("weather");
+  IElementType WHILE_TOKEN = new McFunctionTokenType("while");
   IElementType WHITELIST_TOKEN = new McFunctionTokenType("whitelist");
   IElementType WITH_TOKEN = new McFunctionTokenType("with");
   IElementType WORLDBORDER_TOKEN = new McFunctionTokenType("worldborder");
@@ -329,6 +334,12 @@ public interface McFunctionTypes {
       }
       else if (type == EXECUTE_UNLESS_CLAUSE) {
         return new McFunctionExecuteUnlessClauseImpl(node);
+      }
+      else if (type == EXECUTE_UNTIL_CLAUSE) {
+        return new McFunctionExecuteUntilClauseImpl(node);
+      }
+      else if (type == EXECUTE_WHILE_CLAUSE) {
+        return new McFunctionExecuteWhileClauseImpl(node);
       }
       else if (type == GENERIC_COMMAND) {
         return new McFunctionGenericCommandImpl(node);

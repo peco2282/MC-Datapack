@@ -131,6 +131,14 @@ public class McFunctionVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitExecuteUntilClause(@NotNull McFunctionExecuteUntilClause o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExecuteWhileClause(@NotNull McFunctionExecuteWhileClause o) {
+    visitPsiElement(o);
+  }
+
   public void visitGenericCommand(@NotNull McFunctionGenericCommand o) {
     visitPsiElement(o);
   }

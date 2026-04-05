@@ -52,4 +52,10 @@ public interface McFunctionExecuteModifierClause extends PsiElement {
   @Nullable
   McFunctionExecuteUnlessClause getExecuteUnlessClause();
 
+  @Nullable
+  McFunctionExecuteUntilClause getExecuteUntilClause();
+
+  @Nullable
+  McFunctionExecuteWhileClause getExecuteWhileClause();
+
 }

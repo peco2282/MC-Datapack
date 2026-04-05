@@ -1399,6 +1399,8 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   //   | execute_store_clause
   //   | execute_if_clause
   //   | execute_unless_clause
+  //   | execute_while_clause
+  //   | execute_until_clause
   //   | execute_facing_clause
   //   | execute_rotated_clause
   //   | execute_position_clause
@@ -1418,6 +1420,8 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = execute_store_clause(builder_, level_ + 1);
     if (!result_) result_ = execute_if_clause(builder_, level_ + 1);
     if (!result_) result_ = execute_unless_clause(builder_, level_ + 1);
+    if (!result_) result_ = execute_while_clause(builder_, level_ + 1);
+    if (!result_) result_ = execute_until_clause(builder_, level_ + 1);
     if (!result_) result_ = execute_facing_clause(builder_, level_ + 1);
     if (!result_) result_ = execute_rotated_clause(builder_, level_ + 1);
     if (!result_) result_ = execute_position_clause(builder_, level_ + 1);
@@ -1764,6 +1768,34 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     boolean result_, pinned_;
     Marker marker_ = enter_section_(builder_, level_, _NONE_, EXECUTE_UNLESS_CLAUSE, null);
     result_ = consumeToken(builder_, UNLESS_TOKEN);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && execute_if_condition(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  /* ********************************************************** */
+  // UNTIL_TOKEN execute_if_condition
+  public static boolean execute_until_clause(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "execute_until_clause")) return false;
+    if (!nextTokenIs(builder_, UNTIL_TOKEN)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, EXECUTE_UNTIL_CLAUSE, null);
+    result_ = consumeToken(builder_, UNTIL_TOKEN);
+    pinned_ = result_; // pin = 1
+    result_ = result_ && execute_if_condition(builder_, level_ + 1);
+    exit_section_(builder_, level_, marker_, result_, pinned_, null);
+    return result_ || pinned_;
+  }
+
+  /* ********************************************************** */
+  // WHILE_TOKEN execute_if_condition
+  public static boolean execute_while_clause(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "execute_while_clause")) return false;
+    if (!nextTokenIs(builder_, WHILE_TOKEN)) return false;
+    boolean result_, pinned_;
+    Marker marker_ = enter_section_(builder_, level_, _NONE_, EXECUTE_WHILE_CLAUSE, null);
+    result_ = consumeToken(builder_, WHILE_TOKEN);
     pinned_ = result_; // pin = 1
     result_ = result_ && execute_if_condition(builder_, level_ + 1);
     exit_section_(builder_, level_, marker_, result_, pinned_, null);
@@ -2269,7 +2301,7 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
   //   | QUERY_TOKEN | TAKE_TOKEN | OBJECTIVES_TOKEN | SETDISPLAY_TOKEN | EMPTY_TOKEN | JOIN_TOKEN | LEAVE_TOKEN
   //   | RATE_TOKEN | FREEZE_TOKEN | STEP_TOKEN | STOP_TOKEN | UNFREEZE_TOKEN | SUBTITLE_TOKEN | TIMES_TOKEN
   //   | CENTER_TOKEN | WARNING_TOKEN | MASTER_TOKEN | MUSIC_TOKEN
-  //   | IF_TOKEN | UNLESS_TOKEN
+  //   | IF_TOKEN | UNLESS_TOKEN | WHILE_TOKEN | UNTIL_TOKEN
   public static boolean keyword(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "keyword")) return false;
     boolean result_;
@@ -2326,6 +2358,8 @@ public class McFunctionParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, MUSIC_TOKEN);
     if (!result_) result_ = consumeToken(builder_, IF_TOKEN);
     if (!result_) result_ = consumeToken(builder_, UNLESS_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, WHILE_TOKEN);
+    if (!result_) result_ = consumeToken(builder_, UNTIL_TOKEN);
     exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }

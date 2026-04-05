@@ -117,4 +117,16 @@ public class McFunctionExecuteModifierClauseImpl extends ASTWrapperPsiElement im
     return findChildByClass(McFunctionExecuteUnlessClause.class);
   }
 
+  @Override
+  @Nullable
+  public McFunctionExecuteUntilClause getExecuteUntilClause() {
+    return findChildByClass(McFunctionExecuteUntilClause.class);
+  }
+
+  @Override
+  @Nullable
+  public McFunctionExecuteWhileClause getExecuteWhileClause() {
+    return findChildByClass(McFunctionExecuteWhileClause.class);
+  }
+
 }

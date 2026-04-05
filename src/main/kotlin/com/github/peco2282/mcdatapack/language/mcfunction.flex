@@ -45,6 +45,7 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\]+
   "attribute"                { return ATTRIBUTE_TOKEN; }
   "execute"                  { return EXECUTE_TOKEN; }
   "bossbar"                  { return BOSSBAR_TOKEN; }
+  "chance"                   { return CHANCE_TOKEN; }
   "clear"                    { return CLEAR_TOKEN; }
   "clone"                    { return CLONE_TOKEN; }
   "damage"                   { return DAMAGE_TOKEN; }
@@ -113,6 +114,8 @@ ARGUMENT_TOKEN=[^ \n\r\t\f#\"'\[\]{},=:\\]+
   "xp"                       { return XP_TOKEN; }
   "if"                       { return IF_TOKEN; }
   "unless"                   { return UNLESS_TOKEN; }
+  "while"                    { return WHILE_TOKEN; }
+  "until"                    { return UNTIL_TOKEN; }
   "run"                      { return RUN_TOKEN; }
   "only"                     { return ONLY_TOKEN; }
   "entity"                   { return ENTITY_TOKEN; }
