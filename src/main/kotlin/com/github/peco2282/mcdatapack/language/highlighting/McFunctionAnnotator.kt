@@ -25,11 +25,26 @@ class McFunctionAnnotator : Annotator {
             .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE)
             .create()
         }
+
+        // コロン自体を NAMESPACE_COLON でハイライト
+        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+          .range(colon.textRange)
+          .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE_COLON)
+          .create()
+
+        // コロンの後ろの部分を ARGUMENT でハイライト
+        if (colon.startOffset + 1 < element.textRange.endOffset) {
+          holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+            .range(TextRange(colon.startOffset + 1, element.textRange.endOffset))
+            .textAttributes(McFunctionSyntaxHighlighter.ARGUMENT)
+            .create()
+        }
       } else {
-        // コロンがない場合も、NamespacedId 全体を NAMESPACE でハイライト（必要に応じて）
+        // コロンがない場合も、NamespacedId 全体を NAMESPACE ではなく ARGUMENT として扱う方が自然かもしれない
+        // ただし現状の仕様に合わせて NAMESPACE にしておく
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
           .range(element.textRange)
-          .textAttributes(McFunctionSyntaxHighlighter.NAMESPACE)
+          .textAttributes(McFunctionSyntaxHighlighter.ARGUMENT)
           .create()
       }
     }
