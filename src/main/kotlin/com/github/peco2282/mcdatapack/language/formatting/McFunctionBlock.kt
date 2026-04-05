@@ -17,14 +17,24 @@ class McFunctionBlock(
   override fun buildChildren(): List<Block> {
     val blocks = mutableListOf<Block>()
     var child = myNode.firstChildNode
+    var prevWasRun = false
     while (child != null) {
       val elementType = child.elementType
       if (elementType != TokenType.WHITE_SPACE) {
-        val childIndent = when (elementType) {
-          McFunctionTypes.JSON_OBJECT, McFunctionTypes.NBT_COMPOUND -> Indent.getNormalIndent()
-          McFunctionTypes.JSON_ARRAY, McFunctionTypes.NBT_LIST -> Indent.getNormalIndent()
+        val childIndent = when {
+          // JSON/NBT 構造体のインデント
+          elementType == McFunctionTypes.JSON_OBJECT ||
+          elementType == McFunctionTypes.NBT_COMPOUND ||
+          elementType == McFunctionTypes.JSON_ARRAY ||
+          elementType == McFunctionTypes.NBT_LIST -> Indent.getNormalIndent()
+
+          // execute_command 直下で RUN_TOKEN の次の COMMAND_LINE はインデント
+          myNode.elementType == McFunctionTypes.EXECUTE_COMMAND &&
+          elementType == McFunctionTypes.COMMAND_LINE && prevWasRun -> Indent.getNormalIndent()
+
           else -> Indent.getNoneIndent()
         }
+        prevWasRun = elementType == McFunctionTypes.RUN_TOKEN
         blocks.add(
           McFunctionBlock(
             child,
@@ -48,11 +58,17 @@ class McFunctionBlock(
 
   override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
     val elementType = myNode.elementType
-    return when (elementType) {
-      McFunctionTypes.JSON_OBJECT, McFunctionTypes.NBT_COMPOUND ->
+    return when {
+      elementType == McFunctionTypes.JSON_OBJECT ||
+      elementType == McFunctionTypes.NBT_COMPOUND ||
+      elementType == McFunctionTypes.JSON_ARRAY ||
+      elementType == McFunctionTypes.NBT_LIST ->
         ChildAttributes(Indent.getNormalIndent(), null)
-      McFunctionTypes.JSON_ARRAY, McFunctionTypes.NBT_LIST ->
+
+      // execute_command 内で新しい行を入力した場合はインデント
+      elementType == McFunctionTypes.EXECUTE_COMMAND ->
         ChildAttributes(Indent.getNormalIndent(), null)
+
       else -> ChildAttributes(Indent.getNoneIndent(), null)
     }
   }
